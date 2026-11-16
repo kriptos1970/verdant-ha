@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {iosCareValue,iosDeadline} from '../plantcare_web/frontend/src/ios-summary.ts';
+const plant={wateringInterval:7,fertilizingInterval:14,rotationInterval:null,_actions:[{kind:'Annaffia',daysUntil:2,includesFertilizing:true}],_schedule:[{kind:'Annaffia',daysUntil:2},{kind:'Concima',daysUntil:2}]};
+assert.equal(iosCareValue(plant,'Concima'),'Tra 2 giorni','Grouped feed must still appear in summary');
+assert.equal(iosCareValue(plant,'Concima',true),'Ogni 14 giorni');
+assert.equal(iosCareValue({...plant,wateringInterval:1},'Annaffia',true),'Ogni giorno');
+assert.equal(iosCareValue(plant,'Ruota'),'Non prevista');
+assert.equal(iosCareValue({...plant,fertilizingInterval:null},'Concima'),'Non pianificata');
+assert.equal(iosCareValue({...plant,_schedule:[{kind:'Concima',daysUntil:5}]},'Concima'),'Tra 5 giorni','Use effective schedule, including deferred dates');
+assert.deepEqual([-3,-1,0,1,7].map(iosDeadline),['Scaduta da 3 giorni','Scaduta da 1 giorno','Oggi','Tra 1 giorno','Tra 7 giorni']);
+console.log('OK: riepilogo concime raggruppato, rinvio, frequenze e diciture native.');

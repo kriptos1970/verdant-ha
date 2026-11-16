@@ -1,0 +1,18 @@
+import ts from '../plantcare_web/frontend/node_modules/typescript/lib/typescript.js';
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../plantcare_web/frontend/src/plant-links.ts',import.meta.url),'utf8');
+const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const links=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const id='170F12A0-7D2E-489E-AF4A-116A108D6985';
+const link=links.labelLink('https://ha.example',id,true);
+assert.equal(link,`https://ha.example/app/local_plantcare_web/plant/${id}`);
+assert.equal(links.parsePlantLabel(link),id);
+assert.equal(links.parsePlantLabel(`verdant://plant/${id.toLowerCase()}`),id);
+assert.equal(links.parsePlantLabel(links.labelLink('http://localhost:8768',id,false)),id);
+assert.equal(links.parsePlantLabel('javascript:alert(1)'),null);
+assert.equal(links.routePlant('/plant/invalid'),null);
+assert.equal(links.routePlant('/plant/'+id+'/other'),null);
+assert(!link.includes('hassio_ingress'));
+assert.throws(()=>links.labelLink('javascript:bad',id,true));
+console.log('QR links OK: route HA stabile, collegamento locale, etichetta nativa e input invalidi.');

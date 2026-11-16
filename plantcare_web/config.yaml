@@ -1,0 +1,55 @@
+name: PlantCare Web
+version: "0.10.3"
+slug: plantcare_web
+description: Piante, cure e assistente botanico con archivio locale
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+init: false
+homeassistant_api: true
+ingress: true
+ingress_port: 8099
+ingress_stream: true
+panel_icon: mdi:flower
+panel_title: PlantCare
+panel_admin: true
+map:
+  - type: share
+    read_only: false
+options:
+  photo_directory: /data/photos
+  max_photo_mb: 20
+  measurement_retention_days: 365
+  timezone: Europe/Rome
+  exposed_entities: []
+  poll_interval_minutes: 15
+  ai_provider: none
+  ai_model: ""
+  openai_api_key: ""
+  gemini_api_key: ""
+  ai_update_time: "03:00"
+  auto_apply_ai: false
+  plantnet_api_key: ""
+  perenual_api_key: ""
+  openplantbook_client_id: ""
+  openplantbook_secret: ""
+schema:
+  photo_directory: str
+  max_photo_mb: int(1,100)
+  measurement_retention_days: int(7,3650)
+  timezone: str
+  exposed_entities:
+    - str
+  poll_interval_minutes: int(1,1440)
+  ai_provider: list(none|gemini|openai)
+  ai_model: str?
+  openai_api_key: password?
+  gemini_api_key: password?
+  ai_update_time: match(^([01][0-9]|2[0-3]):[0-5][0-9]$)
+  auto_apply_ai: bool
+  plantnet_api_key: password?
+  perenual_api_key: password?
+  openplantbook_client_id: password?
+  openplantbook_secret: password?

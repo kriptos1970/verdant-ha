@@ -1,0 +1,200 @@
+[
+  {
+    "kind": "Annaffia",
+    "steps": [
+      {
+        "title": "Controlla il terreno",
+        "detail": "Senti l’umidità in profondità e annaffia solo se il substrato è pronto.",
+        "icon": "hand.point.down.fill"
+      },
+      {
+        "title": "Bagna lentamente",
+        "detail": "Distribuisci l’acqua sul terreno in modo uniforme.",
+        "icon": "drop.fill"
+      },
+      {
+        "title": "Lascia drenare",
+        "detail": "Attendi che l’eccesso esca dai fori e svuota il sottovaso.",
+        "icon": "tray.and.arrow.down.fill"
+      }
+    ],
+    "tip": "Usa acqua a temperatura ambiente e adatta la quantità alle dimensioni del vaso.",
+    "image": "guide-water.webp"
+  },
+  {
+    "kind": "Concima",
+    "steps": [
+      {
+        "title": "Misura la dose",
+        "detail": "Segui l’etichetta senza superare la concentrazione indicata.",
+        "icon": "ruler.fill"
+      },
+      {
+        "title": "Diluisci bene",
+        "detail": "Mescola il fertilizzante nell’acqua prima di applicarlo.",
+        "icon": "water.waves"
+      },
+      {
+        "title": "Applica sul terreno umido",
+        "detail": "Distribuisci la soluzione senza concentrarla in un solo punto.",
+        "icon": "drop.circle.fill"
+      }
+    ],
+    "tip": "Non concimare una pianta molto secca, stressata o appena rinvasata.",
+    "image": "guide-fertilize.webp"
+  },
+  {
+    "kind": "Ruota",
+    "steps": [
+      {
+        "title": "Osserva la direzione",
+        "detail": "Individua il lato che cresce verso la fonte luminosa.",
+        "icon": "sun.max.fill"
+      },
+      {
+        "title": "Ruota di un quarto",
+        "detail": "Gira il vaso di circa 90° senza torcere i fusti.",
+        "icon": "rotate.right.fill"
+      },
+      {
+        "title": "Mantieni la posizione",
+        "detail": "Rimettilo nello stesso punto e osserva la risposta.",
+        "icon": "scope"
+      }
+    ],
+    "tip": "Evita rotazioni durante fioritura o acclimatazione.",
+    "image": "guide-rotate.webp"
+  },
+  {
+    "kind": "Rinvasa",
+    "steps": [
+      {
+        "title": "Prepara vaso e substrato",
+        "detail": "Scegli un vaso poco più grande, drenante e una miscela adatta.",
+        "icon": "shippingbox.fill"
+      },
+      {
+        "title": "Controlla le radici",
+        "detail": "Estrai la zolla e rimuovi solo radici morte o marce.",
+        "icon": "circle.dotted"
+      },
+      {
+        "title": "Sistema alla stessa altezza",
+        "detail": "Riempi senza comprimere troppo e stabilizza la pianta.",
+        "icon": "leaf.fill"
+      }
+    ],
+    "tip": "Evita concime e sole intenso finché la pianta non si è assestata.",
+    "image": "guide-repot.webp"
+  },
+  {
+    "kind": "Pota",
+    "steps": [
+      {
+        "title": "Disinfetta gli strumenti",
+        "detail": "Pulisci e asciuga le lame prima di iniziare.",
+        "icon": "cross.vial.fill"
+      },
+      {
+        "title": "Scegli dove tagliare",
+        "detail": "Individua parti danneggiate o il nodo corretto.",
+        "icon": "eye.fill"
+      },
+      {
+        "title": "Esegui un taglio netto",
+        "detail": "Taglia una sola volta senza schiacciare il tessuto.",
+        "icon": "scissors"
+      }
+    ],
+    "tip": "Non rimuovere troppo fogliame in una sola sessione.",
+    "image": "guide-prune.webp"
+  },
+  {
+    "kind": "Controlla salute",
+    "steps": [
+      {
+        "title": "Guarda entrambe le facce",
+        "detail": "Cerca macchie, deformazioni o parassiti sulle foglie.",
+        "icon": "magnifyingglass"
+      },
+      {
+        "title": "Esamina fusti e terreno",
+        "detail": "Osserva colletto, nodi, substrato e drenaggio.",
+        "icon": "circle.hexagongrid.fill"
+      },
+      {
+        "title": "Registra ciò che vedi",
+        "detail": "Annota sintomi, aree coinvolte e stato generale.",
+        "icon": "square.and.pencil"
+      }
+    ],
+    "tip": "Isola temporaneamente la pianta se sospetti parassiti.",
+    "image": "guide-inspect.webp"
+  },
+  {
+    "kind": "Aggiorna progressi",
+    "steps": [
+      {
+        "title": "Ricrea la stessa inquadratura",
+        "detail": "Usa luce, distanza e angolazione simili.",
+        "icon": "camera.fill"
+      },
+      {
+        "title": "Cerca i cambiamenti",
+        "detail": "Osserva nuove foglie, altezza, colore e crescita.",
+        "icon": "leaf.arrow.triangle.circlepath"
+      },
+      {
+        "title": "Aggiungi una nota",
+        "detail": "Registra le differenze principali e lo stato della pianta.",
+        "icon": "note.text"
+      }
+    ],
+    "tip": "Una foto coerente e una nota breve facilitano il confronto.",
+    "image": "guide-progress.webp"
+  },
+  {
+    "kind": "Spostamento",
+    "steps": [
+      {
+        "title": "Valuta la destinazione",
+        "detail": "Controlla luce, correnti, calore e spazio.",
+        "icon": "sun.horizon.fill"
+      },
+      {
+        "title": "Sostieni vaso e chioma",
+        "detail": "Solleva dalla base e accompagna i fusti.",
+        "icon": "figure.strengthtraining.traditional"
+      },
+      {
+        "title": "Posiziona in sicurezza",
+        "detail": "Verifica stabilità, sottovaso e orientamento.",
+        "icon": "checkmark.circle.fill"
+      }
+    ],
+    "tip": "Dopo lo spostamento osserva la pianta prima di cambiare altre cure.",
+    "image": "guide-move.webp"
+  },
+  {
+    "kind": "Trattamento",
+    "steps": [
+      {
+        "title": "Isola la pianta",
+        "detail": "Allontanala dalle altre e identifica il problema.",
+        "icon": "rectangle.3.group.fill"
+      },
+      {
+        "title": "Proteggiti e tratta",
+        "detail": "Segui l’etichetta e applica solo dove necessario.",
+        "icon": "shield.lefthalf.filled"
+      },
+      {
+        "title": "Pulisci e monitora",
+        "detail": "Igienizza gli strumenti e verifica l’evoluzione.",
+        "icon": "sparkles"
+      }
+    ],
+    "tip": "Non mescolare prodotti né aumentare dose o frequenza.",
+    "image": "guide-treatment.webp"
+  }
+]

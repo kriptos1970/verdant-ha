@@ -1,0 +1,281 @@
+/* iPhone layout measured against Verdant iOS 26.5, 16 November 2026.
+   Desktop and tablet retain their existing presentation. */
+.ios-detail-more,.ios-products,.ios-control-label,.ios-tool-back,.ios-collection-controls,.ios-rooms,.ios-page-title,.ios-card-room,.ios-tool-group,.ios-plant-overview,.ios-detail-caption,.ios-subsection-heading{display:none}
+@media(max-width:760px){
+ :root{font-size:17px;--muted:#68736b}
+ body{line-height:1.45;-webkit-text-size-adjust:100%}
+ main,.has-detail main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+ .content,.has-detail .content{padding:12px 16px 24px}
+ .topbar,.has-detail .topbar{height:58px;padding:0 16px;border:0;gap:12px}
+ .topbar .breadcrumb{display:none}
+ .topbar-right{margin-left:auto}
+ .topbar-right .button{width:44px;height:44px;padding:0;border-radius:50%;background:#f3f6f1;color:var(--forest);border:0}
+ .topbar-right .button>span{display:none}
+ .topbar-right .button>svg{width:24px;height:24px}
+ .mobile-menu,.icon-button{width:44px;height:44px;min-width:44px;border-radius:50%}
+ .ios-page-title{display:block;font-size:34px;line-height:1.14;letter-spacing:-1.1px;font-weight:750;color:#17251d;margin:4px 0 26px;overflow-wrap:anywhere}
+ .page-heading .eyebrow{display:none}
+ main:not([data-page=today]) .page-heading{display:none}
+ h1,.has-detail h1{font-size:30px;letter-spacing:-.8px}
+ h2,.section-heading h2,.native-week .section-heading h2{font-size:19px;line-height:1.3}
+ h3,.detail-section>h3{font-size:18px}
+ p,.detail-section>p,.detail .learning p,.guide-tiles p,.guide-ranges p,.action-guide li p,.guide-tip{font-size:16px;line-height:1.5}
+ .small-text{font-size:15px!important;line-height:1.5}
+ small,.muted,.fact,.schedule-line small,.settings-list,.history-event small,.global-history-event small{font-size:14px;line-height:1.45}
+ label{font-size:15px;line-height:1.45}
+ input,select,textarea,.search input,.collection-toolbar>select{font-size:17px!important;min-height:44px}
+ input[type=checkbox],input[type=radio]{min-height:0;width:22px;height:22px}
+ .button,.button.compact,.text-button,.history-actions button,.modal-actions .button,.quick-actions .button{font-size:16px;min-height:44px;line-height:1.35}
+ .button{padding:11px 16px;border-radius:14px}
+ .section-heading{gap:12px;flex-wrap:wrap}
+ .page-heading{align-items:flex-start;margin-bottom:26px}
+ .page-heading>div{min-width:0;flex:1}
+ .page-heading>div>p{font-size:19px;line-height:1.4;margin-top:8px}
+ .heading-icon{width:44px;height:44px;background:transparent}
+ .native-week{padding:18px 14px;border-radius:22px;background:white}
+ .native-week .section-heading{align-items:center;flex-wrap:nowrap}
+ .native-week .section-heading>div{min-width:0;flex:1}
+ .native-week .section-heading p{font-size:13px;line-height:1.35;max-width:180px}
+ .native-week .section-heading .button{font-size:15px;white-space:nowrap;min-height:36px;border:0;border-radius:24px;background:#e2ebe3;padding:8px 12px}
+ .week-strip{display:flex;overflow-x:auto;gap:10px;scroll-snap-type:x proximity;padding-bottom:3px}
+ .week-strip>button{min-width:58px;min-height:72px;scroll-snap-align:start;flex:1 0 58px}
+ .week-strip small{font-size:13px}.week-strip strong{font-size:21px}
+ .hero,.has-detail .hero{padding:24px 20px;min-height:210px;border-radius:24px}
+ .hero>div:first-child{max-width:100%;position:relative;z-index:1}
+ .hero .eyebrow{font-size:12px;letter-spacing:1.4px}
+ .hero h2,.has-detail .hero h2{font-size:25px;line-height:1.2;margin:12px 0}
+ .hero p,.has-detail .hero p{font-size:17px;line-height:1.4}
+ .hero .botanical{display:none}
+ .hero,.has-detail .hero{background:linear-gradient(120deg,#004632,#08713c)}
+ .hero>div:first-child,.has-detail .hero>div:first-child{max-width:100%;width:100%}
+ .hero h2,.has-detail .hero h2,.hero p{max-width:none}
+ .hero .button{border-radius:25px;padding:9px 18px}
+ .stats{gap:8px;margin:22px 0}.stats>div,.has-detail .stats>div{padding:18px 10px;min-width:0;border-radius:18px}
+ .stats>div>span,.has-detail .stats>div>span{font-size:13px;line-height:1.35}
+ .stats strong{font-size:28px}.stats strong small,.has-detail .stats strong small{font-size:12px;display:block;margin-left:0}
+ .section-heading h2>span{font-size:14px}
+ .panel{padding:20px 16px;border-radius:20px}
+ .care-row{flex-wrap:wrap;gap:10px;padding:16px 0}
+ .row-identity{flex:1;min-width:0;gap:12px}.row-identity strong{font-size:17px}.row-identity small{font-size:14px}
+ .avatar{width:64px;height:68px;border-radius:14px}
+ .pill{font-size:14px;padding:7px 10px}.round-action,.care-row .round-action{min-width:44px;width:44px;height:44px}
+ .plant-grid,.has-detail .plant-grid,.native-split .plant-grid{grid-template-columns:1fr;gap:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:white}
+ .plant-card{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:14px;padding:18px 14px;border:0;border-radius:0;border-bottom:1px solid var(--line);width:100%}
+ .card-image .placeholder{background:linear-gradient(130deg,#79a48a,#194b37);color:white}
+ .plant-card:last-child{border-bottom:0}.plant-card:hover{transform:none;box-shadow:none}
+ .card-image .plant-cover{width:76px;height:86px;border-radius:15px;object-fit:cover}.card-image .plant-cover svg{width:44px;height:44px}
+ .card-image .room-tag{display:none}.plant-card-body{padding:0;min-width:0;display:flex;flex-direction:column;gap:3px}
+ .plant-card-body h3{font-size:19px;order:-1;white-space:normal;line-height:1.25;margin:0;overflow-wrap:anywhere}
+ .plant-card-body>small{font-size:15px;color:#68736b;line-height:1.35;overflow-wrap:anywhere}
+ .ios-card-room{display:block;font-size:14px;color:#68736b}
+ .card-next{font-size:14px;line-height:1.35;margin-top:5px;padding-top:0;border:0;gap:5px}
+ .card-next b{margin-left:0}.card-next>span{display:none}
+ .collection-toolbar{flex-wrap:wrap;gap:12px}.search{flex:1 0 100%;min-height:46px;border-radius:14px;background:#f2f3f2}
+ .collection-toolbar>select{display:none}
+ main[data-page=plants] .chips{display:none}
+ .ios-collection-controls{display:flex;align-items:center;gap:10px;margin:20px 0}
+ .ios-collection-controls .segmented{min-width:0}.ios-collection-controls select{max-width:108px;background:transparent;border:0;padding:0 4px;color:var(--forest);font-size:15px!important}
+ .ios-rooms{display:grid;gap:12px}.ios-rooms button{display:flex;gap:15px;align-items:center;background:white;border:1px solid var(--line);border-radius:20px;padding:22px 16px;text-align:left}.ios-rooms button span{flex:1}.ios-rooms strong{display:block;font-size:19px}.ios-rooms small{display:block;font-size:15px;color:var(--muted)}
+ main[data-page=plants][data-collection-mode=Ambienti] .plant-grid{display:none}
+ .chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px}.chips button{font-size:15px;min-height:44px;white-space:nowrap}
+ .bottom-tabs{z-index:50;inset:auto 12px env(safe-area-inset-bottom);padding:7px 6px;min-height:64px;border:1px solid #e8ece6;border-radius:34px;box-shadow:0 3px 22px #19352712;background:#ffffffed;gap:2px}
+ .bottom-tabs button{font-size:12px;min-height:50px;flex:1;min-width:0;padding:5px 1px;border-radius:26px;color:#56665a;gap:3px}
+ .bottom-tabs button.active{background:#eaf0e8;color:var(--forest)}.bottom-tabs button svg{width:25px;height:25px}
+ .bottom-tabs b{font-size:11px;min-width:17px;height:17px}
+ .care-mode-toolbar{gap:10px;margin-bottom:24px}.segmented{flex:1;border-radius:25px;background:#f0f1ef}.segmented button{font-size:15px;padding:9px 12px;min-height:40px;border-radius:22px;flex:1}
+ .care-mode-toolbar>.button{font-size:15px;min-height:44px}
+ .calendar-panel .section-heading{flex-wrap:wrap}.calendar-panel .section-heading h2{font-size:22px}
+ .calendar-week{grid-template-columns:repeat(7,minmax(54px,1fr));overflow-x:auto;gap:8px;padding-bottom:6px;scroll-snap-type:x proximity}
+ .calendar-day{min-height:76px;scroll-snap-align:center}.calendar-day strong{font-size:21px}.calendar-day small{font-size:13px}
+ .calendar-month{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.calendar-month .calendar-day{min-height:65px}.calendar-month .calendar-day strong{font-size:17px}
+ .global-history-event{grid-template-columns:26px minmax(0,1fr) 44px;gap:8px;padding:18px 0}.global-history-event strong,.global-history-event p,.history-event strong,.history-event p{font-size:16px}
+ .history-plant-link{font-size:17px}.history-filters{grid-template-columns:1fr;gap:12px}.history-event{gap:12px}.history-actions button{font-size:15px}
+ .product-card h2{font-size:22px}.product-card p{font-size:16px}.product-photo{height:260px;background:white}
+ .species-catalog-grid{grid-template-columns:1fr}.catalog-credit{font-size:13px}
+ main[data-page=more]:not([data-tool=""]) .tools-grid{display:none}
+ .ios-tool-back{display:flex;min-height:44px}
+ .tools-grid{display:flex;flex-direction:column;gap:0}.ios-tool-group{display:block;font-size:17px;color:#737b74;padding:24px 16px 10px}
+ .ios-discover{order:0}.tool-card[data-tool=identify]{order:1;border-radius:22px 22px 0 0}.tool-card[data-tool=catalog]{order:2;border-radius:0 0 22px 22px}
+ .ios-assistance{order:10}.tool-card[data-tool=labels]{order:11;border-radius:22px 22px 0 0}.tool-card[data-tool=guides]{order:12}.tool-card[data-tool=diagnosis]{order:13;border-radius:0 0 22px 22px}
+ .ios-manage{order:20}.tool-card[data-tool=ai]{order:21;border-radius:22px 22px 0 0}.tool-card[data-tool=species]{order:22}.tool-card[data-tool=sensors]{order:23}.tool-card[data-tool=backup]{order:24}.tool-card[data-tool=settings]{order:25;border-radius:0 0 22px 22px}
+ .tool-card{padding:17px 16px;min-height:80px;border-radius:0;border:1px solid var(--line);border-bottom:0;background:white;gap:13px}.tool-card[data-tool=catalog],.tool-card[data-tool=diagnosis],.tool-card[data-tool=settings]{border-bottom:1px solid var(--line)}
+ .tool-card strong{font-size:18px;line-height:1.3}.tool-card small{font-size:14px;line-height:1.4;margin-top:3px}.tool-card>span{width:38px;height:38px;border-radius:10px}
+ dialog{width:calc(100% - 16px);padding:22px 18px;max-height:calc(100dvh - 24px);border-radius:24px}.modal-top h2{font-size:25px}.form-grid{grid-template-columns:1fr}.modal-actions{flex-wrap:wrap}.modal-actions .button{flex:1}.photo-upload{font-size:16px}.photo-upload small{font-size:14px}
+ .detail{background:white;padding-bottom:0}.detail-top{height:58px;padding:0 16px;position:relative}.desktop-detail-caption{display:none}.ios-detail-caption{display:block;font-size:17px!important;font-weight:650;letter-spacing:0!important;color:#243a2c!important}
+ .detail-scroll{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+ .detail-scroll>.plant-cover,.detail-body>.eyebrow,.detail-body>.plant-title,.detail-body>.scientific,.detail-body>.quick-actions,.detail-tabs{display:none}
+ .detail:not(.ios-section-open) .detail-body{display:none}.detail-body{padding:16px}.detail-body p{font-size:16px}
+ .ios-plant-overview{display:block;padding:16px}
+ .ios-plant-hero{position:relative;isolation:isolate;aspect-ratio:1/1;min-height:360px;overflow:hidden;border-radius:26px;background:var(--forest)}
+ .ios-plant-hero .plant-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0}.ios-plant-hero .plant-cover>svg{width:90px;height:90px;opacity:.75}
+ .ios-plant-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(#163e30c9,#071a13f5);color:white;border-radius:20px 20px 0 0;padding:18px 16px 16px}
+ .ios-plant-caption h2{font-size:29px;line-height:1.2;margin:10px 0 6px;color:white}.ios-next-care{font-size:14px;font-weight:600;color:#bde4c8}.ios-plant-species{font-size:16px;font-style:italic;color:#dbe6df}
+ .ios-plant-actions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:12px}.ios-plant-actions button{border:0;background:#07503b;color:white;border-radius:14px;padding:8px 2px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:650;line-height:1.2}.ios-plant-actions svg{width:22px;height:22px}
+ .ios-photo-credit{font-size:13px;margin-top:8px;color:#68736b}
+ .ios-summary{margin:24px 0;background:white;border:1px solid var(--line);border-radius:22px;padding:18px 16px}.ios-summary h3{display:flex;align-items:center;gap:9px;font-size:19px}.ios-summary-label{font-size:14px;font-weight:600;color:var(--moss);margin:14px 0 20px}
+ .ios-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 14px}.ios-summary-grid>div{display:flex;align-items:center;gap:9px;min-width:0}.ios-summary-grid>div>svg{color:var(--moss);flex-shrink:0}.ios-summary-grid span{min-width:0}.ios-summary-grid small{display:block;font-size:13px;color:#737b74}.ios-summary-grid strong{display:block;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+ .ios-section-list{display:grid;gap:12px}.ios-section-list>button{background:white;border:1px solid var(--line);border-radius:18px;padding:18px 16px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:76px}.ios-section-list>button strong{display:block;font-size:18px}.ios-section-list>button small{display:block;font-size:14px;color:#737b74;margin-top:4px}
+ .ios-subsection-heading{display:block;padding:16px}.ios-subsection-heading h2{font-size:26px;margin-top:12px}.ios-section-open .detail-body>.button{display:none}.ios-safety-open .detail-body>*:not(.safety-section){display:none}
+ .detail-section .fact{flex-wrap:wrap;gap:8px}.fact strong{overflow-wrap:anywhere}.schedule-line{font-size:15px;gap:9px}.schedule-line strong{font-size:16px}
+ .detail-section>button,.detail-section .button{max-width:100%;white-space:normal}
+ .page-footer{font-size:12px;margin-top:30px}.toast{bottom:calc(92px + env(safe-area-inset-bottom));font-size:15px;white-space:normal;max-width:calc(100% - 32px)}
+}
+@media(max-width:760px){
+ .sidebar:not(.open){visibility:hidden}
+ .has-detail main{display:none}
+ .ios-plant-hero .placeholder{background:linear-gradient(135deg,#6e9c80,#124b35);color:white}
+}
+
+@media(max-width:760px){
+ .calendar-panel{border:0;padding:12px 0;background:white}
+ .calendar-panel .section-heading{flex-direction:column;align-items:center;text-align:center}
+ .calendar-panel .section-heading h2{font-size:22px}
+ .calendar-panel .section-heading .button-row{justify-content:center}
+ .calendar-panel .section-heading .text-button,.calendar-panel .section-heading .icon-button{background:#e2ebe3;color:var(--forest);border-radius:24px;padding:8px 14px;min-height:40px;width:auto;gap:7px;font-size:16px}
+ .ios-control-label{display:inline}
+ .calendar-navigation{margin:8px 0;font-size:14px}.calendar-navigation span{font-size:14px}
+ main[data-page=care] .gentle-empty{display:flex;flex-direction:column;justify-content:center;text-align:center;min-height:220px;gap:20px;padding:24px 16px}
+ main[data-page=care] .gentle-empty>svg{width:52px;height:52px}
+ main[data-page=care] .gentle-empty strong{font-size:22px;line-height:1.3}
+ main[data-page=care] .gentle-empty p{font-size:16px;line-height:1.45;margin-top:8px}
+}
+@media(max-width:760px){
+ .ios-plant-overview{min-width:0}
+ .ios-plant-hero{width:100%;max-width:100%;min-width:0}
+}
+
+/* Preserve the desktop tool order while keeping iOS reading order grouped. */
+@media(min-width:761px){
+ .tools-grid [data-tool=ai]{order:0}.tools-grid [data-tool=labels]{order:1}.tools-grid [data-tool=guides]{order:2}.tools-grid [data-tool=diagnosis]{order:3}.tools-grid [data-tool=identify]{order:4}.tools-grid [data-tool=catalog]{order:5}.tools-grid [data-tool=species]{order:6}.tools-grid [data-tool=sensors]{order:7}.tools-grid [data-tool=backup]{order:8}.tools-grid [data-tool=settings]{order:9}
+}
+
+@media(max-width:760px){
+ main[data-page=products] .product-grid,main[data-page=products] .empty-state{display:none}
+ .ios-products{display:block}.ios-product-filter{display:block;margin:18px 0;font-size:15px}.ios-product-filter select{display:block;width:100%;margin-top:6px}
+ .ios-product-list{border:1px solid var(--line);border-radius:22px;overflow:hidden}.ios-product-list:empty{display:none}
+ .ios-product-list>button{display:flex;align-items:center;width:100%;gap:14px;padding:18px 14px;border:0;border-bottom:1px solid var(--line);background:white;text-align:left}.ios-product-list>button:last-child{border-bottom:0}.ios-product-list>button>span:nth-child(2){flex:1;min-width:0}.ios-product-list strong{display:block;font-size:18px;line-height:1.3}.ios-product-list small{display:block;font-size:14px;color:#68736b;margin-top:4px}
+ .ios-product-image{width:76px;height:86px;flex-shrink:0;display:grid;place-items:center;background:white}.ios-product-image img{width:100%;height:100%;object-fit:contain}
+ .ios-product-detail{position:fixed;inset:0;background:white;z-index:45;display:flex;flex-direction:column}.ios-product-detail>header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;gap:10px;border-bottom:1px solid var(--line);min-height:58px}.ios-product-detail>header>strong{font-size:17px;line-height:1.3;text-align:center;overflow-wrap:anywhere}.ios-product-scroll{padding:20px 16px calc(110px + env(safe-area-inset-bottom));overflow-y:auto;flex:1}.ios-product-scroll h2{font-size:28px}.ios-product-scroll>p{margin:10px 0}.ios-product-scroll .product-photo{height:280px;background:white}.ios-product-scroll section{padding:20px 0;border-bottom:1px solid var(--line);margin-bottom:16px}.ios-product-scroll>.button{width:100%;margin:8px 0}
+}
+
+@media(max-width:760px){
+ .desktop-detail-edit{display:none}.ios-detail-more{display:block}.ios-detail-more>summary{display:flex;align-items:center;justify-content:center;list-style:none;width:44px;height:44px;background:#f4f7f2;border-radius:50%;cursor:pointer}.ios-detail-more>summary::-webkit-details-marker{display:none}
+ .ios-detail-more>div{position:absolute;right:12px;top:54px;z-index:10;width:min(300px,calc(100vw - 32px));padding:18px;background:white;border:1px solid var(--line);box-shadow:0 8px 30px #163b2c20;border-radius:18px}.ios-detail-more label{display:block;margin-top:16px}.ios-detail-more select{width:100%;display:block;margin-top:8px}
+ main:has(.ios-product-detail)>.topbar,main:has(.ios-product-detail)>.content{visibility:hidden}.ios-product-detail{visibility:visible}
+}
+
+@media(max-width:760px){
+ .ios-open-photo{position:absolute;inset:0;border:0;background:transparent;cursor:zoom-in;z-index:1}
+ .ios-plant-caption{z-index:2}
+ .ios-product-photo{position:relative}.ios-product-photo>.ios-open-photo{z-index:2}
+ .ios-photo-viewer{text-align:center}.ios-photo-viewer img{display:block;width:100%;max-height:70dvh;object-fit:contain;background:white;border-radius:14px}.ios-photo-viewer p{margin:12px 0;font-size:14px}.ios-photo-viewer a{display:inline-flex;align-items:center;min-height:44px;font-size:16px;text-decoration:underline}
+}
+
+@media(max-width:760px){
+ dialog:has(.ios-photo-viewer){visibility:visible;width:100%;max-width:none;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0;padding:16px;display:flex;flex-direction:column}
+ dialog:has(.ios-photo-viewer)>.modal-top{flex-shrink:0}
+ .ios-photo-viewer{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+ .ios-photo-viewer img{flex:1;min-height:0;max-height:none;object-fit:contain}
+ .ios-photo-viewer p,.ios-photo-viewer a{flex-shrink:0}
+}
+@media(max-width:760px){
+ .ios-plant-hero>.ios-open-photo{bottom:55%}
+}
+
+/* Filled iOS glyphs retain the desktop icon set on larger screens. */
+.mobile-symbol{display:none}
+@media(max-width:760px){
+ .desktop-symbol{display:none!important}.mobile-symbol{display:inline-block}
+ .ios-symbol{flex-shrink:0}
+ .bottom-tabs button{color:#111;line-height:1.2}
+ .bottom-tabs button.active{color:#42664a;background:#e8e9e8}
+ .bottom-tabs b{background:#ef4843;color:white}
+ .ios-plant-actions button{background:#214735;min-height:48px;padding:4px 2px;gap:2px}
+ .ios-plant-actions svg{width:24px;height:24px}
+}
+
+@media(max-width:760px){
+ .ios-fact-icon{display:flex;align-items:center;justify-content:center;width:30px;height:30px;flex:0 0 30px;border-radius:50%;background:#4b70551f;color:#4b7055}
+ .ios-fact-icon[data-fact=Annaffiatura]{color:#3486f7;background:#e3efff}
+ .ios-fact-icon[data-fact=Concimazione]{color:#f58c31;background:#fcf1e5}
+ .ios-fact-icon[data-fact=Luce]{color:#e0ab1d;background:#fff6d8}
+ .ios-fact-icon[data-fact=Posizione]{color:#a356c8;background:#f3e7fa}
+ .ios-fact-icon[data-fact="Con te dal"]{color:#269d9c;background:#e4f5f4}
+ .ios-fact-icon[data-fact=Rinvaso]{color:#a78466;background:#f3ece6}
+}
+.ios-plan-button{display:none}
+@media(max-width:760px){
+ .app{--ios-bottom-inset:env(safe-area-inset-bottom)}
+ /* Home Assistant Companion already reserves its own safe area outside Ingress. */
+ .app.in-ha{--ios-bottom-inset:0px}
+ .bottom-tabs{bottom:var(--ios-bottom-inset);padding:6px;min-height:64px}
+ .bottom-tabs button{min-height:48px;padding:4px 1px;gap:2px}
+ .bottom-tabs button svg{width:24px;height:24px}
+ .detail-top{height:52px;padding:0 14px;gap:8px;border:0}
+ .ios-detail-caption{flex:1;min-width:0;text-align:center;font-size:19px!important;font-weight:700;color:#111!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .detail-top>.icon-button{background:#fafbf9;border:1px solid #dfe2dd}
+ .detail-top>.icon-button svg{stroke-width:3}
+ .ios-plan-button{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #dfe2dd;border-radius:50%;background:#fafbf9;color:#4b7055}
+ .ios-detail-more>summary{background:#fafbf9;border:1px solid #dfe2dd;color:#4b7055}
+ .ios-plant-overview{padding:14px}
+ .ios-plant-hero{aspect-ratio:.98;min-height:340px;width:100%;min-width:0}
+ .ios-plant-caption{background:linear-gradient(180deg,#10161055,#080e0bdb);padding:18px 18px 16px}
+ .ios-plant-caption h2{font-size:32px;font-weight:750;margin:10px 0 6px}
+ .ios-plant-species{font-size:17px}
+ .ios-summary{border:0;padding:18px 16px;color:#111;box-shadow:0 2px 22px #19352705}
+ .ios-summary h3{font-size:21px;font-weight:700;color:#111}
+ .ios-summary-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:8px 0;border:0;background:transparent;margin:10px 0;color:#4b7055;text-align:left}
+ .ios-summary-toggle>span{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:650}
+ .ios-summary-toggle>small{display:flex;align-items:center;gap:5px;font-size:12px;color:#89898c}
+ .ios-summary-grid{gap:10px;cursor:pointer}
+ .ios-summary-grid>div{padding:9px;min-height:68px;align-items:center;gap:9px}
+ .ios-summary-grid small{font-size:14px;color:#89898c}
+ .ios-summary-grid strong{font-size:17px;line-height:1.3;color:#111;font-weight:650;overflow-wrap:normal;word-break:normal}
+ .ios-fact-icon[data-fact="Diario crescita"]{color:#bd3edb;background:#f5e5fb}
+ .ios-fact-icon[data-fact=Altezza]{color:#6262bb;background:#eeeef9}
+ .ios-fact-icon[data-fact=Vaso]{color:#a78468;background:#f3ece6}
+}
+@media(max-width:760px){
+ .ios-section-card{background:white;border:1px solid #e8ece6;border-radius:22px;overflow:hidden}
+ .ios-section-list .ios-section-card>button{border:0;border-radius:0;width:100%;padding:18px 16px;min-height:84px;justify-content:flex-start}
+ .ios-section-card>button>span{flex:1;min-width:0}
+ .ios-section-card>button>svg{flex-shrink:0;transition:transform .18s ease}
+ .ios-section-card>button>svg.expanded{transform:rotate(90deg)}
+ .ios-disclosure-icon{display:flex;align-items:center;justify-content:center;color:#4b7055;flex:0 0 30px}
+ .ios-section-card[data-section=Crescita] .ios-disclosure-icon{color:#ba3dd9}
+ .ios-section-card[data-section=Piano] .ios-disclosure-icon{color:#be7b30}
+ .ios-section-card[data-section=Prodotto] .ios-disclosure-icon{color:#6565b6}
+ .ios-section-card[data-section=Note] .ios-disclosure-icon{color:#d98b27}
+ .ios-section-content{padding:0 16px 18px}
+ .ios-section-content .detail-body{display:block;padding:0}
+ .ios-section-content .detail-body>.eyebrow,.ios-section-content .detail-body>.plant-title,.ios-section-content .detail-body>.scientific,.ios-section-content .detail-body>.quick-actions,.ios-section-content .detail-tabs{display:none}
+ .ios-section-content .detail-section{padding:16px 0;margin:0}
+ .ios-plan-open .ios-section-content .detail-body>*:not(.ios-plan-content):not(.form-error){display:none}
+ .ios-growth-open .ios-history-content,.ios-history-open .ios-growth-content{display:none}
+ .ios-section-content .care-insights{border:0;margin:0;padding:0}
+ .ios-section-content p{margin:10px 0;font-size:16px;line-height:1.5}
+ .ios-assigned-product{display:flex;align-items:flex-start;gap:16px;padding-top:8px}
+ .ios-assigned-product .product-photo{width:118px;height:118px;flex:0 0 118px;object-fit:contain;background:white}
+ .ios-assigned-product>div{min-width:0}.ios-assigned-product h3{font-size:19px}
+ .ios-section-content h4{margin-top:16px;font-size:15px}
+ .ios-section-content .history-event{grid-template-columns:26px minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.ios-section-card>button>svg{transition:none}}
+@media(max-width:760px){.ios-section-card>button{scroll-margin-top:62px}}
+
+@media(max-width:760px){
+ .ios-section-card>button strong{display:block;font-size:18px;line-height:1.3}
+ .ios-section-card>button small{display:block;font-size:14px;color:#737b74;margin-top:4px}
+}
+@media(max-width:760px){
+ .ios-section-list .ios-section-card>button{display:flex;align-items:center;gap:12px;background:white;text-align:left;color:#17251d}
+}
+@media(max-width:760px){
+ .ios-section-card{--section-color:#4b7055;border-radius:14px;border-color:color-mix(in srgb,var(--section-color) 18%,white)}
+ .ios-section-card[data-section=Piano]{--section-color:#bc7c33}
+ .ios-section-card[data-section=Crescita]{--section-color:#b543cd}
+ .ios-section-card[data-section=Prodotto]{--section-color:#6565b6}
+ .ios-section-card[data-section=Note]{--section-color:#d98b27}
+ .ios-section-card[data-section] .ios-disclosure-icon{width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:var(--section-color);color:white}
+ .ios-section-content{border-top:1px solid #eeeeec;margin:0 14px;padding:14px 0 18px}
+}
