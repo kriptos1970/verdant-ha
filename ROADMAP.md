@@ -6,14 +6,14 @@ Current release: **0.10.3**. The project is usable on a real Home Assistant inst
 
 ## Now — close the consolidation step
 
-These are verification and hardening tasks, not new features:
+These are verification and hardening tasks, not new features. They are tracked in the [Step 8 milestone](https://github.com/kriptos1970/verdant-ha/milestone/1).
 
-- [ ] Test the responsive layout on a **physical iPhone with the Home Assistant Companion app** (bottom bar, safe-area insets, not just Safari responsive mode).
-- [ ] Scan a **QR/NFC label with a real phone** and verify the stable Home Assistant panel link.
-- [ ] Perform a **backup and restore rehearsal on an isolated Home Assistant instance**.
-- [ ] Verify **live Home Assistant sensors** and **Open-Meteo** with real entities and a real location.
-- [ ] Validate a **much larger archive** than the synthetic benchmark (100 plants / 50,000 events).
-- [ ] Record the results in `docs/STATUS.md` and close the open items of step 8.
+- [ ] Test the responsive layout on a **physical iPhone with the Home Assistant Companion app** (bottom bar, safe-area insets, not just Safari responsive mode). [#1](https://github.com/kriptos1970/verdant-ha/issues/1)
+- [ ] Scan a **QR/NFC label with a real phone** and verify the stable Home Assistant panel link. [#2](https://github.com/kriptos1970/verdant-ha/issues/2)
+- [ ] Perform a **backup and restore rehearsal on an isolated Home Assistant instance**. [#3](https://github.com/kriptos1970/verdant-ha/issues/3)
+- [ ] Verify **live Home Assistant sensors** and **Open-Meteo** with real entities and a real location. [#4](https://github.com/kriptos1970/verdant-ha/issues/4)
+- [ ] Validate a **much larger archive** than the synthetic benchmark (100 plants / 50,000 events). [#5](https://github.com/kriptos1970/verdant-ha/issues/5)
+- [ ] Record the results in `docs/STATUS.md` and close the open items of step 8. [#6](https://github.com/kriptos1970/verdant-ha/issues/6)
 
 ## Next — iOS parity and internationalization
 
