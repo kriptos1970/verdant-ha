@@ -37,7 +37,7 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 
 Current version: **0.10.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development.
 
-Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md).
+Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). The high-level plan is in [ROADMAP.md](ROADMAP.md).
 
 ## Installation
 

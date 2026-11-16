@@ -4,7 +4,7 @@
 
 Versione incrementale **0.10.3**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
 
-Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata.
+Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
 
 La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md).
 
