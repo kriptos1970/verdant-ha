@@ -141,7 +141,8 @@ def accepted_water(proposed, baseline, minimum):
 
 def plant_view(plant, zone, version, product=None, language='it'):
     from .treatments import treatment_view
-    return {**plant, '_version': version, '_schedule': schedule(plant, zone, language=language), '_actions': pending_actions(plant,zone,product=product,language=language), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone, language)}
+    from .health import assess
+    return {**plant, '_version': version, '_schedule': schedule(plant, zone, language=language), '_actions': pending_actions(plant,zone,product=product,language=language), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone, language), '_health': assess(plant, zone, language=language)}
 
 
 def uses_watering(product):

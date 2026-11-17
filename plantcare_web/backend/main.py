@@ -98,6 +98,20 @@ def list_plants(summary:bool=False):
     from .archive_views import compact
     return [compact(render_plant(p,v)) if summary else render_plant(p,v) for p,v in store.list('plants')]
 
+@app.get('/api/analytics')
+def analytics(days:int=Query(default=30)):
+    from .analytics import PERIODS, summary
+    if days not in PERIODS:
+        raise HTTPException(422,'Scegli un periodo di 30, 90 o 365 giorni.')
+    return summary([p for p,_ in store.list('plants')],settings.zone,days)
+
+@app.get('/api/plants/{plant_id}/timeline')
+def plant_timeline(plant_id:str,limit:int=Query(default=8,ge=1,le=50)):
+    plant,_=store.get('plants',plant_id)
+    from .analytics import timeline
+    return {'items':timeline(store,plant,limit)}
+
+
 @app.get('/api/plants/{plant_id}')
 def get_plant(plant_id:str):
     p,v=store.get('plants',plant_id)

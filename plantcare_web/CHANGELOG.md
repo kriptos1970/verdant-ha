@@ -1,3 +1,11 @@
+# Non rilasciato — grafici, fase 1
+
+- Indice salute per pianta portato dal nativo (`healthAssessment`): ritardi di acqua e concime, ultima osservazione con peso per età, controlli e progressi arretrati, misure luce ripetute; normalizzazione 20–100 e consigli con codici traducibili.
+- `_health` incluso nella scheda pianta e nella collezione sintetica, senza aggiungere la cronologia alla lista.
+- Nuovo endpoint `/api/analytics?days=30|90|365` con cure completate, giorni attivi, regolarità dell’acqua, attività giornaliera, tipi di cura, ambienti, ultimo stato registrato e piante da osservare.
+- Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
+- 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
+
 # 0.11.1 — caricamento fotografie
 
 - La lista piante usa miniature da 480 px invece degli originali: il trasferimento iniziale scende da decine di MB a poche centinaia di KB.

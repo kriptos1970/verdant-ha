@@ -20,6 +20,7 @@ La documentazione dettagliata è in italiano. Il README principale del repositor
 - [Step 7 — strumenti nativi](STEP7.md) — riconoscimento, guide, album, QR, servizi botanici.
 - [Step 8 — archivio](STEP8.md) — collezione leggera, cronologia paginata, limiti.
 - [Piano i18n](I18N.md) — come rendere l'app italiana e inglese senza rompere il dominio.
+- [Grafici e analisi](ANALYTICS.md) — indice salute, endpoint analytics e timeline.
 
 ## Altro
 

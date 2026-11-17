@@ -13,6 +13,15 @@
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
 | 8 — Consolidamento | 0.11.1 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
 
+## Grafici — fase 1 (17 novembre 2026)
+
+- Porting di `healthAssessment` in `backend/health.py`, con i casi di `HealthScoreTests.swift` come riferimento: punteggio 20–100, etichetta e consiglio con codici traducibili.
+- `_health` disponibile nella scheda pianta e nella collezione sintetica, senza reintrodurre la cronologia nella lista.
+- Endpoint `/api/analytics` per cure completate, giorni attivi, regolarità dell’acqua, attività giornaliera, tipi di cura, ambienti, stato salute e piante da osservare.
+- Endpoint `/api/plants/{id}/timeline` per unire eventi e misure.
+- **180 test backend**; benchmark 100 piante/50.000 eventi: analisi circa 52 ms, indice salute circa 24 ms per 100 piante. Nessun dato reale modificato.
+- Dettagli e contratto in [ANALYTICS.md](ANALYTICS.md).
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.
