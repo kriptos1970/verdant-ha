@@ -51,6 +51,23 @@ Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora 
 
 `GET /api/plants/{id}/timeline?limit=8` unisce eventi attivi e misure, ordinati dal più recente. Le misure native già presenti nel database non vengono duplicate. Gli eventi usano il tipo di cura nel formato italiano dell’API; le misure usano i codici già esposti da `/measurements`.
 
+## Verifica sull’archivio reale (17 novembre 2026)
+
+Lettura in sola lettura delle 18 piante e 732 eventi dell’archivio personale, senza modificare l’istanza.
+
+| Periodo | Cure completate | Giorni attivi | Regolarità acqua |
+|---|---:|---:|---:|
+| 30 giorni | 103 | 20 | 71% |
+| 90 giorni | 495 | 77 | 83% |
+| 365 giorni | 677 | 129 | 85% |
+
+- Tipi di cura a 30 giorni: 49 annaffiature, 21 aggiornamenti progressi, 16 rotazioni, 15 concimazioni, 2 aggiornamenti piano.
+- Ambienti: Pianerottolo 10 piante, Balcone 5, Mezza ombra · balcone 3; nessuna annaffiatura scaduta.
+- Ultimo stato registrato: 13 eccellenti, 5 buone, nessuna pianta in difficoltà o malata, nessuna senza valutazione.
+- Indice salute: 13 piante a 98, 5 a 92; tutte `good`.
+- Le date di prossima acqua e concime coincidono con `_schedule` della 0.11.1 per tutte le 18 piante.
+- Con questo archivio il pannello “Piante da osservare” sarà vuoto: è il risultato corretto, non un errore.
+
 ## Verifica
 
 - I casi di `HealthScoreTests.swift` sono riprodotti in `tests/test_health.py`.

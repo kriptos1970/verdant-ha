@@ -22,6 +22,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
+- Analytics were checked read-only on the real archive (18 plants, 732 events): 103 events and 71% regularity for 30 days, 495/83% for 90 days, 677/85% for 365 days. Water and feeding due dates matched 0.11.1 for every plant.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

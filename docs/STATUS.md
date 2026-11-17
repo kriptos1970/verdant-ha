@@ -20,6 +20,7 @@
 - Endpoint `/api/analytics` per cure completate, giorni attivi, regolarità dell’acqua, attività giornaliera, tipi di cura, ambienti, stato salute e piante da osservare.
 - Endpoint `/api/plants/{id}/timeline` per unire eventi e misure.
 - **180 test backend**; benchmark 100 piante/50.000 eventi: analisi circa 52 ms, indice salute circa 24 ms per 100 piante. Nessun dato reale modificato.
+- Verifica in sola lettura sull’archivio reale: 18 piante, 732 eventi; 103 cure/20 giorni attivi/71% a 30 giorni, 495/77/83% a 90 giorni, 677/129/85% a 365 giorni. Scadenze acqua e concime identiche alla 0.11.1 per tutte le piante.
 - Dettagli e contratto in [ANALYTICS.md](ANALYTICS.md).
 
 ## Correzione 0.4.1 — catalogo AI
