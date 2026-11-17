@@ -250,6 +250,12 @@ La diagnosi guidata mostra sintomi e testo in inglese e invia la lingua al serve
 
 Verifiche: 623 chiavi allineate, build TypeScript/Vite, 151 test backend, prova browser su guide e diagnosi in inglese. Restano documentazione inglese e revisione editoriale delle traduzioni lunghe.
 
+### Internazionalizzazione P5 — documentazione e rifiniture (17 novembre 2026)
+
+Aggiunta la documentazione inglese in `docs/en/` (indice, installazione, stato, architettura) e collegata dai README. Circa 30 messaggi di errore comuni hanno una traduzione inglese specifica; i casi non mappati usano i codici generici. Il bundle frontend è stato diviso in chunk React, icone e QR: il principale scende a circa 441 KB e non supera più la soglia di avviso.
+
+Verifiche: 623 chiavi allineate, build frontend, **151 test backend** e controllo di parità in CI. Nessun dato reale modificato.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

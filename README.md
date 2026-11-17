@@ -72,13 +72,16 @@ The CI workflow runs the same backend tests and the frontend build on every push
 
 ## Documentation
 
-- [Reference matrix and design decisions](docs/REFERENCE.md)
-- [Current status, verification and known limits](docs/STATUS.md)
-- [Deployment on Home Assistant](docs/DEPLOYMENT.md)
-- [iOS layout comparison](docs/IOS_LAYOUT.md)
-- [Archive consolidation and performance](docs/STEP8.md)
+- [English documentation index](docs/en/README.md)
+- [Installation on Home Assistant (English)](docs/en/INSTALL.md)
+- [Status and known limits (English)](docs/en/STATUS.md)
+- [Architecture and reference matrix (English)](docs/en/REFERENCE.md)
+- [Full Italian reference matrix](docs/REFERENCE.md)
+- [Full Italian status and verification notes](docs/STATUS.md)
+- [iOS layout comparison (Italian)](docs/IOS_LAYOUT.md)
+- [Archive consolidation and performance (Italian)](docs/STEP8.md)
 
-The detailed documentation is currently written in Italian. An English translation is planned; the README above is the English entry point. Start from the [documentation index](docs/README.md).
+The detailed verification notes remain in Italian; the English pages above cover installation, status and architecture.
 
 ## Contributing
 

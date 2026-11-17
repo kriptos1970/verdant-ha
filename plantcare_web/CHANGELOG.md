@@ -6,6 +6,7 @@
 - Errori API con codice stabile; messaggi inglesi generici per i codici noti.
 - Home e elenco piante tradotti; preferenza lingua lato server per notifiche e risposte AI.
 - Dettaglio iOS, nove guide di cura, diagnosi, osservazioni e piano intelligente tradotti in inglese.
+- Documentazione inglese in `docs/en/`, messaggi di errore comuni tradotti e code-splitting del frontend.
 - Codici canonici per tipi di cura e stati di salute nel backend, con API e backup ancora nel formato italiano per compatibilità.
 
 # 0.10.3 — sezioni della scheda iOS

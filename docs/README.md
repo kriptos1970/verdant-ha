@@ -4,6 +4,8 @@ La documentazione dettagliata è in italiano. Il README principale del repositor
 
 ## Per iniziare
 
+- [Documentazione inglese](en/README.md) — installazione, stato e architettura in inglese.
+
 - [README inglese](../README.md) — cos'è il progetto, highlights, installazione rapida.
 - [README italiano](../README.it.md) — documentazione dettagliata in italiano.
 - [Roadmap](../ROADMAP.md) — cosa è in corso, cosa arriva dopo e cosa è escluso.
