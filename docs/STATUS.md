@@ -23,6 +23,16 @@
 - Verifica in sola lettura sull’archivio reale: 18 piante, 732 eventi; 103 cure/20 giorni attivi/71% a 30 giorni, 495/77/83% a 90 giorni, 677/129/85% a 365 giorni. Scadenze acqua e concime identiche alla 0.11.1 per tutte le piante.
 - Dettagli e contratto in [ANALYTICS.md](ANALYTICS.md).
 
+## Grafici — fase 2 (17 novembre 2026)
+
+- Componenti condivisi: palette, pannello, stati vuoti, scheletri, tabelle dati accessibili e `DeferredSection` con `IntersectionObserver`.
+- Recharts 3.11.0 confinato in `charts.tsx`, caricato con `React.lazy` solo nella pagina Analisi e solo quando il pannello si avvicina alla vista; il chunk principale cresce di circa 13 kB, Recharts resta un chunk separato da circa 130 kB gzip.
+- Anello salute in SVG puro: quota di piante valutate in salute, con legenda e tabella. Nessuna animazione.
+- Tre grafici reali su dati 30 giorni: attività giornaliera, tipi di cura, piante per ambiente con annaffiature in ritardo.
+- Accessibilità: `accessibilityLayer`, titolo/descrizione SVG, tabelle con intestazioni e conteggi; animazioni disattivate con `prefers-reduced-motion`.
+- Verifica: build e i18n (746 chiavi), 180 test backend, layout 320/390/430/1280 px senza overflow, chunk grafici non richiesto nella pagina Piante.
+- Restano per le fasi successive il selettore 30/90/365 e i grafici di tendenza della singola pianta.
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.

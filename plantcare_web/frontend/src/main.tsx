@@ -73,6 +73,7 @@ import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from 
 import { useCareLabels } from "./care-labels";
 import { useProductLabels } from "./product-labels";
 import { useDomainLabels } from "./domain-labels";
+import AnalyticsPage from "./analytics-page";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -859,64 +860,7 @@ function App() {
                   )}
                 </>
               )}
-              {page === "analytics" && (
-                <>
-                  <div className="page-heading">
-                    <div>
-                      <div className="eyebrow">UNO SGUARDO D’INSIEME</div>
-                      <h1>Come cresce il tuo giardino</h1>
-                      <p>La collezione e le cure che hai registrato.</p>
-                    </div>
-                  </div>
-                  <div className="stats">
-                    <div>
-                      <span>Piante</span>
-                      <strong>{plants.length}</strong>
-                    </div>
-                    <div>
-                      <span>Cure registrate</span>
-                      <strong>
-                        {plants.reduce(
-                          (n, p) =>
-                            n +
-                            (p._careCount ?? p.history.filter(
-                              (e) => !e.deletedAt && e.status !== "postponed",
-                            ).length),
-                          0,
-                        )}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Ambienti</span>
-                      <strong>{rooms.length}</strong>
-                    </div>
-                  </div>
-                  <section className="panel">
-                    <h2>Le piante per ambiente</h2>
-                    {rooms.length ? (
-                      rooms.map((r) => (
-                        <div className="bar-row" key={r}>
-                          <span>{r}</span>
-                          <div>
-                            <i
-                              style={{
-                                width: `${(plants.filter((p) => p.room === r).length / plants.length) * 100}%`,
-                              }}
-                            />
-                          </div>
-                          <strong>
-                            {plants.filter((p) => p.room === r).length}
-                          </strong>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="muted">
-                        Aggiungi le prime piante per iniziare.
-                      </p>
-                    )}
-                  </section>
-                </>
-              )}
+              {page === "analytics" && <AnalyticsPage />}
               {page === "more" && (
                 <>
                   <div className="page-heading">

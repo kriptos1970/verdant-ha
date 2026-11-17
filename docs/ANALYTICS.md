@@ -1,4 +1,4 @@
-# Grafici e analisi — fase 1
+# Grafici e analisi — fasi 1–2
 
 Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora toccare l’interfaccia. Tutto è in sola lettura.
 
@@ -73,3 +73,36 @@ Lettura in sola lettura delle 18 piante e 732 eventi dell’archivio personale, 
 - I casi di `HealthScoreTests.swift` sono riprodotti in `tests/test_health.py`.
 - `tests/test_analytics.py` copre periodi, rinvii, cancellazioni, regolarità, ambienti, stato salute, rischio, timeline e contratto HTTP.
 - Benchmark locale su 100 piante e 50.000 eventi: analisi in circa 52 ms, indice salute per 100 piante in circa 24 ms, scheda completa per 100 piante in circa 208 ms.
+
+## Fase 2 — componenti grafici (17 novembre 2026)
+
+La pagina Analisi usa ora i dati della fase 1. Recharts resta fuori dal chunk principale e viene caricato solo quando il pannello si avvicina alla vista.
+
+### Architettura
+
+- `chart-kit.tsx` — shell leggera senza Recharts: palette condivisa, `useReducedMotion`, `DeferredSection` con `IntersectionObserver` (`rootMargin` 360 px), `ChartPanel`, `ChartEmpty`, `ChartSkeleton` e `ChartDataTable`.
+- `charts.tsx` — unico modulo che importa Recharts 3.11.0: barre dell’attività giornaliera, ciambella dei tipi di cura, barre impilate degli ambienti. Viene caricato con `React.lazy`.
+- `health-ring.tsx` — anello del punteggio in SVG puro, senza Recharts, quindi subito disponibile. Mostra la quota di piante valutate in salute (eccellenti + buone).
+- `analytics.ts` — tipi del contratto `/api/analytics` e hook `useAnalytics(30)` con annullamento della richiesta precedente.
+- `analytics-page.tsx` — pagina eager: titolo, quattro indicatori, anello salute, stati vuoti e caricamento, poi i grafici lazy.
+
+### Caricamento
+
+- La pagina Piante non importa Recharts: `charts.tsx` è un chunk separato (`charts-*.js`, circa 456 kB, 130 kB gzip) richiesto solo entrando in Analisi e solo quando la sezione è vicina alla vista.
+- La shell eager (pagina, anello, tabelle) aggiunge circa 13 kB al chunk principale.
+- Il grafico non viene montato finché `IntersectionObserver` non lo rileva; su telefono il pannello resta sotto la piega e il chunk non parte prima dello scorrimento.
+
+### Accessibilità e movimento
+
+- Ogni grafico Recharts ha `accessibilityLayer`, `title` e `desc`; l’SVG è raggiungibile da tastiera e ha un nome accessibile.
+- Ogni pannello espone i dati in una tabella HTML apribile con “Mostra i dati in tabella”, con `caption`, intestazioni `th scope="col"` e valori numerici allineati. I dati non dipendono dal solo colore: legenda con etichette e conteggi, tabella completa.
+- Con `prefers-reduced-motion: reduce` le animazioni Recharts sono disattivate (`isAnimationActive={false}`) e lo shimmer degli scheletri è spento via CSS.
+- Gli stati vuoti distinguono collezione vuota, periodo senza cure e ambiente senza piante; il caricamento usa scheletri con `role="status"`.
+
+### Verifica
+
+- Build TypeScript/Vite e controllo i18n: **746 chiavi** italiano/inglese allineate.
+- **180 test backend** invariati.
+- Controllo visivo su pagina sintetica di 6 piante e 28 cure: 320, 390, 430 e 1280 px, nessun overflow orizzontale; su telefono indicatori 2×2, pannelli a colonna singola e tabelle scorrevoli.
+- Rete verificata: il chunk `charts-*.js` non viene richiesto nella pagina Piante; viene richiesto in Analisi solo dopo lo scorrimento fino al pannello.
+- La pagina completa 30/90/365 giorni e i grafici di tendenza della singola pianta restano nelle fasi 4 e 6.
