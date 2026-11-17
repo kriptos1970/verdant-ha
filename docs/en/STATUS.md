@@ -31,6 +31,8 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - The add-on was rebuilt from these sources on the real Home Assistant installation on 17 November 2026, keeping version 0.11.1: 99 files verified by SHA256, Ingress checks confirmed 18 plants at 100% health, 495 care events and 83% regularity over 90 days, and a 12-entry plant timeline. No real care was recorded, no archive data changed and no backup was created.
 - The plant collection is now paginated at 12 plants per page with a filter-aware reset; 390 and 1280 px layouts, the Italian/English labels and the 12 + 2 split on a 14-plant synthetic archive were checked.
 - On phones, the plant plan button now opens the smart plan configuration for manual plants too, so the Open-Meteo weather option is reachable; the separate pencil still edits manual intervals.
+- The plant editor now includes **Height · cm**, and the collapsible section is named “Pot, height and other care” (diameter, material, drainage and height); the plant card shows the height when present.
+- The native plant editor was compared field by field with the web form: 34 native fields, 15 present, 3 partial and 16 missing (placement, planting method, pot height/volume, drainage quality, cachepot, saucer, substrate and properties, care rhythm, last fertilizing, fertilizer type/dose, in-form identification). Most missing values already exist in the imported archive, so the gap is mainly UI; see `docs/PLANT_EDITOR_COMPARISON.md`.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

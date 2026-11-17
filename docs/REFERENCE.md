@@ -36,6 +36,10 @@ Riferimento autorevole: codice Swift, non README storico. Non sono stati modific
 
 L'esistenza di un endpoint non certifica la parità con l'app nativa. Le limitazioni effettive sono riportate in STATUS.md.
 
+## Confronto scheda di modifica pianta (17 novembre 2026)
+
+Lettura di `PlantEditorView.swift` e `Models.swift` a confronto con `PlantEditor` nel frontend: 34 campi nativi, 15 presenti nel form web, 3 parziali e 16 assenti. La maggior parte dei dati mancanti è già nell’archivio importato (`plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `setup.container`). Dettaglio, tabella campo per campo e proposta in [PLANT_EDITOR_COMPARISON.md](PLANT_EDITOR_COMPARISON.md).
+
 ## Incremento 0.2.0 — confronto con il nativo in esecuzione
 
 Osservata l’app `/Applications/Verdant.app` in sola lettura: Panoramica, Cure e calendario, Prodotti e trattamenti e modulo Pianifica ciclo. Il modulo è stato chiuso con Annulla; nessuna cura, prodotto o pianta originale è stato modificato. Riferimenti locali in `docs/screenshots/native/` (non inclusi nel pacchetto di distribuzione).

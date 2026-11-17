@@ -343,3 +343,14 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Nella scheda pianta da telefono il pulsante del piano apre ora **Configura/Ricalcola piano intelligente** anche per le piante in modalità Manuale; prima apriva solo la modifica manuale, rendendo irraggiungibile l’opzione meteo di Open-Meteo.
 - Resta separata la matita della sezione Piano per modificare le frequenze manuali.
 - Verifica: 390 px, modale con casella “Usa il meteo e aggiorna il piano ogni giorno”, campi località e clima; desktop invariato.
+
+## Confronto con il nativo — modifica pianta (17 novembre 2026)
+
+- Confronto campo per campo tra `PlantEditorView.swift` e il form web: **34 campi nativi**, 15 presenti, 3 parziali, 16 assenti (posizione reale, metodo di coltivazione, altezza/volume vaso, qualità drenaggio, cachepot, sottovaso, substrato e proprietà, ritmo delle cure, ultima fertilizzazione, tipo/dose fertilizzante, identificazione nel form).
+- I dati mancanti sono già nell’archivio reale (`plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `setup.container`): l’allineamento è quasi tutto interfaccia. Proposta in tre tranche in [PLANT_EDITOR_COMPARISON.md](PLANT_EDITOR_COMPARISON.md).
+
+## Scheda pianta — altezza e vaso nel form (17 novembre 2026)
+
+- Il form di modifica pianta include ora **Altezza · cm**; la sezione richiudibile si chiama “Vaso, altezza e altre attività” e raccoglie diametro, materiale, fori di drenaggio e altezza.
+- La scheda pianta mostra il dato **Altezza** quando presente; la sintesi iOS mostrava già Posizione, Vaso e Altezza (con “Da aggiungere” se mancanti).
+- Verifica: altezza 55 cm salvata su archivio sintetico e comparsa nella scheda; build, **800 chiavi i18n**, 180 test backend.
