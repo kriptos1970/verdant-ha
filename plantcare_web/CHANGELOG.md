@@ -1,4 +1,4 @@
-# Non pubblicato
+# 0.11.0 — italiano/inglese e codici canonici
 
 - Infrastruttura i18n italiano/inglese: cataloghi delle stringhe, selettore lingua in Impostazioni, prime schermate tradotte e controllo automatico delle traduzioni in CI.
 - Giro di cure, calendario e cronologia tradotti in italiano e inglese, con plurali per scadenze e conteggi.

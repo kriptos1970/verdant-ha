@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.10.3
+# Stato dell’incremento 0.11.0
 
 ## Stato rispetto agli otto step
 
