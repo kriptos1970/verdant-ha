@@ -46,6 +46,12 @@ CI runs the same checks on every push and pull request. A change is ready when b
 - SQLite schema changes need a migration path and tests; never rewrite a user's archive in place.
 - Feeds, providers and AI calls must be mockable in tests; no real credentials or paid calls in the test suite.
 
+## Dependencies
+
+- Frontend: dependencies are locked in `package-lock.json`; use `npm ci` and commit the lock file.
+- Backend: `requirements.txt` pins the direct dependencies, while `requirements.lock` is the full reproducible environment used by Docker and CI. Update both files together and run `python scripts/check_lock.py`.
+- Dependabot groups minor and patch updates for npm and GitHub Actions. Major upgrades are ignored until they are evaluated, because the stack is pinned and tested. Backend versions are updated manually so the lock stays consistent; Dependabot security updates remain enabled.
+
 ## Releases
 
 Releases are created from a tag. The workflow runs the tests, builds the source package and publishes the ZIP with its SHA256. See `.github/workflows/release.yml`.

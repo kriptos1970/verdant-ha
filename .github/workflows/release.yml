@@ -31,6 +31,9 @@ jobs:
           print(f"Tag {tag} matches version {version}")
           PY
 
+      - name: Check backend dependency lock
+        run: python scripts/check_lock.py
+
       - name: Install backend dependencies
         run: pip install -r plantcare_web/backend/requirements.lock pytest
 

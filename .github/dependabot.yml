@@ -1,20 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/plantcare_web/backend"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
-    labels:
-      - "dependencies"
-    groups:
-      backend-minor-patch:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-
   - package-ecosystem: "npm"
     directory: "/plantcare_web/frontend"
     schedule:
