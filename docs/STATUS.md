@@ -347,8 +347,8 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 ## Home — allineamento al nativo (17 novembre 2026)
 
 - Rimossa dalla Home l’anteprima “Le tue piante” con 6 schede: ripeteva in parte la collezione e non esiste nella Panoramica nativa; il collegamento alla collezione resta nella scheda Piante.
-- Confronto con `DashboardView.swift` in [HOME_COMPARISON.md](HOME_COMPARISON.md): restano da valutare scheda meteo in intestazione, indicatori Piante/Da curare/Luoghi, metriche analitiche native e attenzione per pianta.
-- Verifica: build, 798 chiavi i18n, 180 test backend; Home a 390 px senza elenco piante e senza overflow.
+- Indicatori allineati a **Piante / Da curare / Ambienti**; scheda meteo in intestazione dal piano adattivo più recente; riga metriche con cure 30 giorni, giornate attive, regolarità e piante da osservare. Restano l’anello salute e il ritmo 14 giorni come approfondimento, l’attenzione per azione e il banner AI.
+- Verifica: riga metriche 28/18/100%/2 sull’archivio sintetico; build, **850 chiavi i18n**, 180 test backend; Home senza elenco piante e senza overflow.
 
 ## Confronto con il nativo — modifica pianta (17 novembre 2026)
 

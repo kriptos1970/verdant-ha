@@ -3638,3 +3638,48 @@ progress::-webkit-progress-value {
 .activity-field .check-label {
   margin: 0;
 }
+
+/* Home: native-style metrics row */
+.home-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.home-metrics > div {
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+.home-metrics strong {
+  display: block;
+  color: var(--forest);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.home-metrics span {
+  display: block;
+  margin-top: 2px;
+  color: #4c5a50;
+  font-size: 12px;
+}
+.home-metrics small {
+  display: block;
+  color: #5f6d62;
+  font-size: 11px;
+}
+@media (max-width: 760px) {
+  .home-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .home-metrics > div {
+    padding: 12px 14px;
+  }
+  .home-metrics strong {
+    font-size: 20px;
+  }
+}

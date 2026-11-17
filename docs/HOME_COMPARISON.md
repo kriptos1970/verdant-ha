@@ -36,12 +36,12 @@ Fonti: `PlantCare2.0/VerdantMultiplatform/Sources/Verdant/DashboardView.swift` (
 | Banner AI | assente | presente quando ci sono proposte |
 | Ordine | meteo, settimana, sintesi, indicatori, attenzione, analisi | settimana, sintesi, indicatori, analisi, attenzione, AI |
 
-## Proposta di allineamento
+## Stato dopo l’allineamento del 17 novembre 2026
 
-1. **Indicatori**: valutare Piante / Da curare / Ambienti al posto di Collezione / Da fare oggi / Questa settimana; il dato “Questa settimana” resta utile ma il nativo mostra i luoghi.
-2. **Meteo**: aggiungere la scheda meteo in intestazione quando esiste una località o un piano con coordinate, riusando i dati già salvati.
-3. **Analisi in Home**: decidere se mantenere l’anello salute (utile e già accessibile) accanto alle metriche native, ed eventualmente aggiungere regolarità acqua e cure negli ultimi 30 giorni.
-4. **Attenzione**: valutare l’elenco per pianta come il nativo, invece delle singole azioni.
-5. **Banner AI**: mantenerlo come aggiunta web o spostarlo in “Altro”.
+- **Indicatori**: allineati a **Piante / Da curare / Ambienti**.
+- **Meteo**: scheda in intestazione con temperatura e località, presa dal piano adattivo più recente; compare solo se esiste almeno un piano (quindi non su collezioni nuove).
+- **Analisi**: aggiunta la riga con **cure 30 giorni, giornate attive, regolarità, da osservare**; l’anello salute e il ritmo di 14 giorni restano come approfondimento web.
+- **Attenzione**: resta l’elenco per azione, più utile per completare una cura; il nativo elenca le piante.
+- **Banner AI**: resta in Home come aggiunta web.
 
-Nessuna di queste proposte è implementata oltre alla rimozione dell’elenco piante.
+Verifica della riga metriche: 28 cure/18 giornate/100%/2 da osservare sull’archivio sintetico, coerenti con `/api/analytics?days=30`.

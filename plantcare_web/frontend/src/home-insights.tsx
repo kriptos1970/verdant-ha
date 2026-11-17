@@ -50,7 +50,7 @@ function HomeInsightsContent({
   onOpenAnalytics,
   onOpenPlant,
 }: HomeInsightsProps) {
-  const { t, plural, formatDate } = useI18n();
+  const { t, plural, formatDate, formatNumber } = useI18n();
   const { data, loading, error, reload } = useAnalytics(30);
 
   if (!data) {
@@ -86,6 +86,30 @@ function HomeInsightsContent({
         <button className="text-button" onClick={onOpenAnalytics}>
           {t("home.insights.openAnalytics")} <ArrowUpRight size={16} />
         </button>
+      </div>
+
+      <div className="home-metrics">
+        <div>
+          <strong>{formatNumber(data.completedEvents)}</strong>
+          <span>{t("home.metrics.care")}</span>
+          <small>{t("home.metrics.last30")}</small>
+        </div>
+        <div>
+          <strong>{formatNumber(data.activeDays)}</strong>
+          <span>{t("home.metrics.activeDays")}</span>
+        </div>
+        <div>
+          <strong>
+            {data.timelinessPercent === null
+              ? "—"
+              : `${formatNumber(data.timelinessPercent)}%`}
+          </strong>
+          <span>{t("home.metrics.timeliness")}</span>
+        </div>
+        <div>
+          <strong>{formatNumber(data.plantsAtRisk.length)}</strong>
+          <span>{t("home.metrics.watch")}</span>
+        </div>
       </div>
 
       <div className="home-insight-grid">

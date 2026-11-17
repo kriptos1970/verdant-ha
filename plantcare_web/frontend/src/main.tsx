@@ -270,6 +270,10 @@ function App() {
     void run(fn, message).catch(() => {});
   };
   const rooms = [...new Set(plants.map((p) => p.room))].sort();
+  const latestPlan = plants
+    .map((p) => p.adaptivePlan)
+    .filter((plan): plan is NonNullable<typeof plan> => !!plan)
+    .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt))[0];
   const allActions = plants
     .flatMap((p) => p._actions)
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
@@ -542,9 +546,29 @@ function App() {
                       </h1>
                       <p>{t("home.intro")}</p>
                     </div>
-                    <span className="heading-icon">
-                      <Sun size={28} />
-                    </span>
+                    <div className="home-heading-side">
+                      {latestPlan && (
+                        <div
+                          className="home-weather"
+                          title={latestPlan.locationName}
+                          aria-label={t("home.weatherAria", {
+                            temperature: Math.round(latestPlan.averageTemperature),
+                            location: latestPlan.locationName,
+                          })}
+                        >
+                          <Sun size={18} aria-hidden="true" />
+                          <strong>
+                            {Math.round(latestPlan.averageTemperature)}°C
+                          </strong>
+                          <small>
+                            {latestPlan.locationName.split(",")[0]}
+                          </small>
+                        </div>
+                      )}
+                      <span className="heading-icon">
+                        <Sun size={28} />
+                      </span>
+                    </div>
                   </div>
                   <WeekStrip
                     actions={allActions}
@@ -613,12 +637,12 @@ function App() {
                     </div>
                     <div>
                       <span>
-                        <CalendarDays size={18} />
-                        {t("home.stats.week")}
+                        <MapPin size={18} />
+                        {t("home.stats.rooms")}
                       </span>
                       <strong>
-                        {week.length}
-                        <small>{t("home.activityWord")}</small>
+                        {rooms.length}
+                        <small>{plural("home.roomWord", rooms.length)}</small>
                       </strong>
                     </div>
                   </div>
