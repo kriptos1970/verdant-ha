@@ -1,53 +1,52 @@
 # PlantCare Web
 
-Apri l’interfaccia da Home Assistant. Inizia con una pianta o importa il backup nativo da **Altro → Archivio e backup**.
+Open the web interface from Home Assistant. Start with a plant or import a native PlantCare backup from **More → Archive and backup**.
 
-## Opzioni
+The full documentation is in the repository: [English index](https://github.com/kriptos1970/verdant-ha/blob/main/docs/en/README.md) and [Italian documentation](https://github.com/kriptos1970/verdant-ha/blob/main/docs/README.md). The Italian add-on README is at [README.it.md](https://github.com/kriptos1970/verdant-ha/blob/main/README.it.md).
 
-- `timezone`: fuso orario del calendario.
-- `photo_directory`: `/data/photos` predefinito; `/share/plantcare/photos` per cartella condivisa. Il cambio non trasferisce le immagini automaticamente.
-- `max_photo_mb`: dimensione massima delle nuove foto; predefinita 20 MB.
-- `measurement_retention_days`: conservazione delle misurazioni, predefinita 365 giorni.
-- `exposed_entities`: lista di sensori Home Assistant ammessi. Tutte le altre entità sono escluse.
-- `poll_interval_minutes`: frequenza campionamento, predefinita 15 minuti.
-- `ai_provider`: `none`, `gemini`, `openai`.
-- `ai_model`: modello esplicito; vuoto conserva il riferimento del nativo.
-- `gemini_api_key`, `openai_api_key`: chiavi solo lato server.
-- `ai_update_time`: ora locale dell’analisi giornaliera.
-- `auto_apply_ai`: applicazione automatica; disabilitata di default.
+## Options
 
-I cataloghi botanici saranno disponibili in un prossimo incremento.
+- `language`: `auto`, `it` or `en`. The web interface also stores a per-browser preference and sends it to the server for notifications and AI.
+- `timezone`: timezone used by the calendar.
+- `photo_directory`: `/data/photos` by default; `/share/plantcare/photos` for a shared folder. Changing it does not move existing photos automatically.
+- `max_photo_mb`: maximum size of new photos, 20 MB by default.
+- `measurement_retention_days`: measurement retention, 365 days by default.
+- `exposed_entities`: list of allowed Home Assistant sensor entities. All other entities are ignored.
+- `poll_interval_minutes`: sampling interval, 15 minutes by default.
+- `ai_provider`: `none`, `gemini` or `openai`.
+- `ai_model`: explicit model; empty keeps the native default.
+- `gemini_api_key`, `openai_api_key`: server-side keys only.
+- `ai_update_time`: local time of the daily analysis.
+- `auto_apply_ai`: automatic application, off by default.
+- `plantnet_api_key`, `perenual_api_key`: optional plant identification and botanical profiles.
+- `openplantbook_client_id`, `openplantbook_secret`: optional Open Plantbook consultation.
 
 ## Backup
 
-Con foto in `/data` il backup dell’add-on deve includere dati e foto. Con foto in `/share` salvare anche la cartella condivisa. L’esportazione ZIP dell’app include entrambi con checksum; richiede spazio temporaneo nel volume dell’add-on.
+With photos in `/data`, the add-on backup must include data and photos. With photos in `/share`, back up the shared folder too. The app ZIP export includes both with checksums and needs temporary space on the add-on volume.
 
-La versione 0.3.0 aggiunge pianificatore intelligente e consigli basati sui sensori. Questa rimane una versione incrementale: consultare STATUS.md nella documentazione del progetto per le funzioni non ancora trasferite.
+Import supports web ZIP archives and native JSON envelopes v1–v3. Import runs on an empty archive after a preview and validates checksums before writing.
 
-## Piano intelligente
+## Smart plan
 
-Dalla scheda della pianta scegliere **Configura piano intelligente**. Indicare esposizione, località e coordinate; usare un clima manuale oppure abilitare il meteo Open-Meteo. Le coordinate vengono inviate a Open-Meteo solo se si seleziona questa opzione. L’anteprima mostra intervalli e motivazioni; **Applica piano** applica esattamente l’anteprima, che scade dopo 30 minuti o dopo una modifica della scheda.
+Open **Configure smart plan** from the plant card. Choose exposure, location and coordinates; use a manual climate or enable Open-Meteo weather. Coordinates are sent to Open-Meteo only when this option is selected. The preview shows intervals and reasons; **Apply plan** applies exactly that preview, which expires after 30 minutes or after the plant changes.
 
-Il meteo abilitato ricalcola il piano una volta al giorno, al primo campionamento disponibile. In caso di errore gli intervalli precedenti restano conservati. I piani importati non attivano automaticamente richieste meteo. È possibile tornare a Manuale dall’editor della pianta.
+Enabled weather recalculates the plan once a day at the first available sample. On error the previous intervals are kept. Imported plans do not start weather requests automatically. You can return to Manual from the plant editor.
 
-Le annaffiature completate consentono l’apprendimento prudente del piano intelligente. Le revisioni manuali e AI restano protette. Le osservazioni del Care Engine sono consultive: non modificano il calendario, non attivano pompe e non equivalgono a una diagnosi. I profili botanici avanzati vengono letti dall’archivio nativo importato; senza profili affidabili il motore richiede ulteriori dati.
+Completed waterings allow cautious learning. Manual and AI revisions stay protected. Care Engine observations are advisory: they do not change the calendar, do not activate pumps and are not a diagnosis. Advanced botanical profiles are read from the imported native archive; without reliable profiles the engine asks for more data.
 
-Per i sensori autorizzati nelle opzioni, configurare l’associazione a pianta o stanza da **Altro → Sensori**. La validità di una misura HA dipende dalla data originale dell’osservazione: un campionamento ripetuto non la rende più recente né aumenta la confidenza.
+## Sensors
 
-## Assistente AI (0.4.0)
+For the entities allowed in the options, map each sensor to a plant or room in **More → Sensors**. A Home Assistant measurement keeps its original observation date: repeated sampling does not make it fresher or increase confidence.
 
-Configurare `ai_provider` e la relativa chiave nelle opzioni dell’add-on; i valori predefiniti dei modelli restano quelli del nativo. Da **Altro → Piano AI → Modello dell’assistente** è possibile caricare i modelli disponibili al proprio account e selezionarne uno. La scelta web vale per il provider corrente e viene superata se si modifica `ai_model` nelle opzioni dell’add-on. Il catalogo non garantisce che ogni modello supporti lo schema strutturato: un errore di compatibilità lascia il piano invariato.
+## AI assistant
 
-Nella scheda della pianta, aprire **AI**, scrivere una domanda e scegliere **Chiedi consiglio**. La domanda e il contesto testuale vengono inviati al provider configurato, con possibile consumo di credito API. Le fotografie non vengono inviate. Il risultato resta nella scheda; una richiesta identica con lo stesso contesto/provider/modello riusa il risultato.
+Configure `ai_provider` and the matching key in the add-on options. From **More → AI plan → Assistant model** you can load the models available to your account and select one. The web choice applies to the current provider and is overridden when `ai_model` changes in the add-on options.
 
-Selezionare le attività desiderate e controllare **Il piano dopo l’applicazione**: questa anteprima considera anche la modalità Manuale/Intelligente/AI e l’allineamento acqua/concime del nativo. Le indicazioni testuali vengono aggiunte alle note. Se la scheda cambia dopo l’analisi occorre un nuovo consiglio. La ripetizione della stessa conferma non crea un secondo evento.
+Open **AI** on the plant card, write a question and choose **Ask for advice**. The question and text context are sent to the configured provider, possibly consuming API credit. Photos are not sent. An identical request with the same context, provider and model reuses the result.
 
-Le analisi giornaliere riguardano le piante in modalità AI. L’applicazione automatica rimane disattivata di default; le proposte generano una notifica persistente in Home Assistant. L’eventuale errore della notifica compare nello stato AI e non fa perdere le proposte.
+Select the activities to apply and review **The plan after applying**. Text indications are added to the notes. If the plant changes after the analysis, a new advice is required. Repeating the same confirmation does not create a second event.
 
-Le prove di sviluppo usano risposte simulate, senza chiavi reali: il collaudo con il proprio account provider resta da eseguire dopo la configurazione.
+Daily analyses cover plants in AI mode. Automatic application is off by default; proposals create a persistent Home Assistant notification. A notification error appears in the AI status and does not lose the proposals.
 
-Se **Carica modelli disponibili** è disabilitato, controllare che `ai_provider` sia `gemini` o `openai`, con la chiave nel campo corrispondente; salvare e riavviare. `ai_model` deve contenere il nome di un modello specifico, oppure restare vuoto: il nome del provider va in `ai_provider`. Dalla 0.4.1 gli errori distinguono chiave non valida, autorizzazioni, quota e problemi di connessione. Non incollare le chiavi nella chat.
-
-## Importazione con fotografie condivise (0.4.2)
-
-Per collezioni grandi è possibile predisporre nella cartella `photo_directory` le fotografie JPEG denominate con il proprio SHA256 (`64 caratteri esadecimali.jpg`), quindi importare il piccolo ZIP dei metadati con i riferimenti corrispondenti. L’anteprima verifica ogni file esistente prima di considerarlo disponibile; un contenuto modificato viene rifiutato. Le foto restano separate dal database e non sono duplicate durante l’importazione. I riferimenti già eliminati nel diario non generano avvisi di foto attive mancanti.
+Live provider tests require your own keys; development checks use simulated responses. Do not paste keys into chats or issues.

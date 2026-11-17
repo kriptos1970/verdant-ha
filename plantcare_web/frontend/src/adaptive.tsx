@@ -4,6 +4,7 @@ import { api } from "./api";
 import { Modal } from "./ui";
 import type { Plant } from "./types";
 import { useI18n, type MessageKey } from "./i18n";
+import { useDomainLabels } from "./domain-labels";
 
 export type AdaptivePlan = {
   placement: string; locationName: string; latitude: number; longitude: number;
@@ -18,6 +19,7 @@ export type AdaptivePlan = {
 const placements = ["Balcone riparato","Pieno sole","Ombra","Mezza ombra · balcone","Patio","Pianerottolo","Interno luminoso","Interno poco luminoso"];
 export function AdaptiveEditor({plant,onClose,onApplied}:{plant:Plant;onClose:()=>void;onApplied:()=>Promise<void>}) {
   const {t,formatDate}=useI18n();
+  const {placementLabel}=useDomainLabels();
   const old=plant.adaptivePlan;
   const [placement,setPlacement]=useState(old?.placement || "Interno luminoso");
   const [name,setName]=useState(old?.locationName || "");
@@ -40,7 +42,7 @@ export function AdaptiveEditor({plant,onClose,onApplied}:{plant:Plant;onClose:()
     }}>
       <fieldset disabled={busy || applied} className="adaptive-fields"><p className="muted">{t("adaptive.intro")}</p>
       <div className="form-grid">
-        <label>{t("adaptive.placement")}<select value={placement} onChange={e=>setPlacement(e.target.value)}>{placements.map(p=><option key={p}>{p}</option>)}</select></label>
+        <label>{t("adaptive.placement")}<select value={placement} onChange={e=>setPlacement(e.target.value)}>{placements.map(p=><option key={p} value={p}>{placementLabel(p)}</option>)}</select></label>
         <label>{t("adaptive.location")}<input required value={name} maxLength={200} onChange={e=>setName(e.target.value)} placeholder={t("adaptive.locationPlaceholder")}/></label>
         <label>{t("adaptive.latitude")}<input required type="number" step="any" min={-90} max={90} value={latitude} onChange={e=>setLatitude(e.target.value)}/></label>
         <label>{t("adaptive.longitude")}<input required type="number" step="any" min={-180} max={180} value={longitude} onChange={e=>setLongitude(e.target.value)}/></label>

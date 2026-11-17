@@ -61,7 +61,7 @@ def aligned_date(requested, water, interval, tz):
     steps = max(0, math.ceil((requested_day.date() - first.date()).days / max(1, interval)))
     return first + timedelta(days=steps * max(1, interval))
 
-def schedule(plant, zone='Europe/Rome', at=None):
+def schedule(plant, zone='Europe/Rome', at=None, language='it'):
     plant = canonical_plant(plant)
     tz = ZoneInfo(zone)
     today = (at or now()).astimezone(tz).date()
@@ -85,7 +85,7 @@ def schedule(plant, zone='Europe/Rome', at=None):
             due = max(due, deferred)
         result.append({'id': plant['id'] + ':' + kind, 'plantID': plant['id'], 'plantName': plant['name'], 'room': plant['room'], 'kind': kind, 'dueDate': iso(due), 'daysUntil': (due.astimezone(tz).date() - today).days, 'intervalDays': interval})
     from .treatments import treatment_actions
-    result.extend(treatment_actions(plant,tz,at))
+    result.extend(treatment_actions(plant,tz,at,language))
     return sorted(result, key=lambda a: (a['dueDate'], a['kind']))
 
 def high_reserve(plant):
@@ -111,7 +111,7 @@ def stable_water(plant):
         return min(120, max(minimum, swift_round(max(minimum, baseline) * multiplier)))
     return min(120, max(minimum, plant['wateringInterval']))
 
-def learning(plant, baseline, zone):
+def learning(plant, baseline, zone, language='it'):
     plant = canonical_plant(plant)
     dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed')
     if len(dates) < 3:
@@ -127,7 +127,8 @@ def learning(plant, baseline, zone):
     target = min(min(35, baseline + distance), max(max(2, baseline-distance), median))
     current = min(35, max(2, plant['wateringInterval']))
     learned = current + (1 if target > current else -1 if target < current else 0)
-    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'confidence': min(1, n/6), 'explanation': f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Variazione prudente: {learned-current:+d} giorno.', 'updatedAt': iso(now())}
+    explanation=(f'The latest care suggests about {median} days between waterings. Prudent change: {learned-current:+d} day.' if language=='en' else f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Variazione prudente: {learned-current:+d} giorno.')
+    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
 
 def evidence(declared, reason):
     signals = ['dati insufficienti', 'non ci sono dati sufficienti', 'non abbiamo dati sufficienti', 'mancano dati', 'mancano informazioni', 'mantengo gli intervalli', 'manteniamo gli intervalli', 'mantenere gli intervalli', 'intervalli attuali', 'continuiamo con gli intervalli']
@@ -138,9 +139,9 @@ def accepted_water(proposed, baseline, minimum):
     upper = max(lower, min(120, math.floor(max(1, baseline)*1.25)))
     return min(upper, max(lower, proposed))
 
-def plant_view(plant, zone, version, product=None):
+def plant_view(plant, zone, version, product=None, language='it'):
     from .treatments import treatment_view
-    return {**plant, '_version': version, '_schedule': schedule(plant, zone), '_actions': pending_actions(plant,zone,product=product), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone)}
+    return {**plant, '_version': version, '_schedule': schedule(plant, zone, language=language), '_actions': pending_actions(plant,zone,product=product,language=language), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone, language)}
 
 
 def uses_watering(product):
@@ -167,18 +168,18 @@ def most_recent_occurrence(first, interval, tz, at):
     return result
 
 
-def pending_actions(plant, zone='Europe/Rome', at=None, product=None):
+def pending_actions(plant, zone='Europe/Rome', at=None, product=None, language='it'):
     tz = ZoneInfo(zone)
     at = at or now()
     result = []
-    for action in schedule(plant, zone, at):
+    for action in schedule(plant, zone, at, language):
         if not action.get('treatmentPlanID'):
             due = most_recent_occurrence(parse(action['dueDate']), action['intervalDays'], tz, at)
             action = {**action, 'dueDate': iso(due), 'daysUntil': (due.astimezone(tz).date() - at.astimezone(tz).date()).days}
         action = {**action, 'id': action['id'] + ':' + action['dueDate'], 'includesFertilizing': False}
         result.append(action)
     if uses_watering(product):
-        raw_feed=next((a for a in schedule(plant,zone,at) if a['kind']=='fertilize'),None)
+        raw_feed=next((a for a in schedule(plant,zone,at,language) if a['kind']=='fertilize'),None)
         for a in result:
             if a['kind']=='water':
                 a['canIncludeFertilizing']=bool(raw_feed and (parse(raw_feed['dueDate']).astimezone(tz).date()<=at.astimezone(tz).date() or parse(raw_feed['dueDate']).astimezone(tz).date()==parse(a['dueDate']).astimezone(tz).date()))

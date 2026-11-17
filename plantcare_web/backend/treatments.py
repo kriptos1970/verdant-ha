@@ -65,7 +65,7 @@ def treatment_view(plant, plan, tz, at=None):
             'calculatedEnd': iso(final)}
 
 
-def treatment_actions(plant, tz, at=None):
+def treatment_actions(plant, tz, at=None, language='it'):
     at = at or now()
     result = []
     for plan in plant.get('treatmentPlans') or []:
@@ -74,7 +74,7 @@ def treatment_actions(plant, tz, at=None):
             continue
         due = parse(view['nextDueDate'])
         number = view['completedApplications'] + 1
-        reason = f"{plan['productName']} · intervento {number} di {plan['totalApplications']}"
+        reason = (f"{plan['productName']} · application {number} of {plan['totalApplications']}" if language=='en' else f"{plan['productName']} · intervento {number} di {plan['totalApplications']}")
         if plan.get('dose'):
             reason += ' · ' + plan['dose']
         result.append({'id': f"{plant['id']}:treatment:{plan['id']}:{number}",

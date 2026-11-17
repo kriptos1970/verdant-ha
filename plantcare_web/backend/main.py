@@ -90,7 +90,8 @@ def linked_product(plant, db=None):
 
 
 def render_plant(plant, version, db=None):
-    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db)))
+    from .services import message_language
+    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db),language=message_language(store,settings)))
 
 @app.get('/api/plants')
 def list_plants(summary:bool=False):
@@ -143,7 +144,8 @@ async def proposed_plan(plant, body, version=None):
         botanical=saved['profile']
         if not botanical.get('exactMatch') and not body.confirmBotanicalMatch:raise HTTPException(422,'Conferma la corrispondenza botanica prima di usare una specie approssimativa.')
         if type(botanical.get('wateringDays')) is not int or not 1<=botanical['wateringDays']<=60:raise HTTPException(422,'Profilo botanico non utilizzabile per il piano.')
-    plan = adaptive.make_plan(plant['species'],plant.get('family') or '',body.placement,location,climate,zone=settings.zone,botanical=botanical)
+    from .services import message_language
+    plan = adaptive.make_plan(plant['species'],plant.get('family') or '',body.placement,location,climate,zone=settings.zone,botanical=botanical,language=message_language(store,settings))
     if body.botanicalPreviewID:
         plan.update(botanicalScientificName=botanical['scientificName'],botanicalFetchedAt=botanical['fetchedAt'],botanicalExactMatch=botanical['exactMatch'])
     plan['weatherEnabled'] = body.weatherEnabled
@@ -203,7 +205,10 @@ def delete_product(identifier:str,version:int=Query(ge=1)):
     store.delete('fertilizers',identifier,version)
 
 @app.get('/api/schedule')
-def calendar(): return sorted([legacy_action(a) for p,_ in store.list('plants') for a in pending_actions(p,settings.zone,product=linked_product(p))],key=lambda a:(a['dueDate'],a['plantName']))
+def calendar():
+    from .services import message_language
+    language=message_language(store,settings)
+    return sorted([legacy_action(a) for p,_ in store.list('plants') for a in pending_actions(p,settings.zone,product=linked_product(p),language=language)],key=lambda a:(a['dueDate'],a['plantName']))
 
 @app.post('/api/plants/{plant_id}/events')
 def add_event(plant_id:str,body:EventRequest):

@@ -17,6 +17,7 @@ Current release: **0.10.3**. The project is usable on a real Home Assistant inst
 - [x] Home, plant list and server-side language preference localized; AI and notifications follow the selected language.
 - [x] iOS detail, nine care guides, practical guide, diagnosis, care insights and adaptive plan localized.
 - [x] English documentation, specific common error messages and frontend code-splitting.
+- [x] Plant taxonomies, plant editor, add-on metadata and generated plan explanations localized.
 
 ## Now — close the consolidation step
 

@@ -33,7 +33,7 @@ Current release: **0.10.3**, published on [GitHub Releases](https://github.com/k
 - **AI automatic application** and the daily analysis remain disabled by default and need a real-data trial.
 - **Desktop layout** realignment with the macOS app is postponed; the phone layout was the priority.
 - **MariaDB** and any external database are postponed; SQLite remains the store.
-- Backend-generated long texts and a few domain taxonomies (plant categories, exposure, pot material) may still appear in Italian in English UI mode. About 30 common error messages are translated; unusual ones fall back to generic English.
+- Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; a maintenance tool for unreferenced files is not available yet.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
 

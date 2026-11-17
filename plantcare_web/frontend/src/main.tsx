@@ -72,6 +72,7 @@ import { CareCalendar, WeekStrip } from "./care-calendar";
 import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
 import { useCareLabels } from "./care-labels";
 import { useProductLabels } from "./product-labels";
+import { useDomainLabels } from "./domain-labels";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -1372,6 +1373,8 @@ function PlantEditor({
   onSave: (p: Plant) => Promise<void>;
 }) {
   const { t } = useI18n();
+  const { categoryLabel, lightLabel, potLabel, planModeLabel } = useDomainLabels();
+  const { kindLabel } = useCareLabels();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
       ? { ...plant }
@@ -1423,7 +1426,7 @@ function PlantEditor({
     new Date(value).toLocaleDateString("en-CA");
   return (
     <Modal
-      title={plant ? "Modifica pianta" : "Una nuova pianta"}
+      title={plant ? t("plantEditor.editTitle") : t("plantEditor.newTitle")}
       onClose={onClose}
     >
       <form
@@ -1441,14 +1444,14 @@ function PlantEditor({
           {(photoURL(draft.photoPath) || seedPhoto) ? (
             <img
               src={photoURL(draft.photoPath, true) || seedPhoto}
-              alt="Foto della pianta"
+              alt={t("plantEditor.photoAlt")}
             />
           ) : (
             <Camera size={28} />
           )}
           <span>
-            {uploading ? "Caricamento…" : "Scegli una fotografia"}
-            <small>JPEG, PNG o WebP · max 20 MB</small>
+            {uploading ? t("common.loading") : t("plantEditor.choosePhoto")}
+            <small>{t("plantEditor.photoFormats")}</small>
           </span>
           <input
             type="file"
@@ -1457,29 +1460,29 @@ function PlantEditor({
             onChange={(e) => void upload(e.target.files?.[0])}
           />
         </label>
-        {seed && <p className="muted small-text">Controlla nome, specie, ambiente e frequenze prima di salvare. Il riconoscimento non conferma automaticamente il piano di cura.</p>}
+        {seed && <p className="muted small-text">{t("plantEditor.seedHint")}</p>}
         <div className="form-grid">
           <label>
-            Nome della pianta
+            {t("plantEditor.name")}
             <input
               autoFocus
               required
               maxLength={200}
               value={draft.name}
-              placeholder="Come la chiami?"
+              placeholder={t("plantEditor.namePlaceholder")}
               onChange={(e) => set("name", e.target.value)}
             />
           </label>
           <label>
-            Specie
+            {t("plantEditor.species")}
             <input
               value={draft.species}
-              placeholder="Es. Monstera deliciosa"
+              placeholder={t("plantEditor.speciesPlaceholder")}
               onChange={(e) => set("species", e.target.value)}
             />
           </label>
           <label>
-            Ambiente
+            {t("plantEditor.room")}
             <input
               required
               list="rooms"
@@ -1493,18 +1496,18 @@ function PlantEditor({
             </datalist>
           </label>
           <label>
-            {t("product.category")}
+            {t("plantEditor.category")}
             <select
               value={draft.category}
               onChange={(e) => set("category", e.target.value)}
             >
               {categories.map((c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{categoryLabel(c)}</option>
               ))}
             </select>
           </label>
           <label>
-            Esposizione
+            {t("plantEditor.exposure")}
             <select
               value={draft.light}
               onChange={(e) => set("light", e.target.value)}
@@ -1515,26 +1518,26 @@ function PlantEditor({
                 "Luce intensa",
                 "Sole diretto",
               ].map((l) => (
-                <option key={l}>{l}</option>
+                <option key={l} value={l}>{lightLabel(l)}</option>
               ))}
             </select>
           </label>
-          <label>Famiglia botanica<input value={draft.family || ""} maxLength={300} onChange={e=>set("family",e.target.value)} placeholder="Es. Araceae"/></label>
+          <label>{t("plantEditor.family")}<input value={draft.family || ""} maxLength={300} onChange={e=>set("family",e.target.value)} placeholder={t("plantEditor.familyPlaceholder")}/></label>
           <label>
-            Piano di cura
+            {t("plantEditor.plan")}
             <select
               value={draft.carePlanMode || "Manuale"}
               onChange={(e) => set("carePlanMode", e.target.value)}
             >
-              <option>Manuale</option>
-              <option>AI</option>
+              <option value="Manuale">{t("detail.planMode.manual")}</option>
+              <option value="AI">{t("detail.planMode.ai")}</option>
               {draft.carePlanMode === "Intelligente" && (
-                <option>Intelligente</option>
+                <option value="Intelligente">{t("detail.planMode.smart")}</option>
               )}
             </select>
           </label>
           <label>
-            Annaffiatura · giorni
+            {t("plantEditor.watering")}
             <input
               type="number"
               min={1}
@@ -1545,12 +1548,12 @@ function PlantEditor({
             />
           </label>
           <label>
-            Concimazione · giorni
+            {t("plantEditor.fertilizing")}
             <input
               type="number"
               min={1}
               max={365}
-              placeholder="Non programmata"
+              placeholder={t("plantEditor.notScheduled")}
               value={draft.fertilizingInterval ?? ""}
               onChange={(e) =>
                 set(
@@ -1561,7 +1564,7 @@ function PlantEditor({
             />
           </label>
           <label>
-            Acquisita il
+            {t("plantEditor.acquired")}
             <input
               type="date"
               required
@@ -1576,7 +1579,7 @@ function PlantEditor({
             />
           </label>
           <label>
-            Ultima annaffiatura
+            {t("plantEditor.lastWatered")}
             <input
               type="date"
               required
@@ -1591,14 +1594,14 @@ function PlantEditor({
             />
           </label>
           <label className="full">
-            Fertilizzante associato
+            {t("plantEditor.fertilizer")}
             <select
               value={draft.fertilizerProductID || ""}
               onChange={(e) =>
                 set("fertilizerProductID", e.target.value || null)
               }
             >
-              <option value="">Nessuno</option>
+              <option value="">{t("plantEditor.none")}</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -1608,7 +1611,7 @@ function PlantEditor({
           </label>
         </div>
         <details className="form-details">
-          <summary>Altre attività e vaso</summary>
+          <summary>{t("plantEditor.other")}</summary>
           <div className="form-grid">
             {[
               ["rotationInterval", "Rotazione"],
@@ -1618,12 +1621,12 @@ function PlantEditor({
               ["progressInterval", "Diario di crescita"],
             ].map(([key, label]) => (
               <label key={key}>
-                {label} · giorni
+                {kindLabel(label)} · giorni
                 <input
                   type="number"
                   min={1}
                   max={3650}
-                  placeholder="Non programmata"
+                  placeholder={t("plantEditor.notScheduled")}
                   value={
                     (draft as unknown as Record<string, number>)[key] ?? ""
                   }
@@ -1634,7 +1637,7 @@ function PlantEditor({
               </label>
             ))}
             <label>
-              Diametro vaso · cm
+              {t("plantEditor.potDiameter")}
               <input
                 type="number"
                 min={1}
@@ -1649,12 +1652,12 @@ function PlantEditor({
               />
             </label>
             <label>
-              Materiale
+              {t("plantEditor.potMaterial")}
               <select
                 value={draft.potMaterial || ""}
                 onChange={(e) => set("potMaterial", e.target.value || null)}
               >
-                <option value="">Non indicato</option>
+                <option value="">{t("plantEditor.notIndicated")}</option>
                 {[
                   "Plastica",
                   "Terracotta",
@@ -1665,7 +1668,7 @@ function PlantEditor({
                   "Auto-irrigante",
                   "Altro",
                 ].map((m) => (
-                  <option key={m}>{m}</option>
+                  <option key={m} value={m}>{potLabel(m)}</option>
                 ))}
               </select>
             </label>
@@ -1676,7 +1679,7 @@ function PlantEditor({
               checked={draft.potHasDrainage === true}
               onChange={(e) => set("potHasDrainage", e.target.checked)}
             />
-            Vaso con fori di drenaggio
+            {t("plantEditor.drainage")}
           </label>
         </details>
         <label>
@@ -1685,12 +1688,12 @@ function PlantEditor({
             rows={3}
             value={draft.notes}
             onChange={(e) => set("notes", e.target.value)}
-            placeholder="Le sue abitudini, il tuo promemoria…"
+            placeholder={t("plantEditor.notesPlaceholder")}
           />
         </label>
         {draft.carePlanMode === "Intelligente" && (
           <p className="muted">
-            Per ricalcolare gli intervalli usa Configura piano intelligente nella scheda. Puoi tornare a Manuale conservando gli intervalli attuali.
+            {t("plantEditor.smartHint")}
           </p>
         )}
         <div className="modal-actions">
@@ -1703,7 +1706,7 @@ function PlantEditor({
             ) : (
               <Check size={16} />
             )}
-            Salva pianta
+            {t("plantEditor.save")}
           </button>
         </div>
         {draft.species && <details><summary>Consulta la scheda botanica della specie</summary><BotanicalLookup scientificName={draft.species} configured={!!(settings?.services?.perenual||settings?.services?.openplantbook)}/></details>}
@@ -2045,6 +2048,7 @@ function PlantDetail({
 }) {
   const { t, plural, locale } = useI18n();
   const { actionLabel, dueLabel, kindLabel, dateLabel } = useCareLabels();
+  const { categoryLabel, lightLabel, potLabel, placementLabel } = useDomainLabels();
   const [tab, setTab] = useState("Scheda"),
     [error, setError] = useState(""),
     [measurements, setMeasurements] = useState<Measure[]>([]),
@@ -2086,7 +2090,7 @@ function PlantDetail({
   const detailBody=(
         <div className="detail-body">
           <div className="eyebrow">
-            {plant.category} · {plant.room}
+            {categoryLabel(plant.category)} · {plant.room}
           </div>
           <h2 className="plant-title">{plant.name}</h2>
           <p className="scientific">
@@ -2173,7 +2177,7 @@ function PlantDetail({
                 <div className="fact">
                   <Sun size={18} />
                   <span>{t("detail.exposure")}</span>
-                  <strong>{plant.light}</strong>
+                  <strong>{lightLabel(plant.light)}</strong>
                 </div>
                 <div className="fact">
                   <MapPin size={18} />
@@ -2190,7 +2194,7 @@ function PlantDetail({
                     <Flower2 size={18} />
                     <span>{t("detail.pot")}</span>
                     <strong>
-                      {plant.potDiameterCM} cm · {plant.potMaterial || "—"}
+                      {plant.potDiameterCM} cm · {potLabel(plant.potMaterial) || "—"}
                     </strong>
                   </div>
                 )}
@@ -2221,7 +2225,7 @@ function PlantDetail({
                   <h3>{t("detail.smartPlan")}</h3>
                   <p>
                     {plant.adaptivePlan.seasonName} ·{" "}
-                    {plant.adaptivePlan.placement}
+                    {placementLabel(plant.adaptivePlan.placement)}
                   </p>
                   <p className="muted small-text">{plant.adaptivePlan.locationName} · {plant.adaptivePlan.averageTemperature} °C · {plant.adaptivePlan.relativeHumidity}% umidità · {plant.adaptivePlan.precipitationNextWeek} mm in 7 giorni</p>
                   <p className="muted small-text">{plant.adaptivePlan.weatherEnabled ? t("detail.weatherOn") : t("detail.weatherOff")} · {t("detail.calculated", { date: dateLabel(plant.adaptivePlan.generatedAt) })}</p>

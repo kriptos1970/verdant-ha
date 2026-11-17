@@ -9,7 +9,7 @@ PLACEMENTS = ['Balcone riparato', 'Pieno sole', 'Ombra', 'Mezza ombra · balcone
 OUTDOOR = set(PLACEMENTS[:5])
 FACTORS = ['Posizione', 'Temperatura', 'Umidità', 'Pioggia', 'Stagione', 'Sicurezza', 'Allineamento']
 
-def make_plan(species, family, placement, location, climate, at=None, zone='Europe/Rome', botanical=None):
+def make_plan(species, family, placement, location, climate, at=None, zone='Europe/Rome', botanical=None, language='it'):
     at = at or now()
     lower, fam = species.lower(), family.lower()
     succulent = any(t in fam for t in ['cactaceae', 'crassulaceae', 'aizoaceae']) or any(t in lower for t in ['aloe', 'echeveria', 'haworthia', 'crassula', 'sedum', 'sempervivum', 'kalanchoe', 'agave', 'lithops', 'gasteria', 'aeonium', 'pachyphytum', 'graptopetalum', 'portulacaria', 'sansevieria'])
@@ -92,6 +92,10 @@ def make_plan(species, family, placement, location, climate, at=None, zone='Euro
     adjustment('nutrition.alignment','nutrition','Allineamento',feed,fertilizer,'La concimazione viene sincronizzata con un ciclo completo di annaffiatura.')
     parts = [str(location.get(k,'')).strip(' ,\t\n\r') for k in ['name','detail']]
     name = ', '.join(p for p in parts if p) if not parts[1] or parts[1].lower() not in parts[0].lower() else parts[0]
+    if language=='en':
+        reasons=[f"Plan based on exposure, season and recorded care: water every {water_days} days, fertilize every {fertilizer} days."]
+        season={'Crescita attiva':'Active growth','Riposo vegetativo':'Resting season','Transizione stagionale':'Seasonal transition'}.get(season,season)
+        name=name or 'Location not specified'
     return dict(placement=placement, locationName=name or 'Località non indicata', latitude=location['latitude'], longitude=location['longitude'], **climate, seasonName=season, wateringDays=water_days, fertilizingDays=fertilizer, inspectionDays=5 if placement in OUTDOOR else 7, generatedAt=iso(at), rationale=reasons, botanicalWateringDays=botanical['wateringDays'] if botanical else None, botanicalSource=botanical['source'] if botanical else None, botanicalSummary=botanical.get('summary') if botanical else None, verdantWateringDays=water_days, verdantFertilizingDays=fertilizer, revisionSource='Verdant', revisedAt=None, wateringAdjustmentDays=None, careLearning=None, standardWateringDays=standard_water, standardFertilizingDays=standard_feed, adjustments=adjustments, climateRevisionHistory=None)
 
 

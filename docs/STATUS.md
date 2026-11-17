@@ -256,6 +256,12 @@ Aggiunta la documentazione inglese in `docs/en/` (indice, installazione, stato, 
 
 Verifiche: 623 chiavi allineate, build frontend, **151 test backend** e controllo di parità in CI. Nessun dato reale modificato.
 
+### Rifiniture i18n finali (17 novembre 2026)
+
+Tradotte le tassonomie delle piante (categoria, esposizione, materiale del vaso, posizione e frequenza), l'editor della pianta, i metadati dell'add-on e la documentazione inglese. Il pianificatore adattivo restituisce una motivazione inglese sintetica quando la lingua è `en`; l'apprendimento e il motivo degli interventi di trattamento sono localizzati. I messaggi backend molto lunghi già salvati negli archivi restano nella lingua originale.
+
+Verifiche: 685 chiavi allineate, build frontend, 151 test backend e prova browser. Nessun dato reale modificato.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.
