@@ -52,3 +52,19 @@ Accesso reale tramite `https://sicoli.ovh/app/local_plantcare_web` con sessione 
 - nessun errore console; nessuna cura registrata e nessun piano modificato durante il controllo.
 
 Restano distinti i collaudi su iPhone fisico/Companion, la scansione QR/NFC reale, il ripristino su HA isolato, i sensori e il meteo live, e un archivio reale molto più grande.
+
+### Prestazioni foto 0.11.1 — 17 novembre 2026
+
+Prima della correzione la lista piante caricava gli originali: 18 immagini 3024 × 4032, **43,18 MB** in totale, con singole richieste da 3,2–4,7 MB e tempi di 3,6–5,3 s. Il middleware inoltre forzava `no-store` sulle risposte `/api`, annullando la cache anche per le miniature.
+
+La 0.11.1:
+
+- usa miniature 480 px nella lista, con relazioni 360 × 480 e file da 25–39 KB;
+- applica `Cache-Control` immutabile ed ETag alle foto, che sono indirizzate per hash;
+- genera le miniature con draft JPEG e scrittura atomica, protetta da lock.
+
+Misura sull’archivio reale via Ingress:
+
+- primo passaggio alla lista: immagini visibili caricate in circa 0,2–0,3 s ciascuna, circa **251 KB** per le immagini nel viewport;
+- secondo passaggio: **12 ms**, 14 immagini già complete e **0 byte** trasferiti dalla rete, servite dalla cache del browser;
+- le immagini fuori schermo restano `loading="lazy"` e vengono caricate solo quando servono.

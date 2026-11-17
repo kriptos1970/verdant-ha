@@ -12,7 +12,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - **Knowledge**: Pl@ntNet identification, iNaturalist catalog, Perenual and Open Plantbook profiles, nine illustrated care guides, guided symptom check.
 - **Labels**: QR/NFC labels using the stable Home Assistant panel URL.
 - **Data**: native archive import v1–v3, ZIP backup with SHA256 checksums, photo deduplication and EXIF stripping, configurable measurement retention.
-- **Web UI**: responsive and aligned with the iOS app at phone widths; works inside Ingress.
+- **Web UI**: responsive and aligned with the iOS app at phone widths; works inside Ingress. List images use cached 480 px thumbnails instead of originals.
 - **Languages**: Italian and English message catalogs, language selector, English guides and diagnosis, server-side language preference for notifications and AI.
 
 ## Verification
