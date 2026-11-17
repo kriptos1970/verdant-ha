@@ -96,3 +96,13 @@ Credenziali native trovate nelle preferenze Verdant (nessuna copia in sorgenti o
 Verifica finale 0.7.0: add-on in esecuzione, fonte Open Plantbook ricevuta nel catalogo Ficus, collegamento `/app/local_plantcare_web/plant/<UUID>` apre la scheda nel pannello HA reale. Sfondo bianco e statistiche archivio verificati: 124 foto, 357,7 MiB, SQLite 0,6 MB. Nessuna sessione salute o cura creata nella collezione reale.
 
 Prove: [scheda botanica](screenshots/0.7.0/home-assistant-botanical.jpg), [etichetta QR](screenshots/0.7.0/home-assistant-qr.jpg), [sfondo bianco e spazio](screenshots/0.7.0/home-assistant-white-settings.jpg).
+
+## Aggiornamento grafici 1–6 — 17 novembre 2026
+
+- Sorgenti aggiornati copiati in `/local_apps/plantcare_web`: **99 file**, SHA256 identici tra Mac e Home Assistant.
+- `ha apps rebuild local_plantcare_web` completato; add-on **in esecuzione**, versione **0.11.1** ricostruita dai sorgenti (nessun cambio di versione). Opzioni, archivio e fotografie non toccati.
+- Verifica Ingress reale (`https://sicoli.ovh/app/local_plantcare_web`):
+  - Home: “Il tuo giardino in numeri” con 18 piante valutate, 100% in salute, 42 cure in 14 giorni su 8 giornate attive;
+  - Analisi: selettore 30 giorni / 90 giorni / 12 mesi; a 90 giorni 495 cure, 77 giornate attive, 83% di regolarità e 14 settimane nel grafico; a 12 mesi 13 mesi con 47 cure a novembre 2026;
+  - scheda Orchidea Phalaenopsis: andamento con 48 cure in 11 mesi attivi e linea del tempo di 12 voci, comprese misure e diario di crescita.
+- Nessun errore in console, nessun overflow orizzontale a 686 px, nessuna cura registrata e nessun dato reale modificato; nessun backup Home Assistant creato.

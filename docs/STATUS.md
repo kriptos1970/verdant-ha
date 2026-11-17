@@ -62,6 +62,7 @@
 - `/api/analytics` restituisce l’attività giornaliera dell’intero periodo: le barre si raggruppano in giorni a 30 giorni, settimane a 90 e mesi a 365, con descrizione, didascalia e colonna coerenti.
 - Durante il cambio periodo i dati precedenti restano visibili con `aria-busy`; la richiesta in corso viene annullata.
 - Verifica: **787 chiavi i18n**, 180 test backend aggiornati sul nuovo contratto, layout 320/390/1280 px senza overflow, italiano e inglese, reti `days=30/90/365`, Lighthouse accessibilità 0.96 con il solo contrasto preesistente del piè di pagina.
+- Installata su Home Assistant il 17 novembre 2026 ricostruendo l’add-on 0.11.1 dai sorgenti aggiornati: 99 file verificati SHA256. In Ingress la Home mostra 18 piante al 100%, l’Analisi 495 cure/77 giornate/83% a 90 giorni e la scheda Orchidea 12 voci di linea del tempo. Nessun dato reale modificato e nessun backup creato.
 
 ## Correzione 0.4.1 — catalogo AI
 

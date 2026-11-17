@@ -28,6 +28,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Phase 4 adds a twelve-month care chart to the plant card, built from the history already loaded: 320, 390 and 1280 px were checked with no horizontal overflow, including the accessible data table and the empty state in both languages. No chart chunk is loaded on the plant card.
 - Phase 6 adds the 30/90/365 selector: the API now returns the whole period day by day and the chart folds it into days, weeks or months. Switching refetches `days=30`, `days=90` or `days=365` while keeping the previous data visible, and the 320/390/1280 px layouts and English labels were checked. Lighthouse accessibility is 0.96 with only the pre-existing footer contrast finding.
 - Phase 5 adds a merged care-and-measurement timeline to the plant diary, fed by `/api/plants/{id}/timeline`: 320/390/1280 px were checked with no horizontal overflow, and loading, empty, error/retry and English states were exercised. The plant card still loads no chart chunk.
+- The add-on was rebuilt from these sources on the real Home Assistant installation on 17 November 2026, keeping version 0.11.1: 99 files verified by SHA256, Ingress checks confirmed 18 plants at 100% health, 495 care events and 83% regularity over 90 days, and a 12-entry plant timeline. No real care was recorded, no archive data changed and no backup was created.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits
