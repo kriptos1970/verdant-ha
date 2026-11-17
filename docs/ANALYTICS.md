@@ -1,4 +1,4 @@
-# Grafici e analisi — fasi 1–3
+# Grafici e analisi — fasi 1–4
 
 Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora toccare l’interfaccia. Tutto è in sola lettura.
 
@@ -140,3 +140,30 @@ La pagina Oggi mette in evidenza lo stato della collezione senza appesantire l�
 - Stati verificati in italiano e inglese: caricamento, errore con “Riprova”, nessuna pianta valutata, collezione vuota.
 - Rete: `charts-*.js` assente sulla Home e presente solo in Analisi; `/api/analytics` risponde 200, nessun errore in console.
 - Lighthouse sulla Home: accessibilità 0.96, best practice e SEO 1. I due rilievi restano preesistenti (contrasto del piè di pagina/statistiche e nomi accessibili dei giorni del calendario).
+
+## Fase 4 — Andamento nella scheda pianta (17 novembre 2026)
+
+La scheda della singola pianta mostra l’attività di cura degli ultimi dodici mesi, senza introdurre un motore grafico.
+
+### Contenuto
+
+- `plant-trend.tsx`: dodici colonne mensili con annaffiature e altre cure impilate, legenda con i conteggi, totale e mesi attivi.
+- I dati arrivano dalla cronologia già presente nella scheda (`plant.history`): nessuna richiesta aggiuntiva e nessun valore stimato.
+- Sono esclusi gli eventi eliminati e i rinvii; i mesi sono calcolati nel fuso dell’app, così una cura a tarda sera resta nel giorno giusto.
+- Posizione: scheda pianta → Diario, in cima. Su iOS la stessa sezione si chiama “Andamento e cronologia”, quindi il grafico precede storie di crescita e cronologia delle cure.
+
+### Accessibilità e stati
+
+- Le barre hanno `role="img"` con un’etichetta che riporta cure totali e mesi attivi; la legenda riporta i valori, non solo i colori.
+- Tabella dati con `caption` e colonne Mese / Annaffiature / Altre cure / Totale, apribile da “Mostra i dati in tabella”.
+- Stato vuoto esplicito quando non ci sono cure negli ultimi dodici mesi.
+- Nessuna animazione e nessun chunk aggiuntivo: la scheda pianta non carica Recharts.
+
+### Verifica
+
+- Build TypeScript/Vite e i18n: **777 chiavi** italiano/inglese allineate (14 nuove).
+- **180 test backend** invariati.
+- Scheda della Monstera sull’archivio sintetico: 6 cure in 2 mesi attivi, 2 annaffiature e 4 altre cure, 12 colonne e 12 righe di tabella.
+- Layout 320, 390 e 1280 px senza overflow orizzontale; tabella contenuta e leggibile a 320 px.
+- Italiano e inglese verificati, compreso lo stato vuoto; nessun errore in console.
+- Lighthouse sulla scheda con il grafico: accessibilità 0.95, best practice e SEO 1; i due rilievi restano i preesistenti elementi del riepilogo iOS.

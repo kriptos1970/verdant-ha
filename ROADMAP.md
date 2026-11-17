@@ -19,6 +19,7 @@ Current release: **0.11.1**. The project is usable on a real Home Assistant inst
 - [x] English documentation, specific common error messages and frontend code-splitting.
 - [x] Plant taxonomies, plant editor, add-on metadata and generated plan explanations localized.
 - [x] Collection analytics, health index and merged plant timeline in the backend; 30-day charts in Analytics and a compact health/care-rhythm summary on Home, both outside the main bundle.
+- [x] Twelve-month care activity chart in every plant card, built from the history already loaded and without a chart runtime.
 
 ## Now — close the consolidation step
 

@@ -42,6 +42,13 @@
 - Verifica: build, **763 chiavi i18n**, 180 test backend, layout 320/390/430/1280 px senza overflow, italiano e inglese, Lighthouse accessibilità 0.96 con i due rilievi preesistenti.
 - Dettagli in [ANALYTICS.md](ANALYTICS.md).
 
+## Grafici — fase 4, scheda pianta (17 novembre 2026)
+
+- Nuovo “Andamento delle cure” nella scheda pianta, sotto Diario: dodici mesi di annaffiature e altre cure con barre CSS, legenda con conteggi, totale e mesi attivi.
+- Dati dalla cronologia già caricata, senza richieste aggiuntive e senza Recharts; esclusi eventi eliminati e rinvii, mesi calcolati nel fuso dell’app.
+- Tabella accessibile con mese, annaffiature, altre cure e totale; etichetta accessibile sul grafico e stato vuoto dedicato.
+- Verifica: build, **777 chiavi i18n**, 180 test backend, layout 320/390/1280 px senza overflow, italiano e inglese, Lighthouse accessibilità 0.95 con i due rilievi preesistenti del riepilogo iOS.
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.
