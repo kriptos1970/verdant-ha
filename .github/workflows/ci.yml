@@ -39,5 +39,8 @@ jobs:
           cache-dependency-path: plantcare_web/frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
+      - name: Check translation catalogs
+        working-directory: .
+        run: node scripts/check_i18n.mjs
       - name: Type-check and build
         run: npm run build

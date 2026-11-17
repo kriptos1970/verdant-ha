@@ -212,6 +212,14 @@ Lo storage SQLite scrive i codici canonici; i payload già presenti vengono cano
 
 Verifiche: **149 test**, 7.160 raccomandazioni Care Engine, 4.096 piani adattivi, 162 casi nativi e 1.536 combinazioni AI equivalenti al codice Swift. Prompt AI e note conservano i nomi italiani nativi. Nessun archivio operativo modificato.
 
+### Preparazione i18n — infrastruttura P2 (17 novembre 2026)
+
+Il frontend ha ora cataloghi italiano/inglese e un provider React con `t()`, plurali tramite `Intl.PluralRules` e formattazione di date e numeri con `Intl`. La lingua si sceglie in **Altro → Impostazioni** (`auto`, italiano, inglese) e viene ricordata nel browser; `auto` segue la lingua del documento o del browser, con fallback inglese.
+
+Sono migrate le parti di struttura: navigazione desktop e mobile, titoli delle pagine, elenco e gruppi degli strumenti, impostazioni, footer, caricamento, dettaglio vuoto, paginazione e chiusura finestre. L'inglese è segnalato come beta perché i flussi di cura e le guide restano italiani fino a P3/P4.
+
+Verifiche: build TypeScript/Vite passata, 95 chiavi allineate tra italiano e inglese, controllo di chiavi e segnaposto in CI (`scripts/check_i18n.mjs`). Nessun cambiamento al backend o ai dati.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

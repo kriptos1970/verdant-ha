@@ -69,14 +69,35 @@ import { ActionGuide, PlantKnowledge, GuidesTool, DiagnosisTool } from "./health
 import { SpeciesCatalog } from "./species-catalog";
 import { IdentificationTool, SpeciesLibrary, BotanicalLookup, type PlantSeed } from "./knowledge";
 import { CareCalendar, WeekStrip } from "./care-calendar";
+import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
-  { id: "today", label: "Oggi", icon: House },
-  { id: "plants", label: "Piante", icon: Leaf },
-  { id: "care", label: "Cure", icon: CalendarDays },
-  { id: "products", label: "Prodotti", icon: FlaskConical },
-  { id: "more", label: "Altro", icon: Ellipsis },
+  { id: "today", labelKey: "nav.today", icon: House },
+  { id: "plants", labelKey: "nav.plants", icon: Leaf },
+  { id: "care", labelKey: "nav.care", icon: CalendarDays },
+  { id: "products", labelKey: "nav.products", icon: FlaskConical },
+  { id: "more", labelKey: "nav.more", icon: Ellipsis },
+] as const;
+const pageTitleKeys: Record<Page, MessageKey> = {
+  today: "page.overview",
+  plants: "page.plants",
+  care: "page.care",
+  products: "page.products",
+  more: "page.tools",
+  analytics: "page.analytics",
+};
+const toolDefinitions = [
+  { id: "identify", titleKey: "tools.identify.title", descKey: "tools.identify.desc", icon: Camera },
+  { id: "catalog", titleKey: "tools.catalog.title", descKey: "tools.catalog.desc", icon: BookOpen },
+  { id: "labels", titleKey: "tools.labels.title", descKey: "tools.labels.desc", icon: Leaf },
+  { id: "guides", titleKey: "tools.guides.title", descKey: "tools.guides.desc", icon: BookOpen },
+  { id: "diagnosis", titleKey: "tools.diagnosis.title", descKey: "tools.diagnosis.desc", icon: ShieldCheck },
+  { id: "ai", titleKey: "tools.ai.title", descKey: "tools.ai.desc", icon: Sparkles },
+  { id: "species", titleKey: "tools.species.title", descKey: "tools.species.desc", icon: BookOpen },
+  { id: "sensors", titleKey: "tools.sensors.title", descKey: "tools.sensors.desc", icon: Thermometer },
+  { id: "backup", titleKey: "tools.backup.title", descKey: "tools.backup.desc", icon: Upload },
+  { id: "settings", titleKey: "tools.settings.title", descKey: "tools.settings.desc", icon: Settings2 },
 ] as const;
 const categories = ["Tropicale", "Succulenta", "Aromatica", "Fiorita", "Altro"];
 const kinds = [
@@ -101,6 +122,7 @@ function Botanical({ small = false }: { small?: boolean }) {
   );
 }
 function App() {
+  const { t } = useI18n();
   const [page, setPage] = useState<Page>("today"),
     [plants, setPlants] = useState<Plant[]>([]),
     [products, setProducts] = useState<Product[]>([]),
@@ -268,6 +290,12 @@ function App() {
       </div>
     );
   };
+  const activeTool = tool ? toolDefinitions.find((item) => item.id === tool) : undefined;
+  const pageTitle = page === "plants"
+    ? (room === "Tutte" ? t("page.allPlants") : room)
+    : page === "more"
+      ? (activeTool ? t(activeTool.titleKey) : t("page.tools"))
+      : t(pageTitleKeys[page]);
   return (
     <div
       className={`app ${settings?.ingress && window.parent!==window ? "in-ha" : ""} ${selectedSummary ? "has-detail" : ""} ${["today", "plants", "care"].includes(page) ? "native-split" : ""}`}
@@ -285,10 +313,10 @@ function App() {
             <Leaf size={24} />
           </div>
           <span>
-            PlantCare<small>IL TUO GIARDINO, A CASA</small>
+            PlantCare<small>{t("app.brandTagline")}</small>
           </span>
         </a>
-        <div className="sidebar-label">LA TUA COLLEZIONE</div>
+        <div className="sidebar-label">{t("app.collection")}</div>
         <nav>
           {navigation.map((item) => (
             <button
@@ -297,7 +325,7 @@ function App() {
               onClick={() => navigate(item.id)}
             >
               <item.icon size={19} />
-              {item.label}
+              {t(item.labelKey)}
               {item.id === "care" && due.length > 0 && <b>{due.length}</b>}
             </button>
           ))}
@@ -306,11 +334,11 @@ function App() {
             onClick={() => navigate("analytics")}
           >
             <BarChart3 size={19} />
-            Analisi
+            {t("nav.analytics")}
           </button>
         </nav>
         <div className="sidebar-label rooms-label">
-          AMBIENTI <span>{rooms.length}</span>
+          {t("app.environments")} <span>{rooms.length}</span>
         </div>
         <nav className="rooms">
           {rooms.map((r) => (
@@ -331,7 +359,7 @@ function App() {
           ))}
           {rooms.length === 0 && (
             <p className="muted sidebar-empty">
-              Gli ambienti appariranno qui quando aggiungi le tue piante.
+              {t("app.emptyRooms")}
             </p>
           )}
         </nav>
@@ -339,11 +367,11 @@ function App() {
           <span className="connection-dot" />
           <div>
             Home Assistant
-            <small>Archivio locale · {settings?.version || "…"}</small>
+            <small>{t("app.localArchive")} · {settings?.version || "…"}</small>
           </div>
           <button
             className="icon-button"
-            aria-label="Impostazioni"
+            aria-label={t("app.settingsAria")}
             onClick={() => {
               navigate("more");
               setTool("settings");
@@ -356,7 +384,7 @@ function App() {
       {menu && (
         <button
           className="sidebar-scrim"
-          aria-label="Chiudi menu"
+          aria-label={t("app.closeMenu")}
           onClick={() => setMenu(false)}
         />
       )}
@@ -364,26 +392,24 @@ function App() {
         <header className="topbar">
           <button
             className="icon-button mobile-menu"
-            aria-label="Apri menu"
+            aria-label={t("app.openMenu")}
             onClick={() => setMenu(true)}
           >
             <Menu size={21} />
           </button>
           <div className="breadcrumb">
-            Il mio giardino <ChevronRight size={14} />
+            {t("app.breadcrumb")} <ChevronRight size={14} />
             <strong>
-              {page === "analytics"
-                ? "Analisi"
-                : navigation.find((n) => n.id === page)?.label}
+              {page === "analytics" ? t("nav.analytics") : t(navigation.find((n) => n.id === page)?.labelKey ?? "nav.more")}
             </strong>
           </div>
           <div className="topbar-right">
             <span className="local-badge">
-              <span className="connection-dot" /> Archivio locale
+              <span className="connection-dot" /> {t("app.localArchive")}
             </span>
             <button
               className="button primary compact"
-              aria-label={page === "products" ? "Nuovo prodotto" : "Nuova pianta"}
+              aria-label={page === "products" ? t("app.newProduct") : t("app.newPlant")}
               onClick={() =>
                 page === "products"
                   ? setProductEditor("new")
@@ -392,14 +418,14 @@ function App() {
             >
               <Plus size={17} />
               <span>
-                {page === "products" ? "Nuovo prodotto" : "Nuova pianta"}
+                {page === "products" ? t("app.newProduct") : t("app.newPlant")}
               </span>
             </button>
           </div>
         </header>
         <div className="content">
-          {page==="more"&&tool&&<button className="ios-tool-back text-button" onClick={()=>setTool(null)}><ArrowLeft size={19}/>Strumenti</button>}
-          <h1 className="ios-page-title">{{today:"Panoramica",plants:room==="Tutte"?"Tutte le piante":room,care:"Cure e calendario",products:"Prodotti",more:tool?({ai:"Piano AI",labels:"Etichette QR/NFC",guides:"Guide di cura",diagnosis:"Controllo salute",identify:"Riconosci una pianta",catalog:"Catalogo botanico",species:"Specie botaniche",sensors:"Sensori Home Assistant",backup:"Archivio",settings:"Impostazioni"}[tool]||"Strumenti"):"Strumenti",analytics:"Analisi collezione"}[page]}</h1>
+          {page==="more"&&tool&&<button className="ios-tool-back text-button" onClick={()=>setTool(null)}><ArrowLeft size={19}/>{t("app.toolsBack")}</button>}
+          <h1 className="ios-page-title">{pageTitle}</h1>
           <div aria-live="polite">
             {error && (
               <div className="alert error">
@@ -408,7 +434,7 @@ function App() {
                 <button
                   className="icon-button"
                   onClick={() => setError("")}
-                  aria-label="Chiudi errore"
+                  aria-label={t("app.errorClose")}
                 >
                   <X size={16} />
                 </button>
@@ -418,7 +444,7 @@ function App() {
           {loading ? (
             <div className="loading">
               <LoaderCircle className="spin" />
-              Apro il tuo giardino…
+              {t("app.loading")}
             </div>
           ) : (
             <>
@@ -865,68 +891,30 @@ function App() {
                   <div className="page-heading">
                     <div>
                       <div className="eyebrow">
-                        IL TUO ANGOLO DEGLI STRUMENTI
+                        {t("app.moreEyebrow")}
                       </div>
-                      <h1>Un giardino, ben organizzato.</h1>
-                      <p>Assistente, sensori e archivio.</p>
+                      <h1>{t("app.moreTitle")}</h1>
+                      <p>{t("app.moreSubtitle")}</p>
                     </div>
                   </div>
                   <div className="tools-grid">
-                    {[
-                      {
-                        id: "ai",
-                        title: "Piano AI",
-                        desc: "Analisi, proposte e assistente botanico",
-                        icon: Sparkles,
-                      },
-                      {
-                        id: "labels", title: "Etichette QR/NFC", desc: "Apri la scheda dalla tua pianta", icon: Leaf,
-                      },
-                      { id: "guides", title: "Guide di cura", desc: "Gesti pratici e ritmo stagionale", icon: BookOpen,
-                      },
-                      { id: "diagnosis", title: "Controllo salute", desc: "Un primo controllo guidato dai sintomi", icon: ShieldCheck,
-                      },
-                      { id: "identify", title: "Riconoscimento AI", desc: "Identifica una specie da una fotografia", icon: Camera,
-                      },
-                      { id: "catalog", title: "Catalogo botanico", desc: "Specie e fotografie da iNaturalist", icon: BookOpen,
-                      },
-                      { id: "species", title: "Specie botaniche", desc: "La biblioteca della tua collezione", icon: BookOpen,
-                      },
-                      {
-                        id: "sensors",
-                        title: "Sensori Home Assistant",
-                        desc: "Collega le misure a piante e ambienti",
-                        icon: Thermometer,
-                      },
-                      {
-                        id: "backup",
-                        title: "Archivio e backup",
-                        desc: "Importa la collezione, conserva le tue storie",
-                        icon: Upload,
-                      },
-                      {
-                        id: "settings",
-                        title: "Impostazioni",
-                        desc: "Servizi, spazio e configurazione",
-                        icon: Settings2,
-                      },
-                    ].sort((a,b)=>["identify","catalog","labels","guides","diagnosis","ai","species","sensors","backup","settings"].indexOf(a.id)-["identify","catalog","labels","guides","diagnosis","ai","species","sensors","backup","settings"].indexOf(b.id)).map((t) => (
-                      <React.Fragment key={t.id}>
-                      {t.id==="identify"&&<h2 className="ios-tool-group ios-discover">Scopri</h2>}
-                      {t.id==="labels"&&<h2 className="ios-tool-group ios-assistance">Assistenza</h2>}
-                      {t.id==="ai"&&<h2 className="ios-tool-group ios-manage">Gestione</h2>}
+                    {toolDefinitions.map((toolItem) => (
+                      <React.Fragment key={toolItem.id}>
+                      {toolItem.id==="identify"&&<h2 className="ios-tool-group ios-discover">{t("tools.group.discover")}</h2>}
+                      {toolItem.id==="labels"&&<h2 className="ios-tool-group ios-assistance">{t("tools.group.assistance")}</h2>}
+                      {toolItem.id==="ai"&&<h2 className="ios-tool-group ios-manage">{t("tools.group.management")}</h2>}
                       <button
-                        data-tool={t.id}
-                        className={`tool-card ${tool === t.id ? "selected" : ""}`}
-                        key={t.id}
-                        onClick={() => setTool(t.id)}
+                        data-tool={toolItem.id}
+                        className={`tool-card ${tool === toolItem.id ? "selected" : ""}`}
+                        key={toolItem.id}
+                        onClick={() => setTool(toolItem.id)}
                       >
                         <span>
-                          <t.icon size={23} className="desktop-symbol"/><IOSIcon name={iosTools[t.id]} size={23} className="mobile-symbol"/>
+                          <toolItem.icon size={23} className="desktop-symbol"/><IOSIcon name={iosTools[toolItem.id]} size={23} className="mobile-symbol"/>
                         </span>
                         <div>
-                          <strong>{t.title}</strong>
-                          <small>{t.desc}</small>
+                          <strong>{t(toolItem.titleKey)}</strong>
+                          <small>{t(toolItem.descKey)}</small>
                         </div>
                         <ChevronRight size={18} />
                       </button>
@@ -1058,18 +1046,18 @@ function App() {
               )}
               <footer className="page-footer">
                 <Leaf size={13} />
-                Coltivato con cura. Conservato a casa tua.
+                {t("app.footer")}
               </footer>
             </>
           )}
         </div>
       </main>
-      {selectedSummary && !selectedPlant && <aside className="detail">{detailError?<><p role="alert">{detailError}</p><button className="button primary" onClick={()=>setDetailRetry(v=>v+1)}>Riprova</button></>:<p role="status">Apro la scheda della pianta…</p>}<button className="button secondary" onClick={()=>openPlant(null)}>Chiudi scheda</button></aside>}
+      {selectedSummary && !selectedPlant && <aside className="detail">{detailError?<><p role="alert">{detailError}</p><button className="button primary" onClick={()=>setDetailRetry(v=>v+1)}>{t("common.retry")}</button></>:<p role="status">{t("app.detailOpening")}</p>}<button className="button secondary" onClick={()=>openPlant(null)}>{t("app.closeDetail")}</button></aside>}
       {!selectedSummary && ["today", "plants", "care"].includes(page) && (
         <aside className="detail empty-native-detail">
           <Leaf size={64} />
-          <h2>Scegli una pianta</h2>
-          <p>Qui troverai dettagli, note e prossime cure.</p>
+          <h2>{t("app.emptyDetailTitle")}</h2>
+          <p>{t("app.emptyDetailText")}</p>
         </aside>
       )}
       {selectedPlant && (
@@ -1121,7 +1109,7 @@ function App() {
           busy={busy}
         />
       )}
-      <nav className="bottom-tabs" aria-label="Navigazione principale">
+      <nav className="bottom-tabs" aria-label={t("nav.main")}>
         {navigation.map((n) => (
           <button
             key={n.id}
@@ -1132,7 +1120,7 @@ function App() {
               <IOSIcon name={iosNavigation[n.id]} size={24} />
               {n.id === "care" && due.length > 0 && <b>{due.length}</b>}
             </span>
-            {n.label}
+            {t(n.labelKey)}
           </button>
         ))}
       </nav>
@@ -2767,6 +2755,7 @@ function BackupTool({
   );
 }
 function SettingsTool({ settings }: { settings: Settings }) {
+  const { t, plural, preference, setPreference, formatNumber, formatDate } = useI18n();
   const [storage, setStorage] = useState<{
       photoDirectory: string;
       photos: number;
@@ -2782,60 +2771,70 @@ function SettingsTool({ settings }: { settings: Settings }) {
       .catch((e) => setError(e.message));
   }, []);
   const size = (n: number) =>
-    new Intl.NumberFormat("it-IT", { maximumFractionDigits: 1 }).format(
-      n / (1024 * 1024),
-    ) + " MB";
+    formatNumber(n / (1024 * 1024), { maximumFractionDigits: 1 }) + " MB";
   return (
     <section className="panel">
-      <h2>Impostazioni e spazio</h2>
-      <p className="muted">
-        Le credenziali e le opzioni si configurano nella pagina dell’add-on Home
-        Assistant.
-      </p>
+      <h2>{t("settings.title")}</h2>
+      <p className="muted">{t("settings.description")}</p>
       <dl className="settings-list">
         <div>
-          <dt>Versione</dt>
-          <dd>{settings.version}</dd>
-        </div>
-        <div>
-          <dt>Fuso orario</dt>
-          <dd>{settings.timezone}</dd>
-        </div>
-        <div>
-          <dt>AI</dt>
+          <dt>{t("settings.language")}</dt>
           <dd>
-            {settings.aiConfigured
-              ? `${settings.aiProvider} · ${settings.aiModel}`
-              : "Non configurata"}
+            <select
+              aria-label={t("settings.language")}
+              value={preference}
+              onChange={(e) => setPreference(e.target.value as LanguagePreference)}
+            >
+              <option value="auto">{t("settings.languageAuto")}</option>
+              <option value="it">{t("settings.languageIt")}</option>
+              <option value="en">{t("settings.languageEn")}</option>
+            </select>
+            <small className="muted">{t("settings.languageHint")}</small>
           </dd>
         </div>
         <div>
-          <dt>Applicazione AI automatica</dt>
-          <dd>{settings.autoApplyAI ? "Attiva" : "Disattivata"}</dd>
+          <dt>{t("settings.version")}</dt>
+          <dd>{settings.version}</dd>
         </div>
         <div>
-          <dt>Conservazione misure</dt>
-          <dd>{settings.measurementRetentionDays} giorni</dd>
+          <dt>{t("settings.timezone")}</dt>
+          <dd>{settings.timezone}</dd>
         </div>
-        {settings.adaptiveStatus && <div><dt>Ricalcolo meteo</dt><dd>{settings.adaptiveStatus.errors ? `${settings.adaptiveStatus.errors} piani da riprovare · intervalli precedenti conservati` : `Ultimo controllo ${new Date(settings.adaptiveStatus.lastRun).toLocaleString("it-IT")}`}</dd></div>}
+        <div>
+          <dt>{t("settings.ai")}</dt>
+          <dd>
+            {settings.aiConfigured
+              ? `${settings.aiProvider} · ${settings.aiModel}`
+              : t("settings.aiNotConfigured")}
+          </dd>
+        </div>
+        <div>
+          <dt>{t("settings.autoApply")}</dt>
+          <dd>{settings.autoApplyAI ? t("settings.enabled") : t("settings.disabled")}</dd>
+        </div>
+        <div>
+          <dt>{t("settings.retention")}</dt>
+          <dd>{plural("settings.days", settings.measurementRetentionDays)}</dd>
+        </div>
+        {settings.adaptiveStatus && <div><dt>{t("settings.weather")}</dt><dd>{settings.adaptiveStatus.errors ? plural("settings.weatherErrors", settings.adaptiveStatus.errors) : t("settings.lastRun", { date: formatDate(settings.adaptiveStatus.lastRun, { dateStyle: "short", timeStyle: "short" }) })}</dd></div>}
         {storage && (
           <>
             <div>
-              <dt>Database SQLite</dt>
+              <dt>{t("settings.database")}</dt>
               <dd>{size(storage.databaseBytes)}</dd>
             </div>
             <div>
-              <dt>Fotografie</dt>
+              <dt>{t("settings.photos")}</dt>
               <dd>
-                {storage.photos} · {size(storage.photoBytes)}
+                {formatNumber(storage.photos)} · {size(storage.photoBytes)}
               </dd>
             </div>
             <div>
-              <dt>Spazio disponibile</dt>
+              <dt>{t("settings.freeSpace")}</dt>
               <dd>{size(storage.freeBytes)}</dd>
             </div>
             <div>
-              <dt>Cartella fotografie</dt>
+              <dt>{t("settings.photoFolder")}</dt>
               <dd>
                 <code>{storage.photoDirectory}</code>
               </dd>
@@ -2845,12 +2844,7 @@ function SettingsTool({ settings }: { settings: Settings }) {
       </dl>
       <div className="info-note">
         <CircleHelp size={20} />
-        <p>
-          Per separare le foto dall’add-on puoi impostare{" "}
-          <code>photo_directory</code> su <code>/share/plantcare/photos</code>.
-          La cartella condivisa richiede un backup dedicato o l’inclusione
-          esplicita nel backup Home Assistant.
-        </p>
+        <p>{t("settings.sharedNote")}</p>
       </div>
       {error && <p className="form-error">{error}</p>}
     </section>
@@ -3033,11 +3027,14 @@ function SensorsTool({
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <I18nProvider>
+      <App />
+    </I18nProvider>
   </React.StrictMode>,
 );
 
 function ArchivePagination({label,page,size,total,onPage}:{label:string;page:number;size:number;total:number;onPage:(page:number)=>void}){
+ const {t}=useI18n();
  if(total<=size)return null;
- return <nav className="archive-pagination" aria-label={label}><p className="muted small-text">{(page-1)*size+1}–{Math.min(page*size,total)} di {total}</p><div className="button-row"><button className="button secondary" disabled={page===1} onClick={()=>onPage(page-1)}>Precedenti</button><button className="button secondary" disabled={page*size>=total} onClick={()=>onPage(page+1)}>Successive</button></div></nav>;
+ return <nav className="archive-pagination" aria-label={label}><p className="muted small-text">{t("common.range",{from:(page-1)*size+1,to:Math.min(page*size,total),total})}</p><div className="button-row"><button className="button secondary" disabled={page===1} onClick={()=>onPage(page-1)}>{t("common.previous")}</button><button className="button secondary" disabled={page*size>=total} onClick={()=>onPage(page+1)}>{t("common.next")}</button></div></nav>;
 }

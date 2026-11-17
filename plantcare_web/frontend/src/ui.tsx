@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { Plant, Product, Action } from "./types";
 import { photoURL } from "./api";
+import { useI18n } from "./i18n";
 const careIcons = {
  water: adaptiveIcon('water', Droplets),
  feed: adaptiveIcon('sparkles', FlaskConical),
@@ -74,6 +75,7 @@ export function Modal({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const { t } = useI18n();
   useEffect(() => {
     const d = ref.current;
     d?.showModal();
@@ -94,7 +96,7 @@ export function Modal({
     >
       <div className="modal-top">
         <h2>{title}</h2>
-        <button className="icon-button" aria-label="Chiudi" onClick={onClose}>
+        <button className="icon-button" aria-label={t("common.close")} onClick={onClose}>
           <X size={21} />
         </button>
       </div>
