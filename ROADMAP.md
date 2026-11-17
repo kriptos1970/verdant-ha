@@ -21,6 +21,7 @@ Current release: **0.11.1**. The project is usable on a real Home Assistant inst
 - [x] Collection analytics, health index and merged plant timeline in the backend; 30-day charts in Analytics and a compact health/care-rhythm summary on Home, both outside the main bundle.
 - [x] Twelve-month care activity chart in every plant card, built from the history already loaded and without a chart runtime.
 - [x] 30/90/365 period selector in Analytics, with the activity series grouped by day, week or month.
+- [x] Merged care-and-measurement timeline in the plant diary, built on the timeline endpoint.
 
 ## Now — close the consolidation step
 
@@ -35,7 +36,7 @@ These are verification and hardening tasks, not new features. They are tracked i
 
 ## Next — iOS parity and internationalization
 
-- [ ] Port the native **plant timeline chart**; the health index calculation and collection analytics are already in place. Do not introduce estimated or invented health values.
+- [x] Show a merged **care-and-measurement timeline** in the plant card; the health index calculation and collection analytics are in place. Do not introduce estimated or invented health values.
 - [ ] Compare the complete **growth entry and health album** flows with the native app, including photos.
 - [ ] Evaluate a **camera-based lux meter** and decide whether the browser can provide a trustworthy measurement.
 - [ ] **App localization (IT/EN)**: the catalogs and language selector are in place; migrate care flows, products and guides next. See [docs/I18N.md](docs/I18N.md).

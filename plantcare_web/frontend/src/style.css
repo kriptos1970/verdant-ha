@@ -3549,3 +3549,79 @@ progress::-webkit-progress-value {
     font-size: 16px;
   }
 }
+
+/* Plant detail: merged care and measurement timeline */
+.plant-timeline-section .plant-timeline {
+  position: relative;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.plant-timeline::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 8px;
+  left: 5px;
+  width: 1px;
+  background: var(--line);
+}
+.plant-timeline li {
+  position: relative;
+  padding: 0 0 14px 24px;
+}
+.plant-timeline li:last-child {
+  padding-bottom: 0;
+}
+.plant-timeline-dot {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #fff;
+}
+.plant-timeline time {
+  display: block;
+  color: #5f6d62;
+  font-size: 11px;
+}
+.plant-timeline strong {
+  display: block;
+  color: var(--forest);
+  font-size: 14px;
+  font-weight: 600;
+}
+.plant-timeline p {
+  margin: 2px 0 0;
+  color: #5f6d62;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.plant-timeline-value {
+  font-variant-numeric: tabular-nums;
+}
+.timeline-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: #5f6d62;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .plant-timeline li {
+    padding-bottom: 16px;
+  }
+  .plant-timeline time {
+    font-size: 12px;
+  }
+  .plant-timeline strong {
+    font-size: 15px;
+  }
+  .plant-timeline p {
+    font-size: 13px;
+  }
+}

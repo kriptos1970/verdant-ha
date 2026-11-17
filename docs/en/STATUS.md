@@ -14,7 +14,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - **Data**: native archive import v1–v3, ZIP backup with SHA256 checksums, photo deduplication and EXIF stripping, configurable measurement retention.
 - **Web UI**: responsive and aligned with the iOS app at phone widths; works inside Ingress. List images use cached 480 px thumbnails instead of originals.
 - **Languages**: Italian and English message catalogs, language selector, English guides and diagnosis, server-side language preference for notifications and AI.
-- **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page renders the 30-day charts (phase 2), the Home page shows a compact collection health and care-rhythm summary without loading Recharts (phase 3), the plant card adds a twelve-month care activity chart (phase 4), and the Analytics page has a 30/90/365 selector that buckets the activity series by day, week or month (phase 6).
+- **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page renders the 30-day charts (phase 2), the Home page shows a compact collection health and care-rhythm summary without loading Recharts (phase 3), the plant card adds a twelve-month care activity chart (phase 4) and a merged care-and-measurement timeline (phase 5), and the Analytics page has a 30/90/365 selector that buckets the activity series by day, week or month (phase 6).
 
 ## Verification
 
@@ -27,6 +27,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Phase 3 was checked on the same synthetic archive: Home shows 60% collection health, 22 care entries over 12 active days and two plants needing a health check. The analytics request is deferred until the block nears the viewport, `charts-*.js` stays off the Home page, and empty, error/retry and English states were exercised. Lighthouse accessibility is 0.96 with only the pre-existing contrast and calendar-label findings.
 - Phase 4 adds a twelve-month care chart to the plant card, built from the history already loaded: 320, 390 and 1280 px were checked with no horizontal overflow, including the accessible data table and the empty state in both languages. No chart chunk is loaded on the plant card.
 - Phase 6 adds the 30/90/365 selector: the API now returns the whole period day by day and the chart folds it into days, weeks or months. Switching refetches `days=30`, `days=90` or `days=365` while keeping the previous data visible, and the 320/390/1280 px layouts and English labels were checked. Lighthouse accessibility is 0.96 with only the pre-existing footer contrast finding.
+- Phase 5 adds a merged care-and-measurement timeline to the plant diary, fed by `/api/plants/{id}/timeline`: 320/390/1280 px were checked with no horizontal overflow, and loading, empty, error/retry and English states were exercised. The plant card still loads no chart chunk.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

@@ -56,6 +56,13 @@
 - Durante il cambio periodo i dati precedenti restano visibili con `aria-busy`; la richiesta in corso viene annullata.
 - Verifica: **787 chiavi i18n**, 180 test backend aggiornati sul nuovo contratto, layout 320/390/1280 px senza overflow, italiano e inglese, reti `days=30/90/365`, Lighthouse accessibilità 0.96 con il solo contrasto preesistente del piè di pagina.
 
+## Grafici — fase 5, linea del tempo della pianta (17 novembre 2026)
+
+- Nuova “Linea del tempo” nella scheda pianta, sotto Diario: cure e misure unite dal nuovo endpoint `/api/plants/{id}/timeline`, dalla più recente.
+- Punti colorati per tipo di cura, misure con etichetta tradotta e valore con unità, controlli salute con lo stato, rinvii marcati; caricamento, stato vuoto ed errore con “Riprova”.
+- La richiesta parte solo aprendo il Diario e non carica Recharts; nessuna modifica ai dati reali.
+- Verifica: **796 chiavi i18n**, build, 180 test backend, layout 320/390/1280 px senza overflow, italiano e inglese, nessun errore in console.
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.

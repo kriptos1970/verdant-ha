@@ -76,6 +76,7 @@ import { useDomainLabels } from "./domain-labels";
 import AnalyticsPage from "./analytics-page";
 import { HomeInsights } from "./home-insights";
 import { PlantTrend } from "./plant-trend";
+import { PlantTimeline } from "./plant-timeline";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -2244,6 +2245,7 @@ function PlantDetail({
           {tab === "Diario" && (
             <>
               <PlantTrend history={plant.history} zone={settings?.timezone || "Europe/Rome"} />
+              <PlantTimeline plantId={plant.id} />
               <div className="ios-growth-content">
               <div className="section-heading">
                 <h3>Storie di crescita</h3>
