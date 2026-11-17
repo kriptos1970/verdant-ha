@@ -1678,9 +1678,13 @@ function PlantEditor({
             placeholder={t("plantEditor.notesPlaceholder")}
           />
         </label>
-        {draft.carePlanMode === "Intelligente" && (
+        {draft.carePlanMode === "Intelligente" ? (
           <p className="muted">
             {t("plantEditor.smartHint")}
+          </p>
+        ) : (
+          <p className="muted">
+            {t("plantEditor.smartUnavailable")}
           </p>
         )}
         <div className="modal-actions">

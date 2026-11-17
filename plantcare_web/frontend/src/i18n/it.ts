@@ -725,6 +725,7 @@ const it = {
   "plantEditor.drainage": "Vaso con fori di drenaggio",
   "plantEditor.notesPlaceholder": "Le sue abitudini, il tuo promemoria…",
   "plantEditor.smartHint": "Per ricalcolare gli intervalli usa Configura piano intelligente nella scheda. Puoi tornare a Manuale conservando gli intervalli attuali.",
+  "plantEditor.smartUnavailable": "Il piano intelligente (località, meteo e anteprima) si configura dalla scheda della pianta con “Configura piano intelligente”; qui restano gli intervalli manuali.",
   "plantEditor.save": "Salva pianta",
 
   "settings.title": "Impostazioni e spazio",

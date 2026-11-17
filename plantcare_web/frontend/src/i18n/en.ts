@@ -727,6 +727,7 @@ const en: Record<MessageKey, string> = {
   "plantEditor.drainage": "Pot with drainage holes",
   "plantEditor.notesPlaceholder": "Its habits, your reminder…",
   "plantEditor.smartHint": "To recalculate intervals, use Configure smart plan on the plant. You can return to Manual while keeping the current intervals.",
+  "plantEditor.smartUnavailable": "The smart plan (location, weather and preview) is configured from the plant card with “Configure smart plan”; here you only set the manual intervals.",
   "plantEditor.save": "Save plant",
 
   "settings.title": "Settings and storage",
