@@ -1,3 +1,10 @@
+# 0.11.1 — caricamento fotografie
+
+- La lista piante usa miniature da 480 px invece degli originali: il trasferimento iniziale scende da decine di MB a poche centinaia di KB.
+- Foto e miniature sono contenuti indirizzati per hash e ora hanno `Cache-Control` immutabile ed ETag; il middleware non forza più `no-store` sulle immagini.
+- Generazione miniature più rapida con draft JPEG e scrittura atomica, protetta da lock.
+- 152 test backend.
+
 # 0.11.0 — italiano/inglese e codici canonici
 
 - Infrastruttura i18n italiano/inglese: cataloghi delle stringhe, selettore lingua in Impostazioni, prime schermate tradotte e controllo automatico delle traduzioni in CI.

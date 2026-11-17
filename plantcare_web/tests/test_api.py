@@ -66,6 +66,20 @@ def test_language_preference_is_stored_and_validated(client):
     assert client.get('/api/preferences').json()['language']=='en'
     assert client.put('/api/preferences',json={'language':'fr'}).status_code==422
 
+
+def test_photo_thumbnails_are_immutable_and_cached(client):
+    image=Image.new('RGB',(1200,900),'green');data=io.BytesIO();image.save(data,format='JPEG')
+    path=client.post('/api/photos',files={'file':('x.jpg',data.getvalue(),'image/jpeg')}).json()['path']
+    thumb=client.get(f'/api/photos/{path}?thumb=true')
+    assert thumb.status_code==200
+    assert 'immutable' in thumb.headers['cache-control']
+    assert thumb.headers['etag']==f'"{path}-thumb"'
+    assert (main.store.thumbnails/path).exists()
+    full=client.get(f'/api/photos/{path}')
+    assert full.headers['etag']==f'"{path}"'
+    assert 'immutable' in full.headers['cache-control']
+    assert client.get('/api/plants').headers['cache-control']=='no-store'
+
 def test_duplicate_event_and_delete_recalculate(client):
     p=create(client)
     event={'id':str(uuid4()).upper(),'kind':'Annaffia','date':'2026-11-09T12:00:00Z'}

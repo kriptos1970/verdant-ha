@@ -52,7 +52,7 @@ async def boundary(request,call_next):
     response=await call_next(request)
     response.headers['X-Content-Type-Options']='nosniff'
     response.headers['Referrer-Policy']='same-origin'
-    if request.url.path.startswith('/api'):
+    if request.url.path.startswith('/api') and not request.url.path.startswith('/api/photos/'):
         response.headers['Cache-Control']='no-store'
     return response
 
@@ -429,14 +429,23 @@ def photo(filename:str, thumb:bool=False):
     if thumb:
         cached=store.thumbnails/filename
         if not cached.exists():
-            try:
-                with Image.open(path) as image:
-                    image=ImageOps.exif_transpose(image)
-                    image.thumbnail((480,480))
-                    image.convert('RGB').save(cached,format='JPEG',quality=80)
-            except (OSError,UnidentifiedImageError): raise HTTPException(422,'Miniatura non disponibile.')
+            with store.thumbnails_lock:
+                if not cached.exists():
+                    try:
+                        temporary=cached.with_suffix('.tmp')
+                        with Image.open(path) as image:
+                            image.draft('RGB',(480,480))
+                            image=ImageOps.exif_transpose(image)
+                            image.thumbnail((480,480))
+                            image.convert('RGB').save(temporary,format='JPEG',quality=76,progressive=True)
+                        temporary.replace(cached)
+                    except (OSError,UnidentifiedImageError):
+                        try: temporary.unlink()
+                        except OSError: pass
+                        raise HTTPException(422,'Miniatura non disponibile.')
         path=cached
-    return FileResponse(path,headers={'Cache-Control':'private, max-age=86400'})
+    etag=f'"{filename}-thumb"' if thumb else f'"{filename}"'
+    return FileResponse(path,headers={'Cache-Control':'private, max-age=31536000, immutable','ETag':etag})
 
 async def handle_import(file,commit=False):
     import tempfile

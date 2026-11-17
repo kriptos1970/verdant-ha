@@ -2,7 +2,7 @@
 
 Verdant HA is developed incrementally. This file gives the high-level direction; detailed verification notes and known limits live in [docs/STATUS.md](docs/STATUS.md) (currently in Italian), and released changes are listed in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md).
 
-Current release: **0.11.0**. The project is usable on a real Home Assistant installation, but a few verification and parity items remain open.
+Current release: **0.11.1**. The project is usable on a real Home Assistant installation, but a few verification and parity items remain open.
 
 ## Done recently
 

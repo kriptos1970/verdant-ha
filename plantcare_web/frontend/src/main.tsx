@@ -2475,7 +2475,7 @@ function PlantDetail({
       </header>
       <div className="detail-scroll" ref={detailScrollRef}>
         {phone&&<IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>}
-        {!phone&&<Avatar plant={plant} large/>}
+        {!phone&&<Avatar plant={plant} large full/>}
         {!phone && detailBody}
       </div>
       {healthOpen && <HealthPhotoEditor key={plant.id} plant={plant} onClose={()=>setHealthOpen(false)} onSaved={()=>run(async()=>{},"Controllo sanitario salvato")}/>}

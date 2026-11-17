@@ -33,13 +33,15 @@ export const eventIcon = (kind: string) => kind === 'Annaffia' ? careIcons.water
 export function Avatar({
   plant,
   large = false,
+  full = false,
 }: {
   plant: Plant;
   large?: boolean;
+  full?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   const src =
-    photoURL(plant.photoPath, !large) ||
+    photoURL(plant.photoPath, !full) ||
     (/^https:\/\//.test(plant.catalogImageURL || "")
       ? plant.catalogImageURL
       : undefined);

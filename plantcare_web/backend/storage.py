@@ -22,6 +22,7 @@ class Store:
         self.thumbnails.mkdir(exist_ok=True)
         self.photos.mkdir(parents=True,exist_ok=True)
         self.lock = threading.RLock()
+        self.thumbnails_lock = threading.Lock()
         with self.connection() as db:
             db.executescript('''
             PRAGMA journal_mode=WAL;
