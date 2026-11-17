@@ -78,11 +78,11 @@ The CI workflow runs the same backend tests and the frontend build on every push
 - [iOS layout comparison](docs/IOS_LAYOUT.md)
 - [Archive consolidation and performance](docs/STEP8.md)
 
-The detailed documentation is currently written in Italian. An English translation is planned; the README above is the English entry point.
+The detailed documentation is currently written in Italian. An English translation is planned; the README above is the English entry point. Start from the [documentation index](docs/README.md).
 
 ## Contributing
 
-Contributions are welcome. Please run the backend tests and the frontend build before opening a pull request, and never commit credentials, personal archives or photos from a real collection.
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, run the backend tests and the frontend build, and never commit credentials, personal archives or photos from a real collection. Report security problems privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 

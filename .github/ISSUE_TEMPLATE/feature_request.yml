@@ -1,0 +1,54 @@
+name: Feature request
+description: Suggest a new function or an improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check ROADMAP.md first: the item may already be planned or explicitly postponed.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what gets in the way?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Care scheduling
+        - Care round and calendar
+        - Treatments and products
+        - Sensors and Home Assistant integration
+        - AI advice
+        - Import, backup and restore
+        - Photos and health album
+        - Botanicals and identification
+        - Mobile layout
+        - Internationalization
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked ROADMAP.md and existing issues.
+          required: true

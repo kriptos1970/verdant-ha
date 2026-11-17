@@ -124,14 +124,14 @@ Layout mobile riallineato a Verdant iOS: navigazione, lista Piante/Ambienti, sch
 
 ## Contribuire
 
-Il progetto è aperto a contributi. Prima di aprire una pull request esegui i test backend e la build frontend:
+Il progetto è aperto a contributi. Leggi [CONTRIBUTING.md](CONTRIBUTING.md) prima di aprire una pull request. Esegui i test backend e la build frontend:
 
 ```sh
 .venv/bin/python -m pytest plantcare_web/tests -q
 npm run build --prefix plantcare_web/frontend
 ```
 
-La CI GitHub esegue gli stessi controlli a ogni push e pull request. Non includere credenziali, archivi personali o fotografie dell'archivio operativo nei commit.
+La CI GitHub esegue gli stessi controlli a ogni push e pull request. Non includere credenziali, archivi personali o fotografie dell'archivio operativo nei commit. Per problemi di sicurezza segui [SECURITY.md](SECURITY.md), senza aprire issue pubbliche. L'indice della documentazione è in [docs/README.md](docs/README.md).
 
 ## Licenza
 

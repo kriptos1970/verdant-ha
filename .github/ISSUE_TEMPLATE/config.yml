@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/kriptos1970/verdant-ha/blob/main/docs/README.md
+    about: Installation, status, reference matrix and iOS notes.
+  - name: Report a security vulnerability
+    url: https://github.com/kriptos1970/verdant-ha/security/advisories/new
+    about: Please report security problems privately, not in a public issue.

@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check tag against add-on version
+        run: |
+          python - <<'PY'
+          import os, re, sys
+          from pathlib import Path
+          tag = os.environ["GITHUB_REF_NAME"]
+          version = re.search(r'^version:\s*"([^"]+)"', Path("plantcare_web/config.yaml").read_text(), re.M).group(1)
+          if tag.lstrip("v") != version:
+              sys.exit(f"Tag {tag} does not match add-on version {version}")
+          print(f"Tag {tag} matches version {version}")
+          PY
+
+      - name: Install backend dependencies
+        run: pip install -r plantcare_web/backend/requirements.lock pytest
+
+      - name: Run backend tests
+        run: python -m pytest plantcare_web/tests -q
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: plantcare_web/frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: plantcare_web/frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build source package
+        run: python scripts/package.py
+
+      - name: Generate release notes
+        run: python scripts/release_notes.py > "$RUNNER_TEMP/release-notes.md"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: ${{ runner.temp }}/release-notes.md
+          fail_on_unmatched_files: true
+          files: |
+            releases/plantcare-web-*.zip
+            releases/plantcare-web-*.sha256

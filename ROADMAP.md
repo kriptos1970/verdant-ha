@@ -4,6 +4,13 @@ Verdant HA is developed incrementally. This file gives the high-level direction;
 
 Current release: **0.10.3**. The project is usable on a real Home Assistant installation, but a few verification and parity items remain open.
 
+## Done recently
+
+- [x] English landing README with an Italian documentation entry point.
+- [x] CI on every push and pull request; protected `main` (no force pushes or deletions).
+- [x] Tag-driven releases with tests, source package and SHA256 checksum.
+- [x] Contributor guide, security policy and issue/PR templates.
+
 ## Now — close the consolidation step
 
 These are verification and hardening tasks, not new features. They are tracked in the [Step 8 milestone](https://github.com/kriptos1970/verdant-ha/milestone/1).
@@ -32,7 +39,6 @@ These are verification and hardening tasks, not new features. They are tracked i
 - [ ] Add **pagination to the plant collection**.
 - [ ] Add a **maintenance tool for unreferenced photo files** (no automatic deletion).
 - [ ] Add a **relational index or local normalization** if archives grow beyond the current JSON-document approach.
-- [ ] Automate **releases** (tag → source package → SHA256 → GitHub Release).
 - [ ] Expand accessibility and automated browser checks.
 
 ## On hold / non-goals
