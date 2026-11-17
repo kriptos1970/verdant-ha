@@ -3683,3 +3683,111 @@ progress::-webkit-progress-value {
     font-size: 20px;
   }
 }
+
+/* Native-style plant editor */
+.plant-editor-form .form-grid {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.plant-editor-form label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 14px;
+}
+.plant-editor-form label > input,
+.plant-editor-form label > select {
+  flex: 0 1 55%;
+  max-width: 55%;
+  margin: 0;
+}
+.plant-editor-form label.full {
+  display: block;
+}
+.plant-editor-form label.full > input {
+  max-width: none;
+  width: 100%;
+  margin-top: 6px;
+}
+.plant-editor-form label > textarea {
+  width: 100%;
+  margin-top: 6px;
+}
+.plant-editor-form .check-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.plant-editor-form .check-label input[type="checkbox"] {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  border-radius: 999px;
+  background: #d9e2d6;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background 0.15s;
+}
+.plant-editor-form .check-label input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+.plant-editor-form .check-label input[type="checkbox"]:checked {
+  background: var(--forest);
+}
+.plant-editor-form .check-label input[type="checkbox"]:checked::after {
+  transform: translateX(18px);
+}
+.editor-subtitle {
+  margin: -6px 0 12px;
+  color: #5f6d62;
+  font-size: 13px;
+}
+.editor-top-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.editor-section-title {
+  grid-column: 1 / -1;
+  margin: 18px 0 2px;
+  color: #5f6d62;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.editor-section {
+  margin-top: 18px;
+}
+.editor-section h3 {
+  margin: 0 0 8px;
+  color: #5f6d62;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .plant-editor-form label {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .plant-editor-form label > input,
+  .plant-editor-form label > select {
+    max-width: none;
+    flex: none;
+  }
+}

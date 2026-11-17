@@ -1511,16 +1511,27 @@ function PlantEditor({
       onClose={onClose}
     >
       <form
+        className="plant-editor-form"
         onSubmit={async(e) => {
           e.preventDefault();setError("");setUploading(true);
           try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
         }}
       >
+        <p className="editor-subtitle">{t("plantEditor.subtitle")}</p>
         {error && (
           <p className="form-error" role="alert">
             {error}
           </p>
         )}
+        <div className="editor-top-actions">
+          <button type="button" className="button secondary" onClick={onClose}>
+            {t("common.cancel")}
+          </button>
+          <button className="button primary" type="submit" disabled={busy || uploading}>
+            {busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
+            {t("plantEditor.save")}
+          </button>
+        </div>
         <label className="photo-upload">
           {(photoURL(draft.photoPath) || seedPhoto) ? (
             <img
@@ -1543,6 +1554,7 @@ function PlantEditor({
         </label>
         {seed && <p className="muted small-text">{t("plantEditor.seedHint")}</p>}
         <div className="form-grid">
+          <h3 className="editor-section-title full">{t("plantEditor.identity")}</h3>
           <label>
             {t("plantEditor.name")}
             <input
@@ -1562,6 +1574,7 @@ function PlantEditor({
               onChange={(e) => set("species", e.target.value)}
             />
           </label>
+          <h3 className="editor-section-title full">{t("plantEditor.position")}</h3>
           <label>
             {t("plantEditor.room")}
             <input
@@ -1622,6 +1635,7 @@ function PlantEditor({
               </select>
             </label>
           )}
+          <h3 className="editor-section-title full">{t("plantEditor.profile")}</h3>
           <label>
             {t("plantEditor.plantingMethod")}
             <select
@@ -1646,6 +1660,7 @@ function PlantEditor({
               }
             />
           </label>
+          <h3 className="editor-section-title full">{t("plantEditor.planSection")}</h3>
           <label>
             {t("plantEditor.plan")}
             <select
@@ -1782,8 +1797,8 @@ function PlantEditor({
             </label>
           )}
         </div>
-        <details className="form-details">
-          <summary>{t("plantEditor.activities")}</summary>
+        <section className="editor-section">
+          <h3>{t("plantEditor.activities")}</h3>
           <div className="form-grid">
             {[
               ["rotationInterval", "Rotazione", 7],
@@ -1819,9 +1834,9 @@ function PlantEditor({
             })}
           </div>
           <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
-        </details>
-        <details className="form-details">
-          <summary>{t("plantEditor.potSubstrate")}</summary>
+        </section>
+        <section className="editor-section">
+          <h3>{t("plantEditor.potSubstrate")}</h3>
           <div className="form-grid">
             <label>
               {t("plantEditor.potDiameter")}
@@ -1937,7 +1952,8 @@ function PlantEditor({
             ))}
           </div>
           <p className="muted small-text">{t("plantEditor.substrateHint")}</p>
-        </details>
+        </section>
+        <h3 className="editor-section-title full">{t("plantEditor.otherInfo")}</h3>
         <label>
           {t("event.note")}
           <textarea

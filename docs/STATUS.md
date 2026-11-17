@@ -344,6 +344,10 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Resta separata la matita della sezione Piano per modificare le frequenze manuali.
 - Verifica: 390 px, modale con casella “Usa il meteo e aggiorna il piano ogni giorno”, campi località e clima; desktop invariato.
 
+## Scheda pianta — aspetto allineato (17 novembre 2026)
+
+- L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
+
 ## Schermate — confronto con il nativo (17 novembre 2026)
 
 - Confronto di dettaglio pianta, collezione, cure, prodotti, misure e impostazioni dai sorgenti Swift: [SCREENS_COMPARISON.md](SCREENS_COMPARISON.md).

@@ -80,6 +80,8 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 
 ## Stato dopo l’allineamento del 17 novembre 2026
 
+- **Impaginazione**: form a sezioni non richiudibili (Identità, Posizione, Profilo fisico, Modalità del piano di cura, Attività aggiuntive, Vaso e substrato, Altre informazioni), righe etichetta/controllo, sottotitolo e Annulla/Salva in testa e in fondo; interruttori a levetta. Verificato a 1280 px (righe flex, toggle 44 px) e con CSS dedicato al telefono.
+
 - **Fatto**: posizione reale, metodo di coltivazione, altezza (già), qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà, ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori e valori predefiniti delle attività, valori iniziali per una nuova pianta.
 - **Parziale**: la modalità a tre valori resta Manuale/AI nel form; “Intelligente” si applica dal pianificatore, con spiegazione nel form. La spiegazione per modalità è abbreviata.
 - **Assente**: identificazione e reidentificazione Pl@ntNet dentro il form; il web mantiene lo strumento separato con il proprio consenso.
