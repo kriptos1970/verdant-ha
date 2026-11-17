@@ -1,5 +1,15 @@
 import { useI18n, type MessageKey } from "./i18n";
-import type { Action } from "./types";
+import type { Action, Plant } from "./types";
+
+const INTERVAL_FIELDS: Record<string, keyof Plant> = {
+  Annaffia: "wateringInterval",
+  Concima: "fertilizingInterval",
+  Ruota: "rotationInterval",
+  Pota: "pruningInterval",
+  Rinvasa: "repottingInterval",
+  "Controlla salute": "inspectionInterval",
+  "Aggiorna progressi": "progressInterval",
+};
 
 const KIND_KEYS: Record<string, MessageKey> = {
   Annaffia: "care.kind.water",
@@ -44,5 +54,19 @@ export function useCareLabels() {
   const dateLabel = (date: string) =>
     formatDate(date, { day: "numeric", month: "short" });
 
-  return { kindLabel, actionLabel, dueLabel, deadline, dateLabel };
+  const careValue = (plant: Plant, kind: string, frequencies = false) => {
+    const interval = plant[INTERVAL_FIELDS[kind]];
+    if (typeof interval !== "number" || interval <= 0)
+      return kind === "Annaffia" || kind === "Concima"
+        ? t("care.notScheduled")
+        : t("care.notPlanned");
+    if (frequencies)
+      return interval === 1
+        ? t("care.everyDay")
+        : plural("care.everyDays", interval);
+    const action = plant._schedule.find((item) => item.kind === kind);
+    return action ? deadline(action.daysUntil) : t("care.notScheduled");
+  };
+
+  return { kindLabel, actionLabel, dueLabel, deadline, dateLabel, careValue };
 }

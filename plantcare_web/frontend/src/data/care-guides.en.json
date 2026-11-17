@@ -1,0 +1,200 @@
+[
+  {
+    "kind": "Annaffia",
+    "steps": [
+      {
+        "title": "Check the substrate",
+        "detail": "Feel the moisture deeper down and water only when the substrate is ready.",
+        "icon": "hand.point.down.fill"
+      },
+      {
+        "title": "Water slowly",
+        "detail": "Spread the water evenly over the substrate.",
+        "icon": "drop.fill"
+      },
+      {
+        "title": "Let it drain",
+        "detail": "Wait for the excess to leave the holes and empty the saucer.",
+        "icon": "tray.and.arrow.down.fill"
+      }
+    ],
+    "tip": "Use room-temperature water and match the amount to the pot size.",
+    "image": "guide-water.webp"
+  },
+  {
+    "kind": "Concima",
+    "steps": [
+      {
+        "title": "Measure the dose",
+        "detail": "Follow the label without exceeding the indicated concentration.",
+        "icon": "ruler.fill"
+      },
+      {
+        "title": "Dilute well",
+        "detail": "Mix the fertilizer into the water before applying it.",
+        "icon": "water.waves"
+      },
+      {
+        "title": "Apply to moist substrate",
+        "detail": "Spread the solution without concentrating it in one spot.",
+        "icon": "drop.circle.fill"
+      }
+    ],
+    "tip": "Do not fertilize a very dry, stressed or recently repotted plant.",
+    "image": "guide-fertilize.webp"
+  },
+  {
+    "kind": "Ruota",
+    "steps": [
+      {
+        "title": "Look at the direction",
+        "detail": "Find the side growing towards the light source.",
+        "icon": "sun.max.fill"
+      },
+      {
+        "title": "Turn a quarter",
+        "detail": "Rotate the pot about 90° without twisting the stems.",
+        "icon": "rotate.right.fill"
+      },
+      {
+        "title": "Keep the position",
+        "detail": "Put it back in the same spot and observe the response.",
+        "icon": "scope"
+      }
+    ],
+    "tip": "Avoid rotating during flowering or acclimation.",
+    "image": "guide-rotate.webp"
+  },
+  {
+    "kind": "Rinvasa",
+    "steps": [
+      {
+        "title": "Prepare pot and substrate",
+        "detail": "Choose a slightly larger pot with drainage and a suitable mix.",
+        "icon": "shippingbox.fill"
+      },
+      {
+        "title": "Check the roots",
+        "detail": "Lift the root ball and remove only dead or rotten roots.",
+        "icon": "circle.dotted"
+      },
+      {
+        "title": "Keep the same height",
+        "detail": "Fill without packing too much and stabilise the plant.",
+        "icon": "leaf.fill"
+      }
+    ],
+    "tip": "Avoid fertilizer and strong sun until the plant has settled.",
+    "image": "guide-repot.webp"
+  },
+  {
+    "kind": "Pota",
+    "steps": [
+      {
+        "title": "Disinfect the tools",
+        "detail": "Clean and dry the blades before starting.",
+        "icon": "cross.vial.fill"
+      },
+      {
+        "title": "Choose where to cut",
+        "detail": "Find damaged parts or the correct node.",
+        "icon": "eye.fill"
+      },
+      {
+        "title": "Make a clean cut",
+        "detail": "Cut once without crushing the tissue.",
+        "icon": "scissors"
+      }
+    ],
+    "tip": "Do not remove too much foliage in a single session.",
+    "image": "guide-prune.webp"
+  },
+  {
+    "kind": "Controlla salute",
+    "steps": [
+      {
+        "title": "Look at both sides",
+        "detail": "Check leaves for spots, deformations or pests.",
+        "icon": "magnifyingglass"
+      },
+      {
+        "title": "Inspect stems and substrate",
+        "detail": "Look at the crown, nodes, substrate and drainage.",
+        "icon": "circle.hexagongrid.fill"
+      },
+      {
+        "title": "Record what you see",
+        "detail": "Note symptoms, affected areas and general condition.",
+        "icon": "square.and.pencil"
+      }
+    ],
+    "tip": "Temporarily isolate the plant if you suspect pests.",
+    "image": "guide-inspect.webp"
+  },
+  {
+    "kind": "Aggiorna progressi",
+    "steps": [
+      {
+        "title": "Recreate the same framing",
+        "detail": "Use similar light, distance and angle.",
+        "icon": "camera.fill"
+      },
+      {
+        "title": "Look for changes",
+        "detail": "Observe new leaves, height, colour and growth.",
+        "icon": "leaf.arrow.triangle.circlepath"
+      },
+      {
+        "title": "Add a note",
+        "detail": "Record the main differences and the plant condition.",
+        "icon": "note.text"
+      }
+    ],
+    "tip": "A consistent photo and a short note make comparison easier.",
+    "image": "guide-progress.webp"
+  },
+  {
+    "kind": "Spostamento",
+    "steps": [
+      {
+        "title": "Assess the destination",
+        "detail": "Check light, draughts, heat and space.",
+        "icon": "sun.horizon.fill"
+      },
+      {
+        "title": "Support pot and canopy",
+        "detail": "Lift from the base and support the stems.",
+        "icon": "figure.strengthtraining.traditional"
+      },
+      {
+        "title": "Place it safely",
+        "detail": "Check stability, saucer and orientation.",
+        "icon": "checkmark.circle.fill"
+      }
+    ],
+    "tip": "After moving it, observe the plant before changing other care.",
+    "image": "guide-move.webp"
+  },
+  {
+    "kind": "Trattamento",
+    "steps": [
+      {
+        "title": "Isolate the plant",
+        "detail": "Move it away from the others and identify the problem.",
+        "icon": "rectangle.3.group.fill"
+      },
+      {
+        "title": "Protect yourself and treat",
+        "detail": "Follow the label and apply only where needed.",
+        "icon": "shield.lefthalf.filled"
+      },
+      {
+        "title": "Clean and monitor",
+        "detail": "Disinfect tools and check how it evolves.",
+        "icon": "sparkles"
+      }
+    ],
+    "tip": "Do not mix products or increase dose or frequency.",
+    "image": "guide-treatment.webp"
+  }
+]

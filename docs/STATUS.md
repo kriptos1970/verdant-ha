@@ -242,6 +242,14 @@ Aggiunta la preferenza lingua lato server: opzione `language` dell'add-on, endpo
 
 Verifiche: 450 chiavi allineate, build TypeScript/Vite, **151 test backend** (nuovo test su preferenze e validazione), nessun dato reale modificato. Restano dettaglio iOS completo, guide, diagnosi, testi lunghi e documentazione inglese.
 
+### Internazionalizzazione P4b — iOS, guide e osservazioni (17 novembre 2026)
+
+Tradotto il dettaglio iOS: riepilogo, scadenze/frequenze, azioni rapide, dati della pianta, sezioni espandibili e prodotto assegnato. Le nove guide di cura hanno una versione inglese completa (`care-guides.en.json`) con immagini condivise; guida pratica e ritmo stagionale ricevono valori e consigli inglesi dal backend.
+
+La diagnosi guidata mostra sintomi e testo in inglese e invia la lingua al server, che restituisce il consiglio nella stessa lingua. Osservazioni, piano intelligente, azioni, motivazioni, dati mancanti e stima di asciugatura sono tradotti.
+
+Verifiche: 623 chiavi allineate, build TypeScript/Vite, 151 test backend, prova browser su guide e diagnosi in inglese. Restano documentazione inglese e revisione editoriale delle traduzioni lunghe.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

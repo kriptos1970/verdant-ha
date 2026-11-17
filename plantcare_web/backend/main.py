@@ -357,10 +357,12 @@ async def identify_plant(file:UploadFile=File(), organ:str=Form('leaf'), consent
     return await identify(settings,content,organ)
 
 @app.get('/api/knowledge/plants/{plant_id}/guide')
-def plant_guide(plant_id:str):
+def plant_guide(plant_id:str,language:str='it'):
     from .health_guides import practical_guide
     plant,_=store.get('plants',plant_id)
-    return practical_guide(plant)
+    from .services import message_language
+    language=language if language in {'it','en'} else message_language(store,settings)
+    return practical_guide(plant,language)
 
 @app.post('/api/knowledge/diagnosis')
 def guided_diagnosis(body:dict=Body(...)):
@@ -369,7 +371,10 @@ def guided_diagnosis(body:dict=Body(...)):
     if not isinstance(plant_id,str) or not isinstance(symptoms,list) or len(symptoms)>6 or any(not isinstance(s,str) for s in symptoms):
         raise HTTPException(422,'Scegli una pianta e i sintomi osservati.')
     store.get('plants',plant_id)
-    return {'plantID':plant_id,'advice':diagnosis(symptoms)}
+    from .services import message_language
+    language=body.get('language')
+    language=language if language in {'it','en'} else message_language(store,settings)
+    return {'plantID':plant_id,'advice':diagnosis(symptoms,language)}
 
 @app.get('/api/knowledge/species')
 def species_library():

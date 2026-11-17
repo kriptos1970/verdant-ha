@@ -5,6 +5,7 @@
 - Moduli di cura, testata della scheda pianta, prodotti, editor prodotto e trattamenti tradotti.
 - Errori API con codice stabile; messaggi inglesi generici per i codici noti.
 - Home e elenco piante tradotti; preferenza lingua lato server per notifiche e risposte AI.
+- Dettaglio iOS, nove guide di cura, diagnosi, osservazioni e piano intelligente tradotti in inglese.
 - Codici canonici per tipi di cura e stati di salute nel backend, con API e backup ancora nel formato italiano per compatibilità.
 
 # 0.10.3 — sezioni della scheda iOS
