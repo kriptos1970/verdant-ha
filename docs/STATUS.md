@@ -344,6 +344,12 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Resta separata la matita della sezione Piano per modificare le frequenze manuali.
 - Verifica: 390 px, modale con casella “Usa il meteo e aggiorna il piano ogni giorno”, campi località e clima; desktop invariato.
 
+## Schermate — confronto con il nativo (17 novembre 2026)
+
+- Confronto di dettaglio pianta, collezione, cure, prodotti, misure e impostazioni dai sorgenti Swift: [SCREENS_COMPARISON.md](SCREENS_COMPARISON.md).
+- Lacune principali: **cestino con ripristino a 30 giorni** (oggi l’eliminazione è definitiva), filtro categoria e “registra utilizzo” nei prodotti, azione “Sposta pianta”, località predefinita nelle impostazioni.
+- Le funzioni principali di calendario, cronologia, giro, misure e sensori risultano presenti; il confronto puntuale sul campo resta da fare.
+
 ## Home — allineamento al nativo (17 novembre 2026)
 
 - Rimossa dalla Home l’anteprima “Le tue piante” con 6 schede: ripeteva in parte la collezione e non esiste nella Panoramica nativa; il collegamento alla collezione resta nella scheda Piante.

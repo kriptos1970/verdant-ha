@@ -44,6 +44,10 @@ Lettura di `PlantEditorView.swift` e `Models.swift` a confronto con `PlantEditor
 
 Lettura di `DashboardView.swift` a confronto con la Home web: il nativo non contiene un elenco generale delle piante, ha la scheda meteo in intestazione, indicatori Piante/Da curare/Luoghi e una sezione analitica con quattro metriche, barre 30 giorni, ciambella dei tipi di cura e piante da osservare. La Home web ha rimosso l’anteprima parziale di 6 piante. Differenze e proposta in [HOME_COMPARISON.md](HOME_COMPARISON.md).
 
+## Confronto schermate (17 novembre 2026)
+
+Dettaglio pianta, collezione, cure, prodotti, misure e impostazioni confrontati con `PlantDetailView.swift`, `PlantListView.swift`, `CareCalendarView.swift`, `FertilizerViews.swift`, `MeasurementModels.swift` e `DefaultLocationSettingsView.swift`. Lacune principali: cestino con ripristino a 30 giorni, filtro categoria e registrazione utilizzo prodotti, “Sposta pianta”, località predefinita. Dettaglio e piano in [SCREENS_COMPARISON.md](SCREENS_COMPARISON.md).
+
 ## Incremento 0.2.0 — confronto con il nativo in esecuzione
 
 Osservata l’app `/Applications/Verdant.app` in sola lettura: Panoramica, Cure e calendario, Prodotti e trattamenti e modulo Pianifica ciclo. Il modulo è stato chiuso con Annulla; nessuna cura, prodotto o pianta originale è stato modificato. Riferimenti locali in `docs/screenshots/native/` (non inclusi nel pacchetto di distribuzione).
