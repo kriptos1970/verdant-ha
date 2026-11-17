@@ -19,7 +19,7 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
@@ -176,6 +176,13 @@ def apply_adaptive(plant_id:str,previewID:str=Query(min_length=1,max_length=100)
     with store.connection() as db:
         p,v=store.put('plants',candidate,version,db)
     return render_plant(p,v)
+
+@app.get('/api/preferences')
+def preferences(): return store.state('preferences',{'language':settings.options.get('language','auto')})
+@app.put('/api/preferences')
+def save_preferences(body:LanguagePreference):
+    store.set_state('preferences',body.model_dump())
+    return body
 
 @app.get('/api/fertilizers')
 def products(): return [{**p,'_version':v} for p,v in store.list('fertilizers')]

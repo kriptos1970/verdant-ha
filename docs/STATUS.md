@@ -234,6 +234,14 @@ Le API aggiungono un `code` stabile agli errori (`conflict`, `not_found`, `valid
 
 Verifiche: 393 chiavi allineate, build TypeScript/Vite, **150 test backend** (nuovo test sui codici errore) e prova browser in inglese su prodotti, editor prodotto, trattamenti, moduli di cura e testata pianta. Restano home, dettaglio iOS completo, testi lunghi e messaggi specifici. Nessun dato reale modificato.
 
+### Internazionalizzazione P4a — home e lingua server (17 novembre 2026)
+
+Tradotti home e riepilogo Oggi (saluto, data localizzata, hero, statistiche, attività e proposte AI) e l'elenco piante (ricerca, filtri, modalità Piante/Ambienti, conteggi e stato vuoto).
+
+Aggiunta la preferenza lingua lato server: opzione `language` dell'add-on, endpoint `GET/PUT /api/preferences` e stato SQLite. Il frontend invia la lingua effettiva; notifiche delle proposte AI e istruzioni di risposta al provider usano italiano o inglese. La cache dei consigli include il prompt, quindi il cambio lingua invalida le risposte precedenti.
+
+Verifiche: 450 chiavi allineate, build TypeScript/Vite, **151 test backend** (nuovo test su preferenze e validazione), nessun dato reale modificato. Restano dettaglio iOS completo, guide, diagnosi, testi lunghi e documentazione inglese.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

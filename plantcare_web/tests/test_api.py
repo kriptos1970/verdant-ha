@@ -58,6 +58,14 @@ def test_error_responses_expose_stable_codes(client):
     stale=client.put(f"/api/plants/{p['id']}?version=1",json=p)
     assert stale.status_code==409 and stale.json()['code']=='conflict'
 
+
+def test_language_preference_is_stored_and_validated(client):
+    assert client.get('/api/preferences').json()['language'] in {'auto','it','en'}
+    saved=client.put('/api/preferences',json={'language':'en'})
+    assert saved.status_code==200 and saved.json()['language']=='en'
+    assert client.get('/api/preferences').json()['language']=='en'
+    assert client.put('/api/preferences',json={'language':'fr'}).status_code==422
+
 def test_duplicate_event_and_delete_recalculate(client):
     p=create(client)
     event={'id':str(uuid4()).upper(),'kind':'Annaffia','date':'2026-11-09T12:00:00Z'}

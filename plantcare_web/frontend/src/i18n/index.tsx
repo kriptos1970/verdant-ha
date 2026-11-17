@@ -9,6 +9,7 @@ import {
 } from "react";
 import it, { type MessageKey } from "./it";
 import en from "./en";
+import { api } from "../api";
 
 export type { MessageKey } from "./it";
 
@@ -76,6 +77,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale;
+    void api("preferences", {
+      method: "PUT",
+      body: JSON.stringify({ language: locale }),
+    }).catch(() => {
+      // Older servers may not expose the preference endpoint.
+    });
   }, [locale]);
 
   const setPreference = useCallback((value: LanguagePreference) => {

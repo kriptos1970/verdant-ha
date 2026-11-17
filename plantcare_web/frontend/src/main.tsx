@@ -161,7 +161,7 @@ function Botanical({ small = false }: { small?: boolean }) {
   );
 }
 function App() {
-  const { t, plural } = useI18n();
+  const { t, plural, locale, formatDate } = useI18n();
   const { actionLabel, dueLabel } = useCareLabels();
   const { categoryLabel, formLabel } = useProductLabels();
   const [page, setPage] = useState<Page>("today"),
@@ -494,21 +494,17 @@ function App() {
                   <div className="page-heading">
                     <div>
                       <div className="eyebrow">
-                        {new Date().toLocaleDateString("it-IT", {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                        })}
+                        {formatDate(new Date(), { weekday: "long", day: "numeric", month: "long" })}
                       </div>
                       <h1>
                         {new Date().getHours() < 12
-                          ? "Buongiorno"
+                          ? t("home.greeting.morning")
                           : new Date().getHours() < 18
-                            ? "Buon pomeriggio"
-                            : "Buonasera"}{" "}
+                            ? t("home.greeting.afternoon")
+                            : t("home.greeting.evening")}{" "}
                         <span aria-hidden="true">🌿</span>
                       </h1>
-                      <p>Ecco come stanno le tue piante oggi.</p>
+                      <p>{t("home.intro")}</p>
                     </div>
                     <span className="heading-icon">
                       <Sun size={28} />
@@ -521,20 +517,20 @@ function App() {
                   />
                   <section className="hero">
                     <div>
-                      <span className="eyebrow">IL TUO GIARDINO OGGI</span>
+                      <span className="eyebrow">{t("home.heroEyebrow")}</span>
                       <h2>
                         {plants.length === 0
-                          ? "Tutto comincia con una pianta."
+                          ? t("home.heroEmptyTitle")
                           : due.length > 0
-                            ? "Le tue piante ti aspettano."
-                            : "Il giardino è in ordine"}
+                            ? t("home.heroDueTitle")
+                            : t("home.heroOkTitle")}
                       </h2>
                       <p>
                         {plants.length === 0
-                          ? "Aggiungi la prima pianta o porta qui la tua collezione PlantCare."
+                          ? t("home.heroEmptyText")
                           : due.length > 0
-                            ? `${due.length} attività da completare. Prendiamocene cura, una alla volta.`
-                            : "Nessuna cura in scadenza oggi. È un buon momento per osservare come crescono."}
+                            ? plural("home.heroDueText", due.length)
+                            : t("home.heroOkText")}
                       </p>
                       <button
                         className="button hero-button"
@@ -548,9 +544,9 @@ function App() {
                       >
                         {plants.length
                           ? due.length
-                            ? "Apri il giro di cura"
-                            : "Vedi il calendario"
-                          : "Aggiungi una pianta"}
+                            ? t("home.openRound")
+                            : t("home.viewCalendar")
+                          : t("home.addPlant")}
                         <ArrowUpRight size={17} />
                       </button>
                     </div>
@@ -560,46 +556,46 @@ function App() {
                     <div>
                       <span>
                         <Leaf size={18} />
-                        La collezione
+                        {t("home.stats.collection")}
                       </span>
                       <strong>
                         {plants.length}
                         <small>
-                          {plants.length === 1 ? "pianta" : "piante"}
+                          {plural("home.plantWord", plants.length)}
                         </small>
                       </strong>
                     </div>
                     <div>
                       <span>
                         <Droplets size={18} />
-                        Da fare oggi
+                        {t("home.stats.today")}
                       </span>
                       <strong>
                         {due.length}
-                        <small>{due.length === 1 ? "cura" : "cure"}</small>
+                        <small>{plural("home.careWord", due.length)}</small>
                       </strong>
                     </div>
                     <div>
                       <span>
                         <CalendarDays size={18} />
-                        Questa settimana
+                        {t("home.stats.week")}
                       </span>
                       <strong>
                         {week.length}
-                        <small>attività</small>
+                        <small>{t("home.activityWord")}</small>
                       </strong>
                     </div>
                   </div>
                   <section className="panel">
                     <div className="section-heading">
                       <h2>
-                        Un’attenzione per oggi <span>{due.length}</span>
+                        {t("home.attention")} <span>{due.length}</span>
                       </h2>
                       <button
                         className="text-button"
                         onClick={() => setPage("care")}
                       >
-                        Tutte le cure <ChevronRight size={16} />
+                        {t("home.allCare")} <ChevronRight size={16} />
                       </button>
                     </div>
                     {due.length ? (
@@ -610,13 +606,13 @@ function App() {
                         <div>
                           <strong>
                             {plants.length
-                              ? "Tutto in ordine per oggi"
-                              : "Il tuo calendario prenderà vita qui"}
+                              ? t("home.emptyToday")
+                              : t("home.emptyCalendar")}
                           </strong>
                           <p>
                             {plants.length
-                              ? "Le prossime attività compariranno al momento giusto."
-                              : "Le cure appariranno dopo aver aggiunto le piante."}
+                              ? t("home.emptyTodayText")
+                              : t("home.emptyCalendarText")}
                           </p>
                         </div>
                       </div>
@@ -627,9 +623,9 @@ function App() {
                       <Sparkles size={22} />
                       <div>
                         <strong>
-                          {proposals.length} proposte per i tuoi piani AI
+                          {plural("home.ai", proposals.length)}
                         </strong>
-                        <p>Leggi le motivazioni prima di applicarle.</p>
+                        <p>{t("home.aiText")}</p>
                       </div>
                       <button
                         className="text-button"
@@ -638,17 +634,17 @@ function App() {
                           setTool("ai");
                         }}
                       >
-                        Esamina <ChevronRight size={17} />
+                        {t("home.examine")} <ChevronRight size={17} />
                       </button>
                     </section>
                   )}
                   <div className="section-heading collection-heading">
-                    <h2>Le tue piante</h2>
+                    <h2>{t("home.yourPlants")}</h2>
                     <button
                       className="text-button"
                       onClick={() => setPage("plants")}
                     >
-                      La collezione <ChevronRight size={16} />
+                      {t("home.collection")} <ChevronRight size={16} />
                     </button>
                   </div>
                   {plants.length ? (
@@ -676,10 +672,10 @@ function App() {
                 <>
                   <div className="page-heading">
                     <div>
-                      <div className="eyebrow">OGNI PIANTA, UNA STORIA</div>
-                      <h1>{room === "Tutte" ? "Le tue piante" : room}</h1>
+                      <div className="eyebrow">{t("plants.eyebrow")}</div>
+                      <h1>{room === "Tutte" ? t("plants.title") : room}</h1>
                       <p>
-                        {plants.length} piante · {rooms.length} ambienti
+                        {t("plants.summary", { plants: plants.length, rooms: rooms.length })}
                       </p>
                     </div>
                     <Leaf className="muted" size={30} />
@@ -688,25 +684,25 @@ function App() {
                     <label className="search">
                       <Search size={18} />
                       <input
-                        aria-label="Cerca una pianta"
-                        placeholder="Cerca nome, specie o ambiente"
+                        aria-label={t("plants.searchAria")}
+                        placeholder={t("plants.searchPlaceholder")}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                       />
                     </label>
                     <select
-                      aria-label="Filtra per ambiente"
+                      aria-label={t("plants.roomFilterAria")}
                       value={room}
                       onChange={(e) => setRoom(e.target.value)}
                     >
-                      <option>Tutte</option>
+                      <option value="Tutte">{t("plants.allRooms")}</option>
                       {rooms.map((r) => (
                         <option key={r}>{r}</option>
                       ))}
                     </select>
                   </div>
-                  <div className="ios-collection-controls"><div className="segmented">{["Piante","Ambienti"].map(m=><button key={m} aria-pressed={phoneCollectionMode===m} className={phoneCollectionMode===m?"selected":""} onClick={()=>setPhoneCollectionMode(m)}>{m}</button>)}</div><select aria-label="Filtra piante" value={filter} onChange={e=>setFilter(e.target.value)}>{["Tutte","Da curare","Rischio animali"].map(f=><option key={f}>{f}</option>)}</select></div>
-                  {phoneCollectionMode==="Ambienti"&&<div className="ios-rooms">{rooms.filter(r=>!search||r.toLocaleLowerCase().includes(search.toLocaleLowerCase())).map(r=><button key={r} onClick={()=>{setRoom(r);setPhoneCollectionMode("Piante")}}><MapPin size={30}/><span><strong>{r}</strong><small>{plants.filter(p=>p.room===r).length} {plants.filter(p=>p.room===r).length===1?"pianta":"piante"}</small></span><ChevronRight size={20}/></button>)}</div>}
+                  <div className="ios-collection-controls"><div className="segmented">{["Piante","Ambienti"].map(m=><button key={m} aria-pressed={phoneCollectionMode===m} className={phoneCollectionMode===m?"selected":""} onClick={()=>setPhoneCollectionMode(m)}>{m==="Piante"?t("plants.modePlants"):t("plants.modeRooms")}</button>)}</div><select aria-label={t("plants.filterAria")} value={filter} onChange={e=>setFilter(e.target.value)}>{["Tutte","Da curare","Rischio animali"].map(f=><option key={f} value={f}>{f==="Tutte"?t("plants.filterAll"):f==="Da curare"?t("plants.filterDue"):t("plants.filterPetRisk")}</option>)}</select></div>
+                  {phoneCollectionMode==="Ambienti"&&<div className="ios-rooms">{rooms.filter(r=>!search||r.toLocaleLowerCase().includes(search.toLocaleLowerCase())).map(r=><button key={r} onClick={()=>{setRoom(r);setPhoneCollectionMode("Piante")}}><MapPin size={30}/><span><strong>{r}</strong><small>{plants.filter(p=>p.room===r).length} {plural("plants.roomCount", plants.filter(p=>p.room===r).length)}</small></span><ChevronRight size={20}/></button>)}</div>}
                   <div className="chips">
                     {["Tutte", "Da curare", "Rischio animali"].map((f) => (
                       <button
@@ -714,13 +710,13 @@ function App() {
                         className={filter === f ? "selected" : ""}
                         onClick={() => setFilter(f)}
                       >
-                        {f}
+                        {f === "Tutte" ? t("plants.filterAll") : f === "Da curare" ? t("plants.filterDue") : t("plants.filterPetRisk")}
                       </button>
                     ))}
                   </div>
                   {filtered.length ? (
                     <div className="plant-grid">
-                      {(phoneLayout?[...filtered].sort((a,b)=>a.name.localeCompare(b.name,"it")):filtered).map((p) => (
+                      {(phoneLayout?[...filtered].sort((a,b)=>a.name.localeCompare(b.name, locale)):filtered).map((p) => (
                         <PlantCard
                           key={p.id}
                           plant={p}
@@ -731,8 +727,8 @@ function App() {
                   ) : plants.length ? (
                     <div className="empty-state">
                       <Search />
-                      <h2>Nessuna pianta trovata</h2>
-                      <p>Prova un altro nome o modifica i filtri.</p>
+                      <h2>{t("plants.noResults")}</h2>
+                      <p>{t("plants.noResultsText")}</p>
                     </div>
                   ) : (
                     <EmptyCollection
@@ -1332,24 +1328,25 @@ function EmptyCollection({
   onAdd: () => void;
   onImport: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <section className="empty-collection">
       <div className="empty-leaf">
         <Sprout size={34} />
       </div>
-      <h2>Facciamo spazio al verde.</h2>
+      <h2>{t("empty.title")}</h2>
       <p>
-        Ogni pianta ha il suo ritmo.
+        {t("empty.text1")}
         <br />
-        Porta qui la tua collezione e iniziamo a conoscerlo.
+        {t("empty.text2")}
       </p>
       <div className="button-row">
         <button className="button primary" onClick={onAdd}>
           <Plus size={17} />
-          La prima pianta
+          {t("empty.firstPlant")}
         </button>
         <button className="button secondary" onClick={onImport}>
-          Importa archivio
+          {t("empty.import")}
         </button>
       </div>
     </section>

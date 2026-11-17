@@ -56,6 +56,10 @@ async def poll(store,settings):
         store.set_state('sensor-status',{'lastRun':iso(now()),'readings':len(readings),'error':None},db)
     return readings
 
+def message_language(store,settings):
+    preference=(store.state('preferences') or {}).get('language') or settings.options.get('language','auto')
+    return preference if preference in {'it','en'} else 'it'
+
 async def notify(settings,message):
     if not settings.token: return
     async with httpx.AsyncClient(timeout=15) as client:

@@ -72,12 +72,15 @@ async def analyze(store,settings):
     settings=effective_settings(store,settings)
     if lock.locked(): raise Conflict('Analisi già in corso.')
     async with lock:
+        from .services import message_language
+        language=message_language(store,settings)
         plants=[(p,v) for p,v in store.list('plants') if p.get('carePlanMode')=='AI']
-        if not plants: return {'summary':'Nessuna pianta con piano AI.','proposals':0,'skipped':True}
+        if not plants: return {'summary':'No plants with an AI plan.' if language=='en' else 'Nessuna pianta con piano AI.','proposals':0,'skipped':True}
         products=[p for p,_ in store.list('fertilizers')]
         context=[daily_context(p,products) for p,_ in plants]
         prompt=Path(__file__).with_name('daily_prompt.txt').read_text().replace('{plants}',json.dumps(context,ensure_ascii=False))
         prompt+='\nData della richiesta: '+iso(now())+'\nI dati climatici sono istantanee del piano salvato: cita climateContext.generatedAt, oppure specifica data sconosciuta. Non presentarli come meteo attuale, stagione attuale o previsioni attuali; non giustificare modifiche con quei dati storici.'
+        if language=='en': prompt+='\nWrite summary and every explanatory text in English.'
         result=await complete(settings,prompt,DAILY_SCHEMA,'verdant_daily_plans')
         if not isinstance(result.get('summary'),str):raise ValueError('Sintesi AI non valida.')
         suggestions=result.get('plants')
@@ -112,7 +115,8 @@ async def analyze(store,settings):
         if proposals:
             from .services import notify
             try:
-                await notify(settings,f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri PlantCare → Altro → Piano AI per esaminarle.")
+                message=(f"{len(proposals)} plan changes proposed. {applied} applied automatically. Open PlantCare → More → AI plan to review them." if language=='en' else f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri PlantCare → Altro → Piano AI per esaminarle.")
+                await notify(settings,message)
                 status['notificationError']=None
             except httpx.HTTPError:status['notificationError']='Notifica non inviata. Le proposte restano disponibili in PlantCare.'
         store.set_state('ai-status',status)
@@ -153,6 +157,8 @@ async def _advice(store,settings,plant_id,question):
     prompt+='\n\nDATA DELLA RICHIESTA: '+iso(now())[:10]
     if climate:
         prompt+='\nData del contesto stagionale e climatico salvato: '+(climate['generatedAt'] or 'sconosciuta')+'\nQuesti dati provengono dal piano salvato, non da una lettura meteo attuale. Cita esplicitamente la data (oppure data sconosciuta) se li menzioni. Non presentarli come stagione, temperatura, umidità o pioggia attuali e non usarli per giustificare cambiamenti delle frequenze attuali. La pioggia era prevista nei sette giorni successivi alla data del piano, non alla richiesta.'
+    from .services import message_language
+    if message_language(store,settings)=='en': prompt+='\nAnswer in English: summaryMarkdown and careNotes must be written in English.'
     info=settings.public()
     signature=hashlib.sha256((info['aiProvider']+'\n'+info['aiModel']+'\n'+prompt).encode()).hexdigest()
     cached=store.state('ai-advice-'+plant_id)

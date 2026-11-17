@@ -113,6 +113,9 @@ class Question(BaseModel):
         if not value.strip():raise ValueError('Scrivi una domanda.')
         return value.strip()
 
+class LanguagePreference(BaseModel):
+    language: Literal['auto','it','en']
+
 class Mapping(BaseModel):
     entityID: str = Field(min_length=1,max_length=200)
     plantID: str | None = None

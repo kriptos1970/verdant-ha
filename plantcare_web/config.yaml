@@ -19,6 +19,7 @@ map:
   - type: share
     read_only: false
 options:
+  language: auto
   photo_directory: /data/photos
   max_photo_mb: 20
   measurement_retention_days: 365
@@ -36,6 +37,7 @@ options:
   openplantbook_client_id: ""
   openplantbook_secret: ""
 schema:
+  language: list(auto|it|en)
   photo_directory: str
   max_photo_mb: int(1,100)
   measurement_retention_days: int(7,3650)

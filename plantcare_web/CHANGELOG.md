@@ -4,6 +4,7 @@
 - Giro di cure, calendario e cronologia tradotti in italiano e inglese, con plurali per scadenze e conteggi.
 - Moduli di cura, testata della scheda pianta, prodotti, editor prodotto e trattamenti tradotti.
 - Errori API con codice stabile; messaggi inglesi generici per i codici noti.
+- Home e elenco piante tradotti; preferenza lingua lato server per notifiche e risposte AI.
 - Codici canonici per tipi di cura e stati di salute nel backend, con API e backup ancora nel formato italiano per compatibilità.
 
 # 0.10.3 — sezioni della scheda iOS

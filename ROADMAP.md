@@ -14,6 +14,7 @@ Current release: **0.10.3**. The project is usable on a real Home Assistant inst
 - [x] Italian/English message catalogs, language selector, `Intl` formatting and CI key/placeholder parity; navigation, tools and settings migrated.
 - [x] Care round, calendar and history localized, including due labels and plural forms.
 - [x] Care forms, plant detail header, products, product editor and treatments localized; API errors expose stable codes.
+- [x] Home, plant list and server-side language preference localized; AI and notifications follow the selected language.
 
 ## Now — close the consolidation step
 
