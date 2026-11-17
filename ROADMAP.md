@@ -27,7 +27,7 @@ These are verification and hardening tasks, not new features. They are tracked i
 - [ ] Port the native **timeline chart and health index** calculation. Do not introduce estimated or invented health values.
 - [ ] Compare the complete **growth entry and health album** flows with the native app, including photos.
 - [ ] Evaluate a **camera-based lux meter** and decide whether the browser can provide a trustworthy measurement.
-- [ ] **App localization (IT/EN)**: extract UI strings into message catalogs, add a `t()` helper and locale detection, localize dates/numbers with `Intl`.
+- [ ] **App localization (IT/EN)**: extract UI strings into message catalogs, add a `t()` helper and locale detection, localize dates/numbers with `Intl`. See [docs/I18N.md](docs/I18N.md).
 - [ ] Introduce **canonical domain values** (`water`, `fertilize`, `good`, `excellent`, …) and keep Italian labels only for display; this is required before a real translation of events, guides and backend messages.
 - [ ] Translate the **documentation** into English (`docs/en/`), starting from installation and status.
 - [ ] Realign the **desktop layout** with the native macOS app, after the iOS work is closed.

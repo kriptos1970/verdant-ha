@@ -17,6 +17,7 @@ La documentazione dettagliata è in italiano. Il README principale del repositor
 - [Layout iOS](IOS_LAYOUT.md) — confronto con Verdant iOS e scostamenti.
 - [Step 7 — strumenti nativi](STEP7.md) — riconoscimento, guide, album, QR, servizi botanici.
 - [Step 8 — archivio](STEP8.md) — collezione leggera, cronologia paginata, limiti.
+- [Piano i18n](I18N.md) — come rendere l'app italiana e inglese senza rompere il dominio.
 
 ## Altro
 
