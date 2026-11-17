@@ -47,6 +47,7 @@ Accesso reale tramite `https://sicoli.ovh/app/local_plantcare_web` con sessione 
 - versione **0.11.0** mostrata in Impostazioni, con archivio reale di **18 piante**, 124 foto (357,7 MB), SQLite 0,6 MB e 174,8 GB liberi;
 - lingua `auto` in italiano; passaggio a inglese verificato con navigazione, impostazioni e calendario tradotti, poi ripristino a `auto`/italiano;
 - calendario del 17 novembre con 1 attività in scadenza e 1 attività precedente ancora in attesa;
+- etichetta QR/NFC generata per Ficus Elastica: collegamento `https://sicoli.ovh/app/local_plantcare_web/plant/170F12A0-7D2E-489E-AF4A-116A108D6985`, senza token Ingress; la scansione con fotocamera reale resta da fare;
 - layout mobile reale a 734 × 766 CSS px, con barra inferiore e schede piante;
 - nessun errore console; nessuna cura registrata e nessun piano modificato durante il controllo.
 
