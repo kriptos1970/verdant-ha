@@ -106,3 +106,10 @@ Prove: [scheda botanica](screenshots/0.7.0/home-assistant-botanical.jpg), [etich
   - Analisi: selettore 30 giorni / 90 giorni / 12 mesi; a 90 giorni 495 cure, 77 giornate attive, 83% di regolarità e 14 settimane nel grafico; a 12 mesi 13 mesi con 47 cure a novembre 2026;
   - scheda Orchidea Phalaenopsis: andamento con 48 cure in 11 mesi attivi e linea del tempo di 12 voci, comprese misure e diario di crescita.
 - Nessun errore in console, nessun overflow orizzontale a 686 px, nessuna cura registrata e nessun dato reale modificato; nessun backup Home Assistant creato.
+
+## Paginazione collezione — 17 novembre 2026
+
+- Sorgenti sincronizzati in `/local_apps/plantcare_web` e verificati SHA256 (99 file); `ha apps rebuild local_plantcare_web` completato.
+- Add-on **in esecuzione**, versione **0.11.1**; opzioni, archivio e fotografie invariati.
+- Verifica Ingress: pagina Piante con 12 schede e intervallo “1–12 di 18”, seconda pagina con 6 schede “13–18 di 18”, nessun overflow a 686 px.
+- Nessuna cura registrata, nessun dato reale modificato, nessun backup creato.

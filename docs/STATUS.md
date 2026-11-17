@@ -329,3 +329,4 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Il cambio pagina riporta in cima al contenuto, rispettando `prefers-reduced-motion`.
 - La paginazione è nascosta nella vista Ambienti del telefono; la Home continua a mostrare le prime 6 piante.
 - Verifica: build e **797 chiavi i18n**, 180 test backend; archivio sintetico portato a 14 piante, pagine 12 + 2, ricerca “Monstera” con una sola scheda e nessuna paginazione, layout 390 e 1280 px senza overflow, italiano e inglese.
+- Installata su Home Assistant il 17 novembre 2026 con la ricostruzione dell’add-on 0.11.1: in Ingress 12 schede “1–12 di 18” e 6 schede “13–18 di 18”, nessun dato reale modificato.
