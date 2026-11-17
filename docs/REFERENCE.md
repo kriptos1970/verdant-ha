@@ -38,7 +38,11 @@ L'esistenza di un endpoint non certifica la parità con l'app nativa. Le limitaz
 
 ## Confronto scheda di modifica pianta (17 novembre 2026)
 
-Lettura di `PlantEditorView.swift` e `Models.swift` a confronto con `PlantEditor` nel frontend: 34 campi nativi, 15 presenti nel form web, 3 parziali e 16 assenti. La maggior parte dei dati mancanti è già nell’archivio importato (`plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `setup.container`). Dettaglio, tabella campo per campo e proposta in [PLANT_EDITOR_COMPARISON.md](PLANT_EDITOR_COMPARISON.md).
+Lettura di `PlantEditorView.swift` e `Models.swift` a confronto con `PlantEditor` nel frontend: 38 voci confrontate: 17 presenti nel form web, 4 parziali e 17 assenti. La maggior parte dei dati mancanti è già nell’archivio importato (`plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `setup.container`). Dettaglio, tabella campo per campo e proposta in [PLANT_EDITOR_COMPARISON.md](PLANT_EDITOR_COMPARISON.md).
+
+## Confronto Home (17 novembre 2026)
+
+Lettura di `DashboardView.swift` a confronto con la Home web: il nativo non contiene un elenco generale delle piante, ha la scheda meteo in intestazione, indicatori Piante/Da curare/Luoghi e una sezione analitica con quattro metriche, barre 30 giorni, ciambella dei tipi di cura e piante da osservare. La Home web ha rimosso l’anteprima parziale di 6 piante. Differenze e proposta in [HOME_COMPARISON.md](HOME_COMPARISON.md).
 
 ## Incremento 0.2.0 — confronto con il nativo in esecuzione
 

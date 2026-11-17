@@ -32,7 +32,8 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - The plant collection is now paginated at 12 plants per page with a filter-aware reset; 390 and 1280 px layouts, the Italian/English labels and the 12 + 2 split on a 14-plant synthetic archive were checked.
 - On phones, the plant plan button now opens the smart plan configuration for manual plants too, so the Open-Meteo weather option is reachable; the separate pencil still edits manual intervals.
 - The plant editor now includes **Height · cm**, and the collapsible section is named “Pot, height and other care” (diameter, material, drainage and height); the plant card shows the height when present.
-- The native plant editor was compared field by field with the web form: 34 native fields, 15 present, 3 partial and 16 missing (placement, planting method, pot height/volume, drainage quality, cachepot, saucer, substrate and properties, care rhythm, last fertilizing, fertilizer type/dose, in-form identification). Most missing values already exist in the imported archive, so the gap is mainly UI; see `docs/PLANT_EDITOR_COMPARISON.md`.
+- The native plant editor was compared field by field with the web form: 38 items, 17 present, 4 partial and 17 missing (placement, planting method, pot height/volume, drainage quality, cachepot, saucer, substrate and properties, care rhythm, last fertilizing, fertilizer type/dose, in-form identification). Most missing values already exist in the imported archive, so the gap is mainly UI; see `docs/PLANT_EDITOR_COMPARISON.md`.
+- The Home page no longer repeats a six-plant preview of the collection, matching the native dashboard which has no plant list; the comparison with `DashboardView.swift` is in `docs/HOME_COMPARISON.md`.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

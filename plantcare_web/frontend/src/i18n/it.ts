@@ -462,8 +462,6 @@ const it = {
   "home.ai.other": "{count} proposte per i tuoi piani AI",
   "home.aiText": "Leggi le motivazioni prima di applicarle.",
   "home.examine": "Esamina",
-  "home.yourPlants": "Le tue piante",
-  "home.collection": "La collezione",
 
   "plants.eyebrow": "OGNI PIANTA, UNA STORIA",
   "plants.title": "Le tue piante",

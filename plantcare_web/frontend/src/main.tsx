@@ -675,34 +675,6 @@ function App() {
                       </button>
                     </section>
                   )}
-                  <div className="section-heading collection-heading">
-                    <h2>{t("home.yourPlants")}</h2>
-                    <button
-                      className="text-button"
-                      onClick={() => setPage("plants")}
-                    >
-                      {t("home.collection")} <ChevronRight size={16} />
-                    </button>
-                  </div>
-                  {plants.length ? (
-                    <div className="plant-grid">
-                      {plants.slice(0, 6).map((p) => (
-                        <PlantCard
-                          key={p.id}
-                          plant={p}
-                          onClick={() => openPlant(p.id)}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyCollection
-                      onAdd={() => setPlantEditor("new")}
-                      onImport={() => {
-                        navigate("more");
-                        setTool("backup");
-                      }}
-                    />
-                  )}
                 </>
               )}
               {page === "plants" && (

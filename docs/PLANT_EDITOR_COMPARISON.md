@@ -74,8 +74,8 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 
 ## Sintesi
 
-- Campi nativi considerati: **34** (esclusi i 5 gruppi di attività contati una volta).
-- Presenti nel form web: **15** interi, **3** parziali, **16** assenti.
+- Voci confrontate: **38** (33 campi singoli, 5 attività raggruppate).
+- Presenti nel form web: **17** intere, **4** parziali, **17** assenti.
 - I dati mancanti sono in gran parte **già nell’archivio**: il backend conserva i campi extra (`extra='allow'`) e l’archivio reale contiene `plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `heightCM` e `setup.container` (materiale, diametro, drenaggio, cachepot, sottovaso, qualità). L’allineamento è quindi soprattutto interfaccia, senza migrazione.
 
 ## Proposta di allineamento

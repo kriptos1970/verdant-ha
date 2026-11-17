@@ -464,8 +464,6 @@ const en: Record<MessageKey, string> = {
   "home.ai.other": "{count} proposals for your AI plans",
   "home.aiText": "Read the reasons before applying them.",
   "home.examine": "Review",
-  "home.yourPlants": "Your plants",
-  "home.collection": "The collection",
 
   "plants.eyebrow": "EVERY PLANT, A STORY",
   "plants.title": "Your plants",
