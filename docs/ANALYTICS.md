@@ -72,7 +72,7 @@ Lettura in sola lettura delle 18 piante e 732 eventi dell’archivio personale, 
 
 - I casi di `HealthScoreTests.swift` sono riprodotti in `tests/test_health.py`.
 - `tests/test_analytics.py` copre periodi, rinvii, cancellazioni, regolarità, ambienti, stato salute, rischio, timeline e contratto HTTP.
-- Benchmark locale su 100 piante e 50.000 eventi: analisi in circa 52 ms, indice salute per 100 piante in circa 24 ms, scheda completa per 100 piante in circa 208 ms.
+- Benchmark locale su 100 piante e 50.000 eventi: analisi in circa 52 ms, indice salute per 100 piante in circa 24 ms, scheda completa per 100 piante in circa 208 ms. Lo script `scripts/benchmark_archive.py` accetta `--plants` e `--events` (eventi per pianta): con 400 piante e 200.000 eventi la risposta completa pesa 49,5 MB e richiede 2,05 s, la collezione sintetica 561 kB e 1,05 s.
 
 ## Fase 2 — componenti grafici (17 novembre 2026)
 

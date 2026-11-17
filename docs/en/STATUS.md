@@ -56,3 +56,10 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Optional Care Engine activation and AI real-data trial.
 - Desktop layout realignment.
 - English documentation expansion and editorial review of long translations.
+
+## Field checks — status on 17 November 2026
+
+- **#5 large archive (partial)** — the synthetic benchmark now also runs at **400 plants / 200,000 events** (four times the previous size): full response 49.5 MB in 2.05 s, compact collection 561 kB in 1.05 s (−98.87%), history page 18.5 kB in 0.68 s on the development Mac. Run with `scripts/benchmark_archive.py --plants 400 --events 500` (events per plant). It does not replace a real, much larger archive.
+- **#4 sensors and weather (blocked on configuration)** — the add-on `exposed_entities` option is empty, `/api/sensors` returns 0 readings and no mappings exist. Home Assistant exposes 90 supported entities, including `sensor.dracena_moisture` (36%), `sensor.dracena_illuminance` (6 lx) and `sensor.dracena_conductivity` (74 µS/cm). All 18 adaptive plans have weather disabled (last plan computed on 20 September 2026).
+- **#2 QR/NFC (link verified)** — the Ficus Elastica label carries the stable URL `https://sicoli.ovh/app/local_plantcare_web/plant/170F12A0-7D2E-489E-AF4A-116A108D6985` with no ingress token; without a session the page asks for Home Assistant access. The physical scan is still pending.
+- **#1 physical iPhone** and **#3 isolated restore** need the device and a separate instance; the procedures are ready and their outcome is to be recorded.

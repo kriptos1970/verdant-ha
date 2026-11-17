@@ -330,3 +330,10 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - La paginazione è nascosta nella vista Ambienti del telefono; la Home continua a mostrare le prime 6 piante.
 - Verifica: build e **797 chiavi i18n**, 180 test backend; archivio sintetico portato a 14 piante, pagine 12 + 2, ricerca “Monstera” con una sola scheda e nessuna paginazione, layout 390 e 1280 px senza overflow, italiano e inglese.
 - Installata su Home Assistant il 17 novembre 2026 con la ricostruzione dell’add-on 0.11.1: in Ingress 12 schede “1–12 di 18” e 6 schede “13–18 di 18”, nessun dato reale modificato.
+
+## Collaudi — stato al 17 novembre 2026
+
+- **#5 archivio grande (parziale)** — benchmark sintetico esteso a **400 piante / 200.000 eventi** (quattro volte il precedente): risposta completa 49,5 MB in 2,05 s, collezione sintetica 561 kB in 1,05 s (−98,87%), pagina cronologia 18,5 kB in 0,68 s sul Mac di sviluppo. Comando: `scripts/benchmark_archive.py --plants 400 --events 500` (eventi per pianta). Non sostituisce la prova su un archivio reale molto grande.
+- **#4 sensori e meteo (bloccato sulla configurazione)** — `exposed_entities` è vuoto nell’add-on, `/api/sensors` restituisce 0 letture e non esistono associazioni. In Home Assistant ci sono 90 entità con classi supportate, tra cui `sensor.dracena_moisture` (36%), `sensor.dracena_illuminance` (6 lx) e `sensor.dracena_conductivity` (74 µS/cm). Tutti i 18 piani adattivi hanno il meteo disattivato; l’ultimo calcolo è del 20 settembre 2026.
+- **#2 QR/NFC (link verificato)** — etichetta di Ficus Elastica con URL stabile `https://sicoli.ovh/app/local_plantcare_web/plant/170F12A0-7D2E-489E-AF4A-116A108D6985`, senza token Ingress; senza sessione la pagina richiede l’accesso a Home Assistant. La scansione con la fotocamera resta da fare.
+- **#1 iPhone fisico** e **#3 ripristino isolato** — richiedono dispositivo e istanza separata; procedure pronte, esito da registrare.
