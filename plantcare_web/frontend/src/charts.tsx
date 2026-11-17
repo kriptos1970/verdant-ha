@@ -22,6 +22,7 @@ import { useI18n } from "./i18n";
 import { useCareLabels } from "./care-labels";
 import type {
   ActivityPoint,
+  AnalyticsPeriod,
   CareMixSlice,
   RoomSummary,
 } from "./analytics";
@@ -67,33 +68,109 @@ function ChartTooltip({
   );
 }
 
-function ActivityBars({ activity }: { activity: ActivityPoint[] }) {
+type BucketMode = "day" | "week" | "month";
+
+function parseDay(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+function isoDay(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function bucketFor(period: AnalyticsPeriod): BucketMode {
+  return period === 30 ? "day" : period === 90 ? "week" : "month";
+}
+
+/** Folds the daily series so a 90- or 365-day window stays readable. */
+export function bucketize(activity: ActivityPoint[], mode: BucketMode) {
+  if (mode === "day") return activity;
+  const totals = new Map<string, number>();
+  for (const point of activity) {
+    let key = point.date;
+    if (mode === "week") {
+      const date = parseDay(point.date);
+      const offset = (date.getUTCDay() + 6) % 7;
+      date.setUTCDate(date.getUTCDate() - offset);
+      key = isoDay(date);
+    } else {
+      key = point.date.slice(0, 7);
+    }
+    totals.set(key, (totals.get(key) ?? 0) + point.count);
+  }
+  return [...totals.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([date, count]) => ({ date, count }));
+}
+
+function ActivityBars({
+  activity,
+  period,
+}: {
+  activity: ActivityPoint[];
+  period: AnalyticsPeriod;
+}) {
   const { formatDate, t, plural } = useI18n();
   const reduced = useReducedMotion();
-  const data = activity.map((point) => ({
-    label: formatDate(point.date, { day: "numeric", month: "short" }),
-    full: formatDate(point.date, {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    }),
-    count: point.count,
-  }));
-  const total = activity.reduce((sum, point) => sum + point.count, 0);
+  const mode = bucketFor(period);
+  const series = bucketize(activity, mode);
+  const data = series.map((point) => {
+    if (mode === "week") {
+      return {
+        label: formatDate(point.date, { day: "numeric", month: "short" }),
+        full: t("charts.weekOf", {
+          date: formatDate(point.date, { day: "numeric", month: "long" }),
+        }),
+        count: point.count,
+      };
+    }
+    if (mode === "month") {
+      const first = `${point.date}-01`;
+      return {
+        label: formatDate(first, { month: "short" }),
+        full: formatDate(first, { month: "long", year: "numeric" }),
+        count: point.count,
+      };
+    }
+    return {
+      label: formatDate(point.date, { day: "numeric", month: "short" }),
+      full: formatDate(point.date, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }),
+      count: point.count,
+    };
+  });
+  const total = series.reduce((sum, point) => sum + point.count, 0);
+  const description = t(`charts.activity.description.${mode}`);
+  const caption =
+    mode === "week"
+      ? t("charts.table.activityWeek")
+      : mode === "month"
+        ? t("charts.table.activityMonth")
+        : t("charts.table.activity");
+  const periodColumn =
+    mode === "week"
+      ? t("charts.column.week")
+      : mode === "month"
+        ? t("charts.column.month")
+        : t("charts.column.date");
 
   return (
     <ChartPanel
       title={t("charts.activity.title")}
-      description={t("charts.activity.description")}
+      description={description}
       empty={!data.length || total === 0}
       table={{
-        caption: t("charts.table.activity"),
+        caption,
         columns: [
-          { key: "day", label: t("charts.column.date") },
+          { key: "day", label: periodColumn },
           { key: "count", label: t("charts.column.count"), numeric: true },
         ],
         rows: data.map((point) => ({
-          id: point.label,
+          id: point.full,
           day: point.full,
           count: point.count,
         })),
@@ -107,7 +184,7 @@ function ActivityBars({ activity }: { activity: ActivityPoint[] }) {
             barCategoryGap="18%"
             accessibilityLayer
             title={t("charts.activity.title")}
-            desc={t("charts.activity.description")}
+            desc={description}
           >
             <CartesianGrid
               vertical={false}
@@ -142,7 +219,7 @@ function ActivityBars({ activity }: { activity: ActivityPoint[] }) {
               name={t("charts.column.count")}
               fill={CHART_COLORS.moss}
               radius={[4, 4, 0, 0]}
-              maxBarSize={16}
+              maxBarSize={mode === "day" ? 16 : 40}
               isAnimationActive={!reduced}
               animationDuration={420}
             />
@@ -340,14 +417,16 @@ export default function AnalyticsCharts({
   activity,
   careMix,
   rooms,
+  period,
 }: {
   activity: ActivityPoint[];
   careMix: CareMixSlice[];
   rooms: RoomSummary[];
+  period: AnalyticsPeriod;
 }) {
   return (
     <div className="analytics-charts">
-      <ActivityBars activity={activity} />
+      <ActivityBars activity={activity} period={period} />
       <CareMixDonut careMix={careMix} />
       <RoomBars rooms={rooms} />
     </div>

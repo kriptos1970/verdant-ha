@@ -56,8 +56,8 @@ def test_period_selector_changes_the_window_and_chart_length():
     year = analytics.summary([plant(history=events)], 'Europe/Rome', 365, AT)
     assert (month['completedEvents'], quarter['completedEvents'], year['completedEvents']) == (0, 1, 1)
     assert len(month['dailyActivity']) == 30
-    assert len(quarter['dailyActivity']) == 60  # chart capped at 60 days
-    assert len(year['dailyActivity']) == 60
+    assert len(quarter['dailyActivity']) == 90
+    assert len(year['dailyActivity']) == 365
 
 
 def test_timeliness_compares_gaps_with_the_watering_interval():

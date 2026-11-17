@@ -1,5 +1,5 @@
-import React, { Suspense } from "react";
-import { AlertCircle, BarChart3, RefreshCw } from "lucide-react";
+import React, { Suspense, useState } from "react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import {
   ChartDataTable,
   ChartPanel,
@@ -14,6 +14,7 @@ import {
   healthyShare,
 } from "./health-ring";
 import { useAnalytics } from "./analytics";
+import type { AnalyticsPeriod } from "./analytics";
 import { useI18n } from "./i18n";
 
 const AnalyticsCharts = React.lazy(() => import("./charts"));
@@ -41,12 +42,14 @@ function ChartsFallback() {
 
 export default function AnalyticsPage() {
   const { t, plural, formatDate, formatNumber } = useI18n();
-  const { data, loading, error, reload } = useAnalytics(30);
+  const [period, setPeriod] = useState<AnalyticsPeriod>(30);
+  const { data, loading, error, reload } = useAnalytics(period);
 
   const share = data ? healthyShare(data.health) : null;
+  const shownPeriod: AnalyticsPeriod = data?.days ?? period;
 
   return (
-    <div className="analytics-page">
+    <div className="analytics-page" aria-busy={loading || undefined}>
       <div className="page-heading">
         <div>
           <div className="eyebrow">{t("analytics.eyebrow")}</div>
@@ -55,10 +58,28 @@ export default function AnalyticsPage() {
         </div>
       </div>
       <div className="analytics-meta">
-        <span className="analytics-period">
-          <BarChart3 size={14} aria-hidden="true" />
-          {t("analytics.period")}
-        </span>
+        <div
+          className="analytics-periods"
+          role="group"
+          aria-label={t("analytics.period")}
+        >
+          {([30, 90, 365] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={period === value}
+              onClick={() => setPeriod(value)}
+            >
+              {t(
+                value === 30
+                  ? "analytics.period.30"
+                  : value === 90
+                    ? "analytics.period.90"
+                    : "analytics.period.365",
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error ? (
@@ -188,6 +209,7 @@ export default function AnalyticsPage() {
                     activity={data.dailyActivity}
                     careMix={data.careMix}
                     rooms={data.rooms}
+                    period={shownPeriod}
                   />
                 </Suspense>
               </DeferredSection>

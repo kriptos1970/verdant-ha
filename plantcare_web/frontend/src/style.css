@@ -2908,17 +2908,38 @@ progress::-webkit-progress-value {
   justify-content: flex-end;
   margin: -8px 0 16px;
 }
-.analytics-period {
+.analytics-periods {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 2px;
+  padding: 3px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.4;
-  white-space: nowrap;
+  background: #fff;
+}
+.analytics-periods button {
+  min-height: 34px;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #4c5a50;
+  font-size: 12px;
+  font-weight: 500;
+}
+.analytics-periods button:hover {
+  background: #f2f5f0;
+}
+.analytics-periods button[aria-pressed="true"] {
+  background: var(--forest);
+  color: #fff;
+}
+.analytics-periods button:focus-visible {
+  outline: 2px solid var(--moss);
+  outline-offset: 2px;
+}
+.analytics-page[aria-busy="true"] .analytics-stats,
+.analytics-page[aria-busy="true"] .health-panel {
+  opacity: 0.6;
 }
 .analytics-stats {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3194,6 +3215,16 @@ progress::-webkit-progress-value {
   .analytics-meta {
     justify-content: flex-start;
     margin: 4px 0 14px;
+  }
+  .analytics-periods {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .analytics-periods button {
+    flex: 1;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 13px;
   }
   .health-summary {
     flex-direction: column;

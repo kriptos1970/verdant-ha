@@ -1,4 +1,4 @@
-# Grafici e analisi — fasi 1–4
+# Grafici e analisi — fasi 1–6
 
 Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora toccare l’interfaccia. Tutto è in sola lettura.
 
@@ -42,7 +42,7 @@ Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora 
 ```
 
 - Gli eventi cancellati e i rinvii non contano.
-- `dailyActivity` è sempre lunga `min(days, 60)` e include i giorni a zero.
+- `dailyActivity` copre tutto il periodo (`days` giorni) e include i giorni a zero.
 - La regolarità confronta ogni intervallo d’acqua registrato con `wateringInterval + 1`, come il nativo.
 - L’ultimo stato per l’analisi considera diario di crescita ed eventi, non l’album salute, come `CollectionAnalyticsView`.
 - `plantsAtRisk` è ordinata per urgenza e limitata a otto voci; il frontend può mostrarla intera o ridotta.
@@ -167,3 +167,29 @@ La scheda della singola pianta mostra l’attività di cura degli ultimi dodici 
 - Layout 320, 390 e 1280 px senza overflow orizzontale; tabella contenuta e leggibile a 320 px.
 - Italiano e inglese verificati, compreso lo stato vuoto; nessun errore in console.
 - Lighthouse sulla scheda con il grafico: accessibilità 0.95, best practice e SEO 1; i due rilievi restano i preesistenti elementi del riepilogo iOS.
+
+## Fase 6 — selettore 30/90/365 nella pagina Analisi (17 novembre 2026)
+
+La pagina Analisi copre ora i tre periodi previsti dal contratto, con grafici leggibili anche sulle finestre lunghe.
+
+### Selettore
+
+- Tre pulsanti (30 giorni, 90 giorni, 12 mesi) in un gruppo con nome accessibile “Periodo delle analisi” e stato `aria-pressed`; su telefono occupano tutta la larghezza con bersagli da 40 px.
+- Il periodo scelto guida `useAnalytics(period)`: la richiesta precedente viene annullata, i dati restano visibili durante il caricamento e il contenitore espone `aria-busy`.
+- Il sottotitolo non nomina più 30 giorni: descrive il periodo scelto.
+
+### Grafici nel periodo
+
+- `dailyActivity` copre ora l’intero periodo (30, 90 o 365 giorni), non più un massimo di 60; il payload resta di pochi kilobyte.
+- Le barre si raggruppano nel client: giorni a 30 giorni, settimane (lunedì come inizio) a 90, mesi a 365. Titolo e descrizione, didascalia della tabella e intestazione di colonna cambiano di conseguenza.
+- Il tooltip della settimana usa “Settimana del {data}”, quello del mese il nome del mese con l’anno.
+- Gli altri pannelli (tipi di cura, ambienti, salute) usano già i dati del periodo; nessuna richiesta aggiuntiva.
+
+### Verifica
+
+- Build e i18n: **787 chiavi** allineate (11 nuove, una rimossa).
+- **180 test backend**; il test del selettore ora verifica 30, 90 e 365 punti giornalieri.
+- Archivio sintetico di 6 piante e 28 cure: 30 giorni → 30 barre giornaliere; 90 giorni → 14 settimane (4, 6, 15, 3 cure nelle ultime quattro); 365 giorni → 13 mesi con 25 cure a novembre 2026.
+- Rete: richieste `/api/analytics?days=30`, `days=90` e `days=365` al cambio periodo; nessun errore in console.
+- Layout 320, 390 e 1280 px senza overflow; italiano e inglese verificati, comprese le etichette del selettore.
+- Lighthouse sulla pagina Analisi: accessibilità 0.96, best practice e SEO 1; unico rilievo il contrasto preesistente del piè di pagina.

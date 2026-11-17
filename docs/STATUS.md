@@ -49,6 +49,13 @@
 - Tabella accessibile con mese, annaffiature, altre cure e totale; etichetta accessibile sul grafico e stato vuoto dedicato.
 - Verifica: build, **777 chiavi i18n**, 180 test backend, layout 320/390/1280 px senza overflow, italiano e inglese, Lighthouse accessibilità 0.95 con i due rilievi preesistenti del riepilogo iOS.
 
+## Grafici — fase 6, selettore 30/90/365 (17 novembre 2026)
+
+- La pagina Analisi ha ora tre pulsanti (30 giorni, 90 giorni, 12 mesi) con `aria-pressed`; il periodo scelto guida la richiesta e il sottotitolo non è più fisso su 30 giorni.
+- `/api/analytics` restituisce l’attività giornaliera dell’intero periodo: le barre si raggruppano in giorni a 30 giorni, settimane a 90 e mesi a 365, con descrizione, didascalia e colonna coerenti.
+- Durante il cambio periodo i dati precedenti restano visibili con `aria-busy`; la richiesta in corso viene annullata.
+- Verifica: **787 chiavi i18n**, 180 test backend aggiornati sul nuovo contratto, layout 320/390/1280 px senza overflow, italiano e inglese, reti `days=30/90/365`, Lighthouse accessibilità 0.96 con il solo contrasto preesistente del piè di pagina.
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.

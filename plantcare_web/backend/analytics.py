@@ -104,11 +104,10 @@ def summary(plants, zone, days=30, at=None):
             daily[_local_day(date, tz)] += 1
             care_mix[event['kind']] += 1
 
-    days_shown = min(days, 60)
     activity = [
         {'date': (today - timedelta(days=offset)).isoformat(),
          'count': daily[today - timedelta(days=offset)]}
-        for offset in range(days_shown - 1, -1, -1)
+        for offset in range(days - 1, -1, -1)
     ]
 
     return {
