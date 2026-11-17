@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 import httpx
 from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Query, Body, Form
 from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -41,13 +42,13 @@ app=FastAPI(title='PlantCare Web',version=__version__,lifespan=lifespan,docs_url
 @app.middleware('http')
 async def boundary(request,call_next):
     if settings.ingress and (not request.client or request.client.host!='172.30.32.2'):
-        return JSONResponse({'detail':'Accesso consentito solo tramite Home Assistant Ingress.'},status_code=403)
+        return JSONResponse({'detail':'Accesso consentito solo tramite Home Assistant Ingress.','code':'forbidden'},status_code=403)
     if request.method in {'POST','PUT','PATCH','DELETE'} and request.headers.get('x-plantcare-request')!='1':
-        return JSONResponse({'detail':'Richiesta non valida.'},status_code=403)
+        return JSONResponse({'detail':'Richiesta non valida.','code':'forbidden'},status_code=403)
     length=request.headers.get('content-length')
     limit=2*1024**3 if request.url.path in {'/api/import','/api/import/preview'} else MAX_ARCHIVE+1024*1024
     if length and (not length.isdigit() or int(length)>limit):
-        return JSONResponse({'detail':'Richiesta troppo grande.'},status_code=413)
+        return JSONResponse({'detail':'Richiesta troppo grande.','code':'too_large'},status_code=413)
     response=await call_next(request)
     response.headers['X-Content-Type-Options']='nosniff'
     response.headers['Referrer-Policy']='same-origin'
@@ -55,17 +56,24 @@ async def boundary(request,call_next):
         response.headers['Cache-Control']='no-store'
     return response
 
+ERROR_CODES={400:'bad_request',401:'unauthorized',403:'forbidden',404:'not_found',409:'conflict',413:'too_large',422:'validation',424:'remote',502:'remote'}
+@app.exception_handler(StarletteHTTPException)
+async def http_error(request,error):
+    return JSONResponse({'detail':error.detail,'code':ERROR_CODES.get(error.status_code,'error')},status_code=error.status_code,headers=getattr(error,'headers',None))
+@app.exception_handler(RequestValidationError)
+async def request_validation(request,error):
+    return JSONResponse({'detail':'Controlla i dati inseriti.','code':'validation'},status_code=422)
 @app.exception_handler(Conflict)
-async def conflict(request,error): return JSONResponse({'detail':str(error)},status_code=409)
+async def conflict(request,error): return JSONResponse({'detail':str(error),'code':'conflict'},status_code=409)
 @app.exception_handler(KeyError)
-async def missing(request,error): return JSONResponse({'detail':'Elemento non trovato.'},status_code=404)
+async def missing(request,error): return JSONResponse({'detail':'Elemento non trovato.','code':'not_found'},status_code=404)
 @app.exception_handler(ValueError)
-async def invalid(request,error): return JSONResponse({'detail':str(error)},status_code=422)
+async def invalid(request,error): return JSONResponse({'detail':str(error),'code':'validation'},status_code=422)
 @app.exception_handler(httpx.HTTPError)
 async def remote_error(request,error):
     from .remote_errors import describe
     status,detail=describe(error)
-    return JSONResponse({'detail':detail},status_code=status)
+    return JSONResponse({'detail':detail,'code':'remote'},status_code=status)
 
 @app.get('/health')
 def health(): return {'status':'ok','version':__version__}

@@ -17,8 +17,10 @@ import type {
   TreatmentDraft,
   Action,
 } from "./types";
-import { api, dateLabel, uid } from "./api";
+import { api, uid } from "./api";
 import { Modal } from "./ui";
+import { useI18n } from "./i18n";
+import { useCareLabels } from "./care-labels";
 
 const dateInput = (date: string) => {
   const d = new Date(date);
@@ -26,12 +28,12 @@ const dateInput = (date: string) => {
 };
 const dateISO = (date: string, end = false) =>
   new Date(date + (end ? "T23:59:59" : "T12:00:00")).toISOString();
-const labels = {
-  active: "In corso",
-  complete: "Completato",
-  ended: "Terminato per data",
-  cancelled: "Interrotto",
-};
+const statusKeys = {
+  active: "treatment.status.active",
+  complete: "treatment.status.complete",
+  ended: "treatment.status.ended",
+  cancelled: "treatment.status.cancelled",
+} as const;
 
 export function TreatmentEditor({
   plants,
@@ -52,6 +54,8 @@ export function TreatmentEditor({
   onClose: () => void;
   onSave: (plant: Plant, draft: TreatmentDraft) => Promise<void>;
 }) {
+  const { t, plural } = useI18n();
+  const { dateLabel } = useCareLabels();
   const first =
     initialProduct ||
     products.find((p) => p.id === plan?.productID) ||
@@ -84,7 +88,7 @@ export function TreatmentEditor({
   const chosen = products.find((p) => p.id === productID);
   return (
     <Modal
-      title={plan ? "Modifica ciclo" : "Pianifica ciclo"}
+      title={plan ? t("treatment.editTitle") : t("treatment.planTitle")}
       onClose={onClose}
     >
       <form
@@ -92,7 +96,7 @@ export function TreatmentEditor({
           e.preventDefault();
           const plant = initialPlant || plants.find((p) => p.id === plantID);
           if (!plant) {
-            setError("Seleziona una pianta.");
+            setError(t("treatment.selectPlantError"));
             return;
           }
           void onSave(plant, {
@@ -108,16 +112,16 @@ export function TreatmentEditor({
         }}
       >
         <fieldset className="native-form-section">
-          <legend>Destinazione</legend>
+          <legend>{t("treatment.destination")}</legend>
           <label>
-            Pianta
+            {t("treatment.plant")}
             <select
               required
               value={plantID}
               disabled={Boolean(initialPlant)}
               onChange={(e) => setPlantID(e.target.value)}
             >
-              <option value="">Seleziona…</option>
+              <option value="">{t("treatment.select")}</option>
               {plants.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} · {p.room}
@@ -126,7 +130,7 @@ export function TreatmentEditor({
             </select>
           </label>
           <label>
-            Prodotto
+            {t("treatment.product")}
             <select
               required
               value={productID}
@@ -141,7 +145,7 @@ export function TreatmentEditor({
             >
               {!products.some((p) => p.id === productID) && (
                 <option value={productID}>
-                  {plan?.productName || "Seleziona…"}
+                  {plan?.productName || t("treatment.select")}
                 </option>
               )}
               {products.map((p) => (
@@ -152,7 +156,7 @@ export function TreatmentEditor({
             </select>
           </label>
           <label>
-            Primo intervento
+            {t("treatment.first")}
             <input
               type="date"
               required
@@ -162,10 +166,10 @@ export function TreatmentEditor({
           </label>
         </fieldset>
         <fieldset className="native-form-section">
-          <legend>Durata del ciclo</legend>
+          <legend>{t("treatment.duration")}</legend>
           <div className="form-grid">
             <label>
-              Ogni quanti giorni
+              {t("treatment.everyDays")}
               <input
                 type="number"
                 required
@@ -176,7 +180,7 @@ export function TreatmentEditor({
               />
             </label>
             <label>
-              Interventi totali
+              {t("treatment.total")}
               <input
                 type="number"
                 required
@@ -193,11 +197,11 @@ export function TreatmentEditor({
               checked={hasEnd}
               onChange={(e) => setHasEnd(e.target.checked)}
             />
-            Imposta anche una data finale
+            {t("treatment.setEnd")}
           </label>
           {hasEnd && (
             <label>
-              Termina entro
+              {t("treatment.endBy")}
               <input
                 type="date"
                 required
@@ -208,7 +212,7 @@ export function TreatmentEditor({
             </label>
           )}
           <p className="planned-end">
-            <span>Ultimo intervento previsto</span>
+            <span>{t("treatment.lastPlanned")}</span>
             <strong>
               {Number.isFinite(final.getTime())
                 ? dateLabel(final.toISOString())
@@ -217,24 +221,23 @@ export function TreatmentEditor({
           </p>
           {plan && plan.completedApplications > 0 && (
             <p className="muted small-text">
-              {plan.completedApplications} applicazioni già registrate. Le
-              registrazioni precedenti mantengono le loro note.
+              {plural("treatment.already", plan.completedApplications)}
             </p>
           )}
         </fieldset>
         <fieldset className="native-form-section">
-          <legend>Istruzioni</legend>
+          <legend>{t("treatment.instructions")}</legend>
           <label>
-            Dose
+            {t("treatment.dose")}
             <input
               value={dose}
               maxLength={2000}
               onChange={(e) => setDose(e.target.value)}
-              placeholder="Come indicato dal produttore"
+              placeholder={t("treatment.dosePlaceholder")}
             />
           </label>
           <label>
-            Note
+            {t("treatment.notes")}
             <textarea
               rows={3}
               value={notes}
@@ -244,7 +247,7 @@ export function TreatmentEditor({
           </label>
           {chosen?.applicationMethod && (
             <p className="muted small-text">
-              Modalità d’uso: {chosen.applicationMethod}
+              {t("treatment.method", { method: chosen.applicationMethod })}
             </p>
           )}
         </fieldset>
@@ -255,7 +258,7 @@ export function TreatmentEditor({
         )}
         <div className="modal-actions">
           <button type="button" className="button secondary" onClick={onClose}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button
             className="button primary"
@@ -266,7 +269,7 @@ export function TreatmentEditor({
             ) : (
               <Check size={16} />
             )}
-            Salva ciclo
+            {t("treatment.save")}
           </button>
         </div>
       </form>
@@ -287,16 +290,18 @@ export function TreatmentPanel({
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
   onAction: (action: Action) => void;
 }) {
+  const { t, plural } = useI18n();
+  const { dateLabel } = useCareLabels();
   const [editor, setEditor] = useState<Treatment | "new" | null>(null),
     [confirm, setConfirm] = useState<Treatment | null>(null),
     [error, setError] = useState("");
   return (
     <section className="treatment-panel">
       <div className="section-heading">
-        <h3>Cicli di trattamento</h3>
+        <h3>{t("treatment.cycles")}</h3>
         <button
           className="icon-button"
-          aria-label="Nuovo ciclo di trattamento"
+          aria-label={t("treatment.newAria")}
           onClick={() => setEditor("new")}
           disabled={!products.length}
         >
@@ -304,18 +309,17 @@ export function TreatmentPanel({
         </button>
       </div>
       <p className="muted small-text">
-        Pianifica applicazioni, annota la dose e segui gli interventi
-        registrati.
+        {t("treatment.panelText")}
       </p>
       {!products.length && (
         <p className="info-note">
-          Aggiungi prima un prodotto nella sezione Prodotti.
+          {t("treatment.addProductFirst")}
         </p>
       )}
       {!plant._treatments.length ? (
         <div className="gentle-empty">
           <FlaskConical size={25} />
-          <p>Nessun ciclo pianificato per questa pianta.</p>
+          <p>{t("treatment.none")}</p>
         </div>
       ) : (
         plant._treatments.map((plan) => {
@@ -327,7 +331,7 @@ export function TreatmentPanel({
               <div className="section-heading">
                 <h3>{plan.productName}</h3>
                 <span className={`pill treatment-status-${plan.status}`}>
-                  {labels[plan.status]}
+                  {t(statusKeys[plan.status])}
                 </span>
               </div>
               <div className="treatment-count">
@@ -335,21 +339,20 @@ export function TreatmentPanel({
                   {plan.completedApplications}
                   <small> / {plan.totalApplications}</small>
                 </strong>
-                <span>applicazioni registrate</span>
+                <span>{t("treatment.applications")}</span>
               </div>
               <progress
-                aria-label={`Applicazioni ${plan.productName}`}
+                aria-label={t("treatment.progressAria", { name: plan.productName })}
                 max={plan.totalApplications}
                 value={plan.completedApplications}
               />
               <p className="muted small-text">
-                Ogni {plan.intervalDays} giorni · dal{" "}
-                {dateLabel(plan.startDate)}
-                {plan.endDate ? ` al ${dateLabel(plan.endDate)}` : ""}
+                {t("treatment.everyDaysLine", { interval: plan.intervalDays, start: dateLabel(plan.startDate) })}
+                {plan.endDate ? t("treatment.until", { date: dateLabel(plan.endDate) }) : ""}
               </p>
               {plan.dose && (
                 <p>
-                  <strong>Dose</strong> {plan.dose}
+                  <strong>{t("treatment.dose")}</strong> {plan.dose}
                 </p>
               )}
               {plan.notes && <p className="preserve">{plan.notes}</p>}
@@ -360,13 +363,13 @@ export function TreatmentPanel({
                   onClick={() => onAction(action)}
                 >
                   <Check size={16} />
-                  Registra intervento {action.applicationNumber}
+                  {t("treatment.register", { number: action.applicationNumber ?? 1 })}
                   <ChevronRight size={16} />
                 </button>
               )}
               {plan.nextDueDate && (
                 <p className="muted small-text">
-                  Prossimo intervento: {dateLabel(plan.nextDueDate)}
+                  {t("treatment.next", { date: dateLabel(plan.nextDueDate) })}
                 </p>
               )}
               <div className="button-row">
@@ -376,7 +379,7 @@ export function TreatmentPanel({
                   disabled={busy}
                 >
                   <Pencil size={14} />
-                  Modifica ciclo
+                  {t("treatment.editCycle")}
                 </button>
                 {plan.status === "active" && (
                   <button
@@ -385,7 +388,7 @@ export function TreatmentPanel({
                     disabled={busy}
                   >
                     <Pause size={14} />
-                    Interrompi
+                    {t("treatment.stop")}
                   </button>
                 )}
                 {plan.status === "cancelled" && (
@@ -399,12 +402,12 @@ export function TreatmentPanel({
                             `plants/${plant.id}/treatments/${plan.id}/resume?version=${plant._version}`,
                             { method: "POST" },
                           ),
-                        "Ciclo ripreso",
+                        t("treatment.resumed"),
                       ).catch((e) => setError(e.message))
                     }
                   >
                     <Play size={14} />
-                    Riprendi
+                    {t("treatment.resume")}
                   </button>
                 )}
               </div>
@@ -435,25 +438,23 @@ export function TreatmentPanel({
                     body: JSON.stringify(draft),
                   },
                 ),
-              editor === "new" ? "Ciclo pianificato" : "Ciclo aggiornato",
+              editor === "new" ? t("treatment.planned") : t("treatment.updated"),
             );
             setEditor(null);
           }}
         />
       )}
       {confirm && (
-        <Modal title="Interrompere il ciclo?" onClose={() => setConfirm(null)}>
+        <Modal title={t("treatment.stopTitle")} onClose={() => setConfirm(null)}>
           <p>
-            Non verranno proposti altri interventi per {confirm.productName}. Le
-            applicazioni registrate resteranno nel diario e potrai riprendere il
-            ciclo.
+            {t("treatment.stopText", { name: confirm.productName })}
           </p>
           <div className="modal-actions">
             <button
               className="button secondary"
               onClick={() => setConfirm(null)}
             >
-              Annulla
+              {t("common.cancel")}
             </button>
             <button
               className="button destructive"
@@ -465,13 +466,13 @@ export function TreatmentPanel({
                       `plants/${plant.id}/treatments/${confirm.id}?version=${plant._version}`,
                       { method: "DELETE" },
                     ),
-                  "Ciclo interrotto",
+                  t("treatment.stopped"),
                 )
                   .then(() => setConfirm(null))
                   .catch((e) => setError(e.message))
               }
             >
-              Interrompi ciclo
+              {t("treatment.stopConfirm")}
             </button>
           </div>
         </Modal>

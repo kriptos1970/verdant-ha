@@ -226,6 +226,14 @@ Etichette delle cure, scadenze e date usano la lingua attiva tramite `care-label
 
 Verifiche: 191 chiavi allineate, build TypeScript/Vite, 149 test backend e prova browser su archivio sintetico con giro, calendario e cronologia in inglese, senza errori console. Restano da migrare home, scheda pianta, prodotti, trattamenti, moduli di cura, guide e messaggi di errore del backend. Nessun dato reale modificato.
 
+### Internazionalizzazione P3b/P3c — moduli, prodotti, trattamenti (17 novembre 2026)
+
+Tradotti i moduli di cura (conferma e modifica attività, crescita, misure), la testata della scheda pianta, i prodotti su desktop e mobile con il relativo editor, e i trattamenti con pianificazione, modifica, interruzione e ripresa. Stati di salute, sintomi e aree usano etichette tradotte senza cambiare i valori salvati.
+
+Le API aggiungono un `code` stabile agli errori (`conflict`, `not_found`, `validation`, `forbidden`, `too_large`, `remote`). Il frontend usa messaggi inglesi generici per i codici noti; i dettagli specifici restano italiani finché non verranno associati a codici dedicati.
+
+Verifiche: 393 chiavi allineate, build TypeScript/Vite, **150 test backend** (nuovo test sui codici errore) e prova browser in inglese su prodotti, editor prodotto, trattamenti, moduli di cura e testata pianta. Restano home, dettaglio iOS completo, testi lunghi e messaggi specifici. Nessun dato reale modificato.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

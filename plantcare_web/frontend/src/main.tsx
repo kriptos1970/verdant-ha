@@ -71,6 +71,7 @@ import { IdentificationTool, SpeciesLibrary, BotanicalLookup, type PlantSeed } f
 import { CareCalendar, WeekStrip } from "./care-calendar";
 import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
 import { useCareLabels } from "./care-labels";
+import { useProductLabels } from "./product-labels";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -160,8 +161,9 @@ function Botanical({ small = false }: { small?: boolean }) {
   );
 }
 function App() {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const { actionLabel, dueLabel } = useCareLabels();
+  const { categoryLabel, formLabel } = useProductLabels();
   const [page, setPage] = useState<Page>("today"),
     [plants, setPlants] = useState<Plant[]>([]),
     [products, setProducts] = useState<Product[]>([]),
@@ -776,13 +778,9 @@ function App() {
                 <>
                   <div className="page-heading">
                     <div>
-                      <div className="eyebrow">
-                        QUELLO CHE SERVE AL TUO VERDE
-                      </div>
-                      <h1>Prodotti e fertilizzanti</h1>
-                      <p>
-                        Indicazioni, frequenze e note sempre a portata di mano.
-                      </p>
+                      <div className="eyebrow">{t("products.eyebrow")}</div>
+                      <h1>{t("products.title")}</h1>
+                      <p>{t("products.subtitle")}</p>
                     </div>
                     <FlaskConical size={30} className="muted" />
                   </div>
@@ -793,19 +791,19 @@ function App() {
                         <section className="panel product" key={p.id}>
                           <ProductPhoto product={p}/>
                           <h2>{p.name}</h2>
-                          <p>{p.brand || "Marca non indicata"}</p>
+                          <p>{p.brand || t("products.brandUnknown")}</p>
                           {p.applicationIntervalDays && (
                             <span className="pill">
-                              Ogni {p.applicationIntervalDays} giorni
+                              {plural("care.everyDays", p.applicationIntervalDays)}
                             </span>
                           )}
                           <p className="product-notes">
                             {p.dosage && (
                               <strong className="product-dose">
-                                Dose: {p.dosage}
+                                {t("products.dose", { dose: p.dosage })}
                               </strong>
                             )}
-                            {p.notes || "Nessuna nota."}
+                            {p.notes || t("products.noNotes")}
                           </p>
                           <div className="button-row">
                             <button
@@ -814,21 +812,21 @@ function App() {
                               onClick={() => setCycleProduct(p)}
                             >
                               <CalendarDays size={15} />
-                              Pianifica ciclo
+                              {t("products.planCycle")}
                             </button>
                             <button
                               className="button secondary"
                               onClick={() => setProductEditor(p)}
                             >
                               <Pencil size={15} />
-                              Modifica
+                              {t("products.edit")}
                             </button>
                             <button
                               className="icon-button danger"
-                              aria-label={`Elimina ${p.name}`}
+                              aria-label={t("products.deleteAria", { name: p.name })}
                               onClick={() =>
                                 setConfirm({
-                                  title: `Eliminare ${p.name}?`,
+                                  title: t("products.deleteTitle", { name: p.name }),
                                   run: async () => {
                                     await run(
                                       () =>
@@ -836,7 +834,7 @@ function App() {
                                           `fertilizers/${p.id}?version=${p._version}`,
                                           { method: "DELETE" },
                                         ),
-                                      "Prodotto eliminato",
+                                      t("products.deleted"),
                                     );
                                   },
                                 })
@@ -851,17 +849,14 @@ function App() {
                   ) : (
                     <div className="empty-state">
                       <FlaskConical />
-                      <h2>Il tuo scaffale dei prodotti</h2>
-                      <p>
-                        Aggiungi fertilizzanti e annota le indicazioni del
-                        produttore.
-                      </p>
+                      <h2>{t("products.emptyTitle")}</h2>
+                      <p>{t("products.emptyText")}</p>
                       <button
                         className="button primary"
                         onClick={() => setProductEditor("new")}
                       >
                         <Plus size={17} />
-                        Nuovo prodotto
+                        {t("products.new")}
                       </button>
                     </div>
                   )}
@@ -1501,7 +1496,7 @@ function PlantEditor({
             </datalist>
           </label>
           <label>
-            Categoria
+            {t("product.category")}
             <select
               value={draft.category}
               onChange={(e) => set("category", e.target.value)}
@@ -1731,6 +1726,7 @@ function ProductEditor({
   onSave: (p: Product) => Promise<void>;
 }) {
   const { t } = useI18n();
+  const { categoryLabel, formLabel } = useProductLabels();
   const [p, set] = useState<Product>(
     product || {
       id: uid(),
@@ -1748,7 +1744,7 @@ function ProductEditor({
   const upload=async(file?:File)=>{if(!file)return;setUploading(true);setError("");try{const form=new FormData();form.append("file",file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});set(p=>({...p,photoPath:photo.path}))}catch(e){setError((e as Error).message)}finally{setUploading(false)}};
   return (
     <Modal
-      title={product ? "Modifica prodotto" : "Nuovo prodotto"}
+      title={product ? t("product.editTitle") : t("product.newTitle")}
       onClose={onClose}
     >
       <form
@@ -1763,12 +1759,12 @@ function ProductEditor({
           </p>
         )}
         <label className="photo-upload product-photo-upload">
-          {photoURL(p.photoPath)?<img src={photoURL(p.photoPath,true)} alt="Foto del prodotto"/>:<Camera size={28}/>}
-          <span>{uploading?"Caricamento…":"Scegli una fotografia del prodotto"}<small>JPEG, PNG o WebP</small></span>
+          {photoURL(p.photoPath)?<img src={photoURL(p.photoPath,true)} alt={t("product.photoAlt")}/>:<Camera size={28}/>}
+          <span>{uploading?t("common.loading"):t("product.photo")}<small>{t("product.photoFormats")}</small></span>
           <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy||uploading} onChange={e=>void upload(e.target.files?.[0])}/>
         </label>
         <label>
-          Nome
+          {t("product.name")}
           <input
             autoFocus
             required
@@ -1777,7 +1773,7 @@ function ProductEditor({
           />
         </label>
         <label>
-          Marca
+          {t("product.brand")}
           <input
             value={p.brand}
             onChange={(e) => set({ ...p, brand: e.target.value })}
@@ -1785,7 +1781,7 @@ function ProductEditor({
         </label>
         <div className="form-grid">
           <label>
-            Categoria
+            {t("product.category")}
             <select
               value={p.category || "Fertilizzante"}
               onChange={(e) => set({ ...p, category: e.target.value })}
@@ -1799,12 +1795,12 @@ function ProductEditor({
                 "Ammendante",
                 "Altro trattamento",
               ].map((c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{categoryLabel(c)}</option>
               ))}
             </select>
           </label>
           <label>
-            Formato
+            {t("product.form")}
             <select
               value={p.form || "Liquido"}
               onChange={(e) => set({ ...p, form: e.target.value })}
@@ -1817,29 +1813,29 @@ function ProductEditor({
                 "Organico",
                 "Altro",
               ].map((c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{formLabel(c)}</option>
               ))}
             </select>
           </label>
         </div>
         <label>
-          Dose del produttore
+          {t("product.dosage")}
           <input
             value={p.dosage || ""}
             onChange={(e) => set({ ...p, dosage: e.target.value })}
-            placeholder="Es. quantità per litro"
+            placeholder={t("product.dosagePlaceholder")}
           />
         </label>
         <label>
-          Modalità d’uso
+          {t("product.method")}
           <input
             value={p.applicationMethod || ""}
             onChange={(e) => set({ ...p, applicationMethod: e.target.value })}
-            placeholder="Es. diluire nell’acqua o applicazione fogliare"
+            placeholder={t("product.methodPlaceholder")}
           />
         </label>
         <label>
-          Intervallo del produttore · giorni
+          {t("product.interval")}
           <input
             type="number"
             min={1}
@@ -1856,7 +1852,7 @@ function ProductEditor({
           />
         </label>
         <label>
-          Indicazioni e dosaggio
+          {t("product.notes")}
           <textarea
             rows={4}
             value={p.notes}
@@ -1868,7 +1864,7 @@ function ProductEditor({
             {t("common.cancel")}
           </button>
           <button disabled={busy || uploading} className="button primary">
-            Salva prodotto
+            {t("product.save")}
           </button>
         </div>
       </form>
@@ -2269,20 +2265,19 @@ function PlantDetail({
                   </>
                 ) : (
                   <p className="muted">
-                    Profilo non disponibile. L’assenza di una scheda non
-                    significa che la pianta sia sicura.
+                    {t("detail.safetyMissing")}
                   </p>
                 )}
               </div>
               <div className="detail-section">
-                <h3>Le tue note</h3>
+                <h3>{t("detail.yourNotes")}</h3>
                 <p className="preserve">
-                  {plant.notes || "Nessuna nota, per ora."}
+                  {plant.notes || t("detail.noNotes")}
                 </p>
               </div>
               <button className="text-button danger" onClick={onDelete}>
                 <Trash2 size={15} />
-                Elimina pianta
+                {t("detail.deletePlant")}
               </button>
             </>
           )}

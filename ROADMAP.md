@@ -13,6 +13,7 @@ Current release: **0.10.3**. The project is usable on a real Home Assistant inst
 - [x] Canonical care kinds and health values in the backend, with the legacy Italian API contract preserved.
 - [x] Italian/English message catalogs, language selector, `Intl` formatting and CI key/placeholder parity; navigation, tools and settings migrated.
 - [x] Care round, calendar and history localized, including due labels and plural forms.
+- [x] Care forms, plant detail header, products, product editor and treatments localized; API errors expose stable codes.
 
 ## Now — close the consolidation step
 

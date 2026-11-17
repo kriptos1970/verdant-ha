@@ -46,6 +46,18 @@ def test_calendar_endpoint_keeps_the_legacy_frontend_values(client):
     assert any(a['kind']=='Annaffia' for a in actions)
     assert not any(a['kind']=='water' for a in actions)
 
+
+def test_error_responses_expose_stable_codes(client):
+    assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
+    p=create(client)
+    path=f"/api/plants/{p['id']}/events"
+    invalid=client.post(path,json={'kind':'Qualcosa'})
+    assert invalid.status_code==422 and invalid.json()['code']=='validation'
+    p['name']='Changed'
+    assert client.put(f"/api/plants/{p['id']}?version=1",json=p).status_code==200
+    stale=client.put(f"/api/plants/{p['id']}?version=1",json=p)
+    assert stale.status_code==409 and stale.json()['code']=='conflict'
+
 def test_duplicate_event_and_delete_recalculate(client):
     p=create(client)
     event={'id':str(uuid4()).upper(),'kind':'Annaffia','date':'2026-11-09T12:00:00Z'}

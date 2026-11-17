@@ -1,3 +1,37 @@
+const EN_ERRORS: Record<string, string> = {
+  bad_request: "Invalid request.",
+  unauthorized: "Session expired. Open PlantCare from Home Assistant again.",
+  forbidden: "Access is allowed only through Home Assistant.",
+  not_found: "Item not found.",
+  conflict: "The data changed. Reload and try again.",
+  too_large: "The request is too large.",
+  validation: "Check the data and try again.",
+  error: "The operation failed. Try again.",
+};
+
+function activeLanguage() {
+  try {
+    const preference = localStorage.getItem("plantcare.language");
+    if (preference === "it" || preference === "en") return preference;
+  } catch {
+    // Private mode: fall back to the document or browser language.
+  }
+  const language = (
+    document.documentElement.lang ||
+    navigator.language ||
+    ""
+  ).toLowerCase();
+  return language.startsWith("it") ? "it" : "en";
+}
+
+function errorMessage(code: string, detail: unknown) {
+  if (activeLanguage() === "en" && EN_ERRORS[code]) return EN_ERRORS[code];
+  if (typeof detail === "string" && detail) return detail;
+  return activeLanguage() === "en"
+    ? "Check the data and try again."
+    : "Controlla i dati inseriti.";
+}
+
 export async function api<T>(
   path: string,
   options: RequestInit = {},
@@ -8,18 +42,21 @@ export async function api<T>(
     headers.set("Content-Type", "application/json");
   const response = await fetch(`api/${path}`, { ...options, headers });
   if (!response.ok) {
-    let message = `Operazione non riuscita (HTTP ${response.status}). Riprova.`;
+    let code =
+      response.status === 401
+        ? "unauthorized"
+        : response.status === 403
+          ? "forbidden"
+          : "error";
+    let detail: unknown;
     try {
       const body = await response.json();
-      message =
-        typeof body.detail === "string"
-          ? body.detail
-          : "Controlla i dati inseriti.";
+      if (typeof body.code === "string") code = body.code;
+      detail = body.detail;
     } catch {
-      if (response.status === 401 || response.status === 403)
-        message = "Sessione scaduta. Riapri PlantCare da Home Assistant.";
+      // Keep the status-derived code.
     }
-    throw new Error(message);
+    throw new Error(errorMessage(code, detail));
   }
   if (response.status === 204) return undefined as T;
   return response.json();
