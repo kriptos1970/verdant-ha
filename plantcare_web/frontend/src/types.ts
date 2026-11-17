@@ -14,6 +14,47 @@ export type Action = {
   includesFertilizing?: boolean;
   canIncludeFertilizing?: boolean;
 };
+export type PropertyLevel =
+  | "veryLow"
+  | "low"
+  | "moderate"
+  | "high"
+  | "veryHigh"
+  | "unknown";
+
+export type DrainageQuality = "poor" | "moderate" | "good" | "excellent" | "unknown";
+
+export type PlantSetup = {
+  container?: {
+    material?: string | null;
+    diameterCM?: number | null;
+    heightCM?: number | null;
+    volumeLiters?: number | null;
+    drainageHoles?: boolean | null;
+    drainageQuality?: DrainageQuality;
+    hasCachepot?: boolean | null;
+    hasSaucer?: boolean | null;
+  } | null;
+  substrate?: {
+    displayName?: string | null;
+    commercialProductName?: string | null;
+    components?: unknown[];
+    properties?: {
+      waterRetention?: PropertyLevel;
+      drainage?: PropertyLevel;
+      aeration?: PropertyLevel;
+      organicContent?: PropertyLevel;
+      compactionRisk?: PropertyLevel;
+      pH?: number | null;
+      ecMicrosiemensPerCM?: number | null;
+    };
+    propertyConfidence?: number;
+    propertySource?: string;
+  } | null;
+  recordedAt?: string;
+  modelVersion?: number;
+};
+
 export type CareEvent = {
   id: string;
   kind: string;
@@ -64,6 +105,11 @@ export type Plant = {
   healthPhotoSessions?: HealthSession[];
   fertilizerProductID?: string | null;
   fertilizerDose?: string;
+  fertilizerType?: string | null;
+  lastFertilized?: string | null;
+  plantingMethod?: string | null;
+  careFrequencyPreference?: string | null;
+  setup?: PlantSetup | null;
   potMaterial?: string;
   potDiameterCM?: number;
   heightCM?: number;

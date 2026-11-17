@@ -355,8 +355,10 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Confronto campo per campo tra `PlantEditorView.swift` e il form web: **38 voci**, 17 presenti, 4 parziali, 17 assenti (posizione reale, metodo di coltivazione, altezza/volume vaso, qualità drenaggio, cachepot, sottovaso, substrato e proprietà, ritmo delle cure, ultima fertilizzazione, tipo/dose fertilizzante, identificazione nel form).
 - I dati mancanti sono già nell’archivio reale (`plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `setup.container`): l’allineamento è quasi tutto interfaccia. Proposta in tre tranche in [PLANT_EDITOR_COMPARISON.md](PLANT_EDITOR_COMPARISON.md).
 
-## Scheda pianta — altezza e vaso nel form (17 novembre 2026)
+## Scheda pianta — allineamento al nativo (17 novembre 2026)
 
-- Il form di modifica pianta include ora **Altezza · cm**; la sezione richiudibile si chiama “Vaso, altezza e altre attività” e raccoglie diametro, materiale, fori di drenaggio e altezza.
-- La scheda pianta mostra il dato **Altezza** quando presente; la sintesi iOS mostrava già Posizione, Vaso e Altezza (con “Da aggiungere” se mancanti).
-- Verifica: altezza 55 cm salvata su archivio sintetico e comparsa nella scheda; build, **800 chiavi i18n**, 180 test backend.
+- Il form include ora posizione reale (dal piano), metodo di coltivazione, altezza, ritmo delle cure con ridimensionamento degli intervalli, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori delle attività con valori predefiniti e valori iniziali per una nuova pianta (altezza 30, vaso 18 in terracotta, drenaggio attivo).
+- Nuova sezione “Vaso e substrato”: qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e proprietà (ritenzione, drenaggio, aerazione). I valori viaggiano in `setup.container` e `setup.substrate`; materiale, diametro e fori restano sincronizzati con i campi esistenti.
+- La scheda pianta mostra **Altezza** quando presente; la sintesi iOS mostrava già Posizione, Vaso e Altezza.
+- Restano: identificazione Pl@ntNet dentro il form (il web ha lo strumento separato) e la modalità “Intelligente” applicata dal pianificatore, non dal form.
+- Verifica: salvataggio e rilettura su archivio sintetico di `setup` (vaso con qualità, altezza, volume, cachepot, sottovaso; substrato con tre proprietà), ritmo “Diradata” con acqua 7→8 giorni, attività con intervallo, ultima fertilizzazione e tipo. Build, **843 chiavi i18n**, 180 test backend.

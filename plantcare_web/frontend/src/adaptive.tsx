@@ -16,7 +16,7 @@ export type AdaptivePlan = {
   adjustments?: {id:string; domain:string; factor:string; baselineDays:number; resultingDays:number; explanation:string}[];
   climateRevisionHistory?: {id:string; date:string; previousWateringDays:number; newWateringDays:number; previousFertilizingDays:number; newFertilizingDays:number}[];
 };
-const placements = ["Balcone riparato","Pieno sole","Ombra","Mezza ombra · balcone","Patio","Pianerottolo","Interno luminoso","Interno poco luminoso"];
+export const placements = ["Balcone riparato","Pieno sole","Ombra","Mezza ombra · balcone","Patio","Pianerottolo","Interno luminoso","Interno poco luminoso"];
 export function AdaptiveEditor({plant,onClose,onApplied}:{plant:Plant;onClose:()=>void;onApplied:()=>Promise<void>}) {
   const {t,formatDate}=useI18n();
   const {placementLabel}=useDomainLabels();

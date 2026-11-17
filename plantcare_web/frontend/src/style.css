@@ -3625,3 +3625,16 @@ progress::-webkit-progress-value {
     font-size: 13px;
   }
 }
+
+/* Plant editor: activity toggles */
+.activity-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.activity-field input[type="number"] {
+  max-width: 130px;
+}
+.activity-field .check-label {
+  margin: 0;
+}

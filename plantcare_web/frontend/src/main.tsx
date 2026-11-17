@@ -53,13 +53,16 @@ import type {
   Growth,
   CareSelection,
   Treatment,
+  PlantSetup,
+  PropertyLevel,
+  DrainageQuality,
 } from "./types";
 import { api, photoURL, uid, todayISO } from "./api";
 import "./style.css";
 import "./ios-layout.css";
 import {IOSProducts,IOSPlantOverview,useIOSLayout} from "./ios-layout";
 import { PlantAssistant, AIModelCatalog } from "./ai-assistant";
-import { AdaptiveEditor, CareInsights } from "./adaptive";
+import { AdaptiveEditor, CareInsights, placements } from "./adaptive";
 import { Avatar, ProductPhoto, Modal, eventIcon } from "./ui";
 import { CareRound } from "./care-round";
 import { TreatmentEditor, TreatmentPanel } from "./treatments";
@@ -1333,7 +1336,7 @@ function PlantEditor({
   onSave: (p: Plant) => Promise<void>;
 }) {
   const { t } = useI18n();
-  const { categoryLabel, lightLabel, potLabel, planModeLabel } = useDomainLabels();
+  const { categoryLabel, lightLabel, potLabel, planModeLabel, placementLabel } = useDomainLabels();
   const { kindLabel } = useCareLabels();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
@@ -1352,12 +1355,38 @@ function PlantEditor({
           notes: "",
           history: [],
           carePlanMode: "Manuale",
+          heightCM: 30,
+          potMaterial: "Terracotta",
+          potDiameterCM: 18,
+          potHasDrainage: true,
+          plantingMethod: "In vaso",
+          careFrequencyPreference: "Normale",
+          fertilizerType: "",
           _version: 0,
           _schedule: [],
           _actions: [],
           _treatments: [],
           ...seed?.draft,
         },
+  );
+  const container = plant?.setup?.container;
+  const substrate = plant?.setup?.substrate;
+  const [drainageQuality, setDrainageQuality] = useState<DrainageQuality>(
+    container?.drainageQuality || "unknown",
+  );
+  const [potHeight, setPotHeight] = useState(container?.heightCM ?? 0);
+  const [potVolume, setPotVolume] = useState(container?.volumeLiters ?? 0);
+  const [hasCachepot, setHasCachepot] = useState(container?.hasCachepot === true);
+  const [hasSaucer, setHasSaucer] = useState(container?.hasSaucer === true);
+  const [substrateName, setSubstrateName] = useState(substrate?.displayName || "");
+  const [retention, setRetention] = useState<PropertyLevel>(
+    substrate?.properties?.waterRetention || "unknown",
+  );
+  const [substrateDrainage, setSubstrateDrainage] = useState<PropertyLevel>(
+    substrate?.properties?.drainage || "unknown",
+  );
+  const [aeration, setAeration] = useState<PropertyLevel>(
+    substrate?.properties?.aeration || "unknown",
   );
   const [error, setError] = useState(""),
     [uploading, setUploading] = useState(false);
@@ -1384,6 +1413,74 @@ function PlantEditor({
   };
   const inputDate = (value: string) =>
     new Date(value).toLocaleDateString("en-CA");
+  const buildSetup = (value: Plant): PlantSetup => {
+    const hasSubstrate =
+      substrateName.trim() !== "" ||
+      retention !== "unknown" ||
+      substrateDrainage !== "unknown" ||
+      aeration !== "unknown";
+    return {
+      container:
+        value.plantingMethod === "In piena terra"
+          ? null
+          : {
+              material: value.potMaterial || null,
+              diameterCM: value.potDiameterCM ?? null,
+              heightCM: potHeight > 0 ? potHeight : null,
+              volumeLiters: potVolume > 0 ? potVolume : null,
+              drainageHoles: value.potHasDrainage ?? null,
+              drainageQuality,
+              hasCachepot,
+              hasSaucer,
+            },
+      substrate: hasSubstrate
+        ? {
+            displayName: substrateName.trim() || null,
+            commercialProductName: substrate?.commercialProductName || null,
+            components: substrate?.components || [],
+            properties: {
+              organicContent: substrate?.properties?.organicContent || "unknown",
+              compactionRisk: substrate?.properties?.compactionRisk || "unknown",
+              pH: substrate?.properties?.pH ?? null,
+              ecMicrosiemensPerCM:
+                substrate?.properties?.ecMicrosiemensPerCM ?? null,
+              waterRetention: retention,
+              drainage: substrateDrainage,
+              aeration,
+            },
+            propertyConfidence: 1,
+            propertySource: "manualOverride",
+          }
+        : null,
+      recordedAt: new Date().toISOString(),
+      modelVersion: 1,
+    };
+  };
+  const frequencies = [
+    { value: "Molto frequente", multiplier: 0.7, key: "plantEditor.freq.veryFrequent" },
+    { value: "Frequente", multiplier: 0.85, key: "plantEditor.freq.frequent" },
+    { value: "Normale", multiplier: 1, key: "plantEditor.freq.normal" },
+    { value: "Diradata", multiplier: 1.15, key: "plantEditor.freq.spaced" },
+    { value: "Molto diradata", multiplier: 1.3, key: "plantEditor.freq.verySpaced" },
+  ] as const;
+  const changeFrequency = (value: string) => {
+    const from =
+      frequencies.find((f) => f.value === (draft.careFrequencyPreference || "Normale")) ??
+      frequencies[2];
+    const to = frequencies.find((f) => f.value === value) ?? frequencies[2];
+    const scaled = (days: number, min: number, max: number) =>
+      Math.min(max, Math.max(min, Math.round((days / from.multiplier) * to.multiplier)));
+    setDraft((current) => ({
+      ...current,
+      careFrequencyPreference: value,
+      wateringInterval: current.wateringInterval
+        ? scaled(current.wateringInterval, 1, 120)
+        : current.wateringInterval,
+      fertilizingInterval: current.fertilizingInterval
+        ? scaled(current.fertilizingInterval, 7, 365)
+        : current.fertilizingInterval,
+    }));
+  };
   return (
     <Modal
       title={plant ? t("plantEditor.editTitle") : t("plantEditor.newTitle")}
@@ -1392,7 +1489,7 @@ function PlantEditor({
       <form
         onSubmit={async(e) => {
           e.preventDefault();setError("");setUploading(true);
-          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}await onSave(value)}catch(e){setError((e as Error).message)}finally{setUploading(false)}
+          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
         }}
       >
         {error && (
@@ -1483,6 +1580,48 @@ function PlantEditor({
             </select>
           </label>
           <label>{t("plantEditor.family")}<input value={draft.family || ""} maxLength={300} onChange={e=>set("family",e.target.value)} placeholder={t("plantEditor.familyPlaceholder")}/></label>
+          {draft.adaptivePlan && (
+            <label>
+              {t("plantEditor.placement")}
+              <select
+                value={draft.adaptivePlan.placement || "Interno luminoso"}
+                onChange={(e) =>
+                  set("adaptivePlan", {
+                    ...draft.adaptivePlan,
+                    placement: e.target.value,
+                  })
+                }
+              >
+                {placements.map((p) => (
+                  <option key={p} value={p}>{placementLabel(p)}</option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label>
+            {t("plantEditor.plantingMethod")}
+            <select
+              value={draft.plantingMethod || "In vaso"}
+              onChange={(e) => set("plantingMethod", e.target.value)}
+            >
+              <option value="In vaso">{t("plantEditor.method.pot")}</option>
+              <option value="In piena terra">{t("plantEditor.method.ground")}</option>
+              <option value="Idroponica">{t("plantEditor.method.hydroponic")}</option>
+            </select>
+          </label>
+          <label>
+            {t("plantEditor.height")}
+            <input
+              type="number"
+              min={0}
+              max={10000}
+              step={1}
+              value={draft.heightCM ?? ""}
+              onChange={(e) =>
+                set("heightCM", e.target.value ? Number(e.target.value) : null)
+              }
+            />
+          </label>
           <label>
             {t("plantEditor.plan")}
             <select
@@ -1494,6 +1633,17 @@ function PlantEditor({
               {draft.carePlanMode === "Intelligente" && (
                 <option value="Intelligente">{t("detail.planMode.smart")}</option>
               )}
+            </select>
+          </label>
+          <label>
+            {t("plantEditor.frequency")}
+            <select
+              value={draft.careFrequencyPreference || "Normale"}
+              onChange={(e) => changeFrequency(e.target.value)}
+            >
+              {frequencies.map((f) => (
+                <option key={f.value} value={f.value}>{t(f.key)}</option>
+              ))}
             </select>
           </label>
           <label>
@@ -1553,6 +1703,29 @@ function PlantEditor({
               }}
             />
           </label>
+          <label>
+            {t("plantEditor.lastFertilized")}
+            <input
+              type="date"
+              value={draft.lastFertilized ? inputDate(draft.lastFertilized) : ""}
+              onChange={(e) =>
+                set(
+                  "lastFertilized",
+                  e.target.value
+                    ? new Date(e.target.value + "T12:00:00").toISOString()
+                    : null,
+                )
+              }
+            />
+          </label>
+          <label>
+            {t("plantEditor.fertilizerType")}
+            <input
+              value={draft.fertilizerType || ""}
+              onChange={(e) => set("fertilizerType", e.target.value)}
+              placeholder={t("plantEditor.fertilizerTypePlaceholder")}
+            />
+          </label>
           <label className="full">
             {t("plantEditor.fertilizer")}
             <select
@@ -1569,33 +1742,63 @@ function PlantEditor({
               ))}
             </select>
           </label>
+          {draft.fertilizerProductID && (
+            <label>
+              {t("plantEditor.fertilizerDose")}
+              <select
+                value={draft.fertilizerDose || "Dose intera"}
+                onChange={(e) => set("fertilizerDose", e.target.value)}
+              >
+                <option value="Dose intera">{t("plantEditor.dose.full")}</option>
+                <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
+                <option value="½ dose">{t("plantEditor.dose.half")}</option>
+                <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
+                <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
+              </select>
+            </label>
+          )}
         </div>
         <details className="form-details">
-          <summary>{t("plantEditor.other")}</summary>
+          <summary>{t("plantEditor.activities")}</summary>
           <div className="form-grid">
             {[
-              ["rotationInterval", "Rotazione"],
-              ["inspectionInterval", "Controllo salute"],
-              ["repottingInterval", "Rinvaso"],
-              ["pruningInterval", "Potatura"],
-              ["progressInterval", "Diario di crescita"],
-            ].map(([key, label]) => (
-              <label key={key}>
-                {kindLabel(label)} · giorni
-                <input
-                  type="number"
-                  min={1}
-                  max={3650}
-                  placeholder={t("plantEditor.notScheduled")}
-                  value={
-                    (draft as unknown as Record<string, number>)[key] ?? ""
-                  }
-                  onChange={(e) =>
-                    set(key, e.target.value ? Number(e.target.value) : null)
-                  }
-                />
-              </label>
-            ))}
+              ["rotationInterval", "Rotazione", 7],
+              ["inspectionInterval", "Controllo salute", 7],
+              ["progressInterval", "Diario di crescita", 30],
+              ["pruningInterval", "Potatura", 90],
+              ["repottingInterval", "Rinvaso", 365],
+            ].map(([key, label, fallback]) => {
+              const value = (draft as unknown as Record<string, number | null>)[key as string];
+              return (
+                <div key={key as string} className="activity-field">
+                  <label className="check-label">
+                    <input
+                      type="checkbox"
+                      checked={value != null}
+                      onChange={(e) => set(key as string, e.target.checked ? fallback : null)}
+                    />
+                    {kindLabel(label as string)}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={3650}
+                    aria-label={`${kindLabel(label as string)} · ${t("plantEditor.everyDays")}`}
+                    disabled={value == null}
+                    value={value ?? ""}
+                    onChange={(e) =>
+                      set(key as string, e.target.value ? Number(e.target.value) : null)
+                    }
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
+        </details>
+        <details className="form-details">
+          <summary>{t("plantEditor.potSubstrate")}</summary>
+          <div className="form-grid">
             <label>
               {t("plantEditor.potDiameter")}
               <input
@@ -1604,10 +1807,7 @@ function PlantEditor({
                 max={500}
                 value={draft.potDiameterCM ?? ""}
                 onChange={(e) =>
-                  set(
-                    "potDiameterCM",
-                    e.target.value ? Number(e.target.value) : null,
-                  )
+                  set("potDiameterCM", e.target.value ? Number(e.target.value) : null)
                 }
               />
             </label>
@@ -1633,16 +1833,36 @@ function PlantEditor({
               </select>
             </label>
             <label>
-              {t("plantEditor.height")}
+              {t("plantEditor.drainageQuality")}
+              <select
+                value={drainageQuality}
+                onChange={(e) => setDrainageQuality(e.target.value as DrainageQuality)}
+              >
+                <option value="unknown">{t("plantEditor.drainage.unknown")}</option>
+                <option value="poor">{t("plantEditor.drainage.poor")}</option>
+                <option value="moderate">{t("plantEditor.drainage.moderate")}</option>
+                <option value="good">{t("plantEditor.drainage.good")}</option>
+                <option value="excellent">{t("plantEditor.drainage.excellent")}</option>
+              </select>
+            </label>
+            <label>
+              {t("plantEditor.potHeight")}
               <input
                 type="number"
                 min={0}
-                max={10000}
-                step={1}
-                value={draft.heightCM ?? ""}
-                onChange={(e) =>
-                  set("heightCM", e.target.value ? Number(e.target.value) : null)
-                }
+                max={500}
+                value={potHeight || ""}
+                onChange={(e) => setPotHeight(Number(e.target.value) || 0)}
+              />
+            </label>
+            <label>
+              {t("plantEditor.potVolume")}
+              <input
+                type="number"
+                min={0}
+                max={2000}
+                value={potVolume || ""}
+                onChange={(e) => setPotVolume(Number(e.target.value) || 0)}
               />
             </label>
           </div>
@@ -1654,6 +1874,45 @@ function PlantEditor({
             />
             {t("plantEditor.drainage")}
           </label>
+          <label className="check-label">
+            <input type="checkbox" checked={hasCachepot} onChange={(e) => setHasCachepot(e.target.checked)} />
+            {t("plantEditor.cachepot")}
+          </label>
+          <label className="check-label">
+            <input type="checkbox" checked={hasSaucer} onChange={(e) => setHasSaucer(e.target.checked)} />
+            {t("plantEditor.saucer")}
+          </label>
+          <div className="form-grid">
+            <label className="full">
+              {t("plantEditor.substrate")}
+              <input
+                value={substrateName}
+                onChange={(e) => setSubstrateName(e.target.value)}
+                placeholder={t("plantEditor.substratePlaceholder")}
+              />
+            </label>
+            {[
+              ["retention", "plantEditor.substrateRetention", retention, setRetention],
+              ["drainage", "plantEditor.substrateDrainage", substrateDrainage, setSubstrateDrainage],
+              ["aeration", "plantEditor.substrateAeration", aeration, setAeration],
+            ].map(([id, key, value, setter]) => (
+              <label key={id as string}>
+                {t(key as never)}
+                <select
+                  value={value as string}
+                  onChange={(e) => (setter as (v: PropertyLevel) => void)(e.target.value as PropertyLevel)}
+                >
+                  <option value="unknown">{t("plantEditor.level.unknown")}</option>
+                  <option value="veryLow">{t("plantEditor.level.veryLow")}</option>
+                  <option value="low">{t("plantEditor.level.low")}</option>
+                  <option value="moderate">{t("plantEditor.level.moderate")}</option>
+                  <option value="high">{t("plantEditor.level.high")}</option>
+                  <option value="veryHigh">{t("plantEditor.level.veryHigh")}</option>
+                </select>
+              </label>
+            ))}
+          </div>
+          <p className="muted small-text">{t("plantEditor.substrateHint")}</p>
         </details>
         <label>
           {t("event.note")}

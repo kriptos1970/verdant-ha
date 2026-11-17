@@ -34,54 +34,53 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 | Famiglia botanica | ✅ | – | |
 | Categoria | ✅ | – | |
 | Luogo / ambiente | ✅ | – | input con suggerimenti; il nativo ha selettore e creazione guidata |
-| Esposizione reale (`placement`) | ❌ | `adaptivePlan.placement` | il web la chiede solo nel pianificatore |
+| Esposizione reale (`placement`) | ✅ con piano | `adaptivePlan.placement` | il web la chiede solo nel pianificatore |
 | Esposizione (`light`) | ✅ | – | |
 | Altezza | ✅ | `heightCM` | aggiunta il 17 novembre 2026 |
-| Metodo di coltivazione | ❌ | `plantingMethod` | es. “In vaso” già presente nell’archivio reale |
+| Metodo di coltivazione | ✅ | `plantingMethod` | es. “In vaso” già presente nell’archivio reale |
 | Materiale del vaso | ✅ | `potMaterial` e `setup.container.material` | |
 | Diametro del vaso | ✅ | `potDiameterCM` / `setup.container.diameterCM` | |
 | Fori di drenaggio | ✅ | `potHasDrainage` | il nativo ha anche `setup.container.drainageHoles` |
-| Qualità del drenaggio | ❌ | `setup.container.drainageQuality` | |
-| Altezza del vaso | ❌ | `setup.container.heightCM` | |
-| Volume del vaso in litri | ❌ | `setup.container.volumeLiters` | |
-| Cachepot | ❌ | `setup.container.hasCachepot` | |
-| Sottovaso | ❌ | `setup.container.hasSaucer` | |
-| Nome substrato | ❌ | `setup.substrate.displayName` | |
-| Ritenzione idrica substrato | ❌ | `setup.substrate.properties.waterRetention` | |
-| Drenaggio substrato | ❌ | `setup.substrate.properties.drainage` | |
-| Aerazione substrato | ❌ | `setup.substrate.properties.aeration` | |
+| Qualità del drenaggio | ✅ | `setup.container.drainageQuality` | |
+| Altezza del vaso | ✅ | `setup.container.heightCM` | |
+| Volume del vaso in litri | ✅ | `setup.container.volumeLiters` | |
+| Cachepot | ✅ | `setup.container.hasCachepot` | |
+| Sottovaso | ✅ | `setup.container.hasSaucer` | |
+| Nome substrato | ✅ | `setup.substrate.displayName` | |
+| Ritenzione idrica substrato | ✅ | `setup.substrate.properties.waterRetention` | |
+| Drenaggio substrato | ✅ | `setup.substrate.properties.drainage` | |
+| Aerazione substrato | ✅ | `setup.substrate.properties.aeration` | |
 | Tipo di piano | 🟡 | `carePlanMode` | web: Manuale/AI; “Intelligente” solo se già attivo; nativo: tre modalità con ricalcolo nel form |
-| Ritmo delle cure | ❌ | `careFrequencyPreference` | nell’archivio reale è “Molto frequente”; il nativo ridimensiona gli intervalli |
+| Ritmo delle cure | ✅ | `careFrequencyPreference` | nell’archivio reale è “Molto frequente”; il nativo ridimensiona gli intervalli |
 | Spiegazione della modalità | 🟡 | – | il web mostra un’indicazione, il nativo una spiegazione per modalità |
 | Annaffia ogni N giorni | ✅ | – | |
 | Ultima annaffiatura | ✅ | – | |
 | Fertilizza ogni N giorni | ✅ | – | |
-| Ultima fertilizzazione | ❌ | `lastFertilized` | presente nell’archivio |
-| Tipo di fertilizzante (senza prodotti) | ❌ | `fertilizerType` | presente nell’archivio |
+| Ultima fertilizzazione | ✅ | `lastFertilized` | presente nell’archivio |
+| Tipo di fertilizzante (senza prodotti) | ✅ | `fertilizerType` | presente nell’archivio |
 | Prodotto fertilizzante | ✅ | – | |
-| Dose del fertilizzante | ❌ | `fertilizerDose` | es. “Dose intera” già presente |
-| Interruttore attività aggiuntive | 🟡 | – | il web ha solo l’intervallo: vuoto = disattiva |
-| Rotazione, controllo salute, diario, potatura, rinvaso | 🟡 | – | mancano gli interruttori e i limiti di intervallo del nativo |
+| Dose del fertilizzante | ✅ | `fertilizerDose` | es. “Dose intera” già presente |
+| Interruttore attività aggiuntive | ✅ | – | il web ha solo l’intervallo: vuoto = disattiva |
+| Rotazione, controllo salute, diario, potatura, rinvaso | ✅ | – | mancano gli interruttori e i limiti di intervallo del nativo |
 | Con te dal | ✅ | – | |
 | Note | ✅ | – | |
 
 ## Differenze di comportamento
 
 - **Piano intelligente**: il nativo applica il ricalcolo quando si sceglie “Intelligente” nel form; il web lo vieta (`422`) e rimanda a “Configura piano intelligente” nella scheda pianta. Il 17 novembre 2026 quel pulsante è stato reso raggiungibile anche da telefono.
-- **Nuova pianta**: il nativo precompila altezza 30 cm, vaso in terracotta da 18 cm e drenaggio attivo; il web lascia vuoto.
+- **Nuova pianta**: il web precompila ora altezza 30 cm, vaso in terracotta da 18 cm, drenaggio attivo, metodo “In vaso” e ritmo “Normale”.
 - **Ritmo delle cure**: il nativo ridimensiona subito gli intervalli; il web non espone la preferenza.
-- **Identificazione**: solo il nativo la integra nel form, con consenso esplicito prima dell’invio della foto.
+- **Identificazione**: resta solo nel nativo; il web usa lo strumento “Identifica” separato. È l’unico campo del confronto ancora assente.
 
 ## Sintesi
 
 - Voci confrontate: **38** (33 campi singoli, 5 attività raggruppate).
-- Presenti nel form web: **17** intere, **4** parziali, **17** assenti.
+- Presenti nel form web: **34** intere, **2** parziali, **2** assenti (identificazione e reidentificazione nel form).
 - I dati mancanti sono in gran parte **già nell’archivio**: il backend conserva i campi extra (`extra='allow'`) e l’archivio reale contiene `plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `heightCM` e `setup.container` (materiale, diametro, drenaggio, cachepot, sottovaso, qualità). L’allineamento è quindi soprattutto interfaccia, senza migrazione.
 
-## Proposta di allineamento
+## Stato dopo l’allineamento del 17 novembre 2026
 
-1. **Profilo fisico e vaso/substrato** (dati già presenti): metodo di coltivazione, qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà. È il gruppo che hai segnalato come mancante.
-2. **Piano**: ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante; modalità a tre valori con spiegazione. Da decidere se ricalcolare il piano dentro il form come il nativo o mantenere il pianificatore separato.
-3. **Rifiniture**: interruttori delle attività, valori predefiniti per una nuova pianta, identificazione Pl@ntNet nel form con consenso.
-
-Il confronto è documentale: nessuna di queste modifiche è ancora implementata oltre ad altezza e campi vaso di base.
+- **Fatto**: posizione reale, metodo di coltivazione, altezza (già), qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà, ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori e valori predefiniti delle attività, valori iniziali per una nuova pianta.
+- **Parziale**: la modalità a tre valori resta Manuale/AI nel form; “Intelligente” si applica dal pianificatore, con spiegazione nel form. La spiegazione per modalità è abbreviata.
+- **Assente**: identificazione e reidentificazione Pl@ntNet dentro il form; il web mantiene lo strumento separato con il proprio consenso.
+- **Persistenza**: i campi viaggiano in `setup` (container e substrato) e nei campi già previsti dall’archivio; verificati su archivio sintetico con salvataggio e rilettura.
