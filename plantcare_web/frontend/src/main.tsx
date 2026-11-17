@@ -33,6 +33,7 @@ import {
   Flower2,
   Menu,
   MapPin,
+  Ruler,
   ShieldCheck,
   AlertCircle,
   LoaderCircle,
@@ -1659,6 +1660,19 @@ function PlantEditor({
                 ))}
               </select>
             </label>
+            <label>
+              {t("plantEditor.height")}
+              <input
+                type="number"
+                min={0}
+                max={10000}
+                step={1}
+                value={draft.heightCM ?? ""}
+                onChange={(e) =>
+                  set("heightCM", e.target.value ? Number(e.target.value) : null)
+                }
+              />
+            </label>
           </div>
           <label className="check-label">
             <input
@@ -2187,6 +2201,13 @@ function PlantDetail({
                     <strong>
                       {plant.potDiameterCM} cm · {potLabel(plant.potMaterial) || "—"}
                     </strong>
+                  </div>
+                )}
+                {plant.heightCM != null && (
+                  <div className="fact">
+                    <Ruler size={18} />
+                    <span>{t("detail.height")}</span>
+                    <strong>{plant.heightCM} cm</strong>
                   </div>
                 )}
                 {product && (
