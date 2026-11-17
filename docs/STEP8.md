@@ -19,3 +19,23 @@ Il server continua a leggere i documenti JSON completi per il calendario nativo;
 Restano il collaudo Companion/iPhone fisico e della scansione QR, la revisione dei file fotografici non referenziati e il ripristino quando l’utente vorrà riattivare i backup. Non si cancellano foto automaticamente e non si creano backup operativi durante lo sviluppo.
 
 Distribuzione della 0.9.0: 53 file sorgente trasferiti e verificati nella condivisione add-on. Build/smoke ARM64 e AMD64 passati. Pacchetto circa 232 KB, integro, senza foto o credenziali native. Installata il 16 novembre 2026 senza backup: stato «In esecuzione» e versione 0.9.0 verificati in Safari. Cronologia reale di 730 registrazioni attive, passaggio alla pagina 2 e filtro Balcone (213 eventi, ritorno alla pagina 1) verificati. Scheda Ficus, fotografia e diario completo caricati su richiesta; nessuna modifica alle cure o ai piani reali.
+
+## Verifica 0.11.0 — 17 novembre 2026
+
+La 0.11.0 è stata installata sull’installazione Home Assistant reale:
+
+- sorgenti copiati in `/local_apps/plantcare_web` e copia dei sorgenti 0.10.3 conservata in `/tmp/plantcare_web-0.10.3-src.tgz`;
+- `ha refresh-updates` e `ha apps update local_plantcare_web` completati;
+- add-on **in esecuzione**, versione **0.11.0**, nessun errore nei log;
+- opzioni esistenti conservate, nuova opzione `language: auto`;
+- fotografie condivise intatte: 124 file, 358,5 MB in `/share/plantcare/photos`;
+- consumo osservato: circa 76 MB di RAM, 0,1% CPU; Supervisor sano e supportato;
+- nessun backup Home Assistant creato durante l’aggiornamento.
+
+Benchmark sintetico ripetuto: 100 piante e 50.000 eventi, risposta della collezione ridotta del 99,04%, pagina cronologia circa 18,5 KB e 0,163 s sul Mac di sviluppo. Restano aperti i collaudi che richiedono hardware o archivi reali:
+
+- iPhone fisico con Companion e area sicura;
+- scansione QR/NFC con fotocamera reale;
+- ripristino completo su un’installazione HA isolata;
+- sensori HA e Open-Meteo live;
+- archivio reale molto più grande del benchmark sintetico.
