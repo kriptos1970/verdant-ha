@@ -1,6 +1,14 @@
 import React from "react";
 import { HEALTH_COLORS, type HealthBucket } from "./chart-kit";
-import { useI18n } from "./i18n";
+import { useI18n, type MessageKey } from "./i18n";
+
+export const HEALTH_LABEL_KEYS: Record<HealthBucket, MessageKey> = {
+  excellent: "health.state.excellent",
+  good: "health.state.good",
+  struggling: "health.state.struggling",
+  sick: "health.state.sick",
+  unrated: "health.state.unrated",
+};
 
 /**
  * Pure SVG health ring: no Recharts, no chart bundle, no animation, so it is

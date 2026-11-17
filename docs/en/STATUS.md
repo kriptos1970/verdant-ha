@@ -14,7 +14,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - **Data**: native archive import v1–v3, ZIP backup with SHA256 checksums, photo deduplication and EXIF stripping, configurable measurement retention.
 - **Web UI**: responsive and aligned with the iOS app at phone widths; works inside Ingress. List images use cached 480 px thumbnails instead of originals.
 - **Languages**: Italian and English message catalogs, language selector, English guides and diagnosis, server-side language preference for notifications and AI.
-- **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page now renders the 30-day charts from this data (phase 2).
+- **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page renders the 30-day charts (phase 2), and the Home page shows a compact collection health and care-rhythm summary without loading Recharts (phase 3).
 
 ## Verification
 
@@ -24,6 +24,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
 - Analytics were checked read-only on the real archive (18 plants, 732 events): 103 events and 71% regularity for 30 days, 495/83% for 90 days, 677/85% for 365 days. Water and feeding due dates matched 0.11.1 for every plant.
 - Phase 2 charts were checked on a synthetic 6-plant/28-care archive at 320, 390, 430 and 1280 px with no horizontal overflow. The `charts-*.js` chunk (about 130 kB gzip) is not requested on the plant list and only loads when the Analytics panel approaches the viewport. Reduced-motion and table alternatives are wired into the shared chart shell.
+- Phase 3 was checked on the same synthetic archive: Home shows 60% collection health, 22 care entries over 12 active days and two plants needing a health check. The analytics request is deferred until the block nears the viewport, `charts-*.js` stays off the Home page, and empty, error/retry and English states were exercised. Lighthouse accessibility is 0.96 with only the pre-existing contrast and calendar-label findings.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

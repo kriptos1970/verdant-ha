@@ -18,6 +18,7 @@ Current release: **0.11.1**. The project is usable on a real Home Assistant inst
 - [x] iOS detail, nine care guides, practical guide, diagnosis, care insights and adaptive plan localized.
 - [x] English documentation, specific common error messages and frontend code-splitting.
 - [x] Plant taxonomies, plant editor, add-on metadata and generated plan explanations localized.
+- [x] Collection analytics, health index and merged plant timeline in the backend; 30-day charts in Analytics and a compact health/care-rhythm summary on Home, both outside the main bundle.
 
 ## Now — close the consolidation step
 
@@ -32,7 +33,7 @@ These are verification and hardening tasks, not new features. They are tracked i
 
 ## Next — iOS parity and internationalization
 
-- [ ] Port the native **timeline chart and health index** calculation. Do not introduce estimated or invented health values.
+- [ ] Port the native **plant timeline chart**; the health index calculation and collection analytics are already in place. Do not introduce estimated or invented health values.
 - [ ] Compare the complete **growth entry and health album** flows with the native app, including photos.
 - [ ] Evaluate a **camera-based lux meter** and decide whether the browser can provide a trustworthy measurement.
 - [ ] **App localization (IT/EN)**: the catalogs and language selector are in place; migrate care flows, products and guides next. See [docs/I18N.md](docs/I18N.md).

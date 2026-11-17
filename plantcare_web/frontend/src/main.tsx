@@ -74,6 +74,7 @@ import { useCareLabels } from "./care-labels";
 import { useProductLabels } from "./product-labels";
 import { useDomainLabels } from "./domain-labels";
 import AnalyticsPage from "./analytics-page";
+import { HomeInsights } from "./home-insights";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -588,6 +589,10 @@ function App() {
                       </strong>
                     </div>
                   </div>
+                  <HomeInsights
+                    onOpenAnalytics={() => setPage("analytics")}
+                    onOpenPlant={openPlant}
+                  />
                   <section className="panel">
                     <div className="section-heading">
                       <h2>

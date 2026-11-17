@@ -8,19 +8,15 @@ import {
   HEALTH_COLORS,
   type HealthBucket,
 } from "./chart-kit";
-import { HealthRing, healthyShare } from "./health-ring";
+import {
+  HEALTH_LABEL_KEYS,
+  HealthRing,
+  healthyShare,
+} from "./health-ring";
 import { useAnalytics } from "./analytics";
-import { useI18n, type MessageKey } from "./i18n";
+import { useI18n } from "./i18n";
 
 const AnalyticsCharts = React.lazy(() => import("./charts"));
-
-const HEALTH_KEYS: Record<HealthBucket, MessageKey> = {
-  excellent: "health.state.excellent",
-  good: "health.state.good",
-  struggling: "health.state.struggling",
-  sick: "health.state.sick",
-  unrated: "health.state.unrated",
-};
 
 const HEALTH_ORDER: HealthBucket[] = [
   "excellent",
@@ -151,7 +147,7 @@ export default function AnalyticsPage() {
                             style={{ background: HEALTH_COLORS[bucket] }}
                             aria-hidden="true"
                           />
-                          <span>{t(HEALTH_KEYS[bucket])}</span>
+                          <span>{t(HEALTH_LABEL_KEYS[bucket])}</span>
                           <b>{formatNumber(data.health[bucket])}</b>
                         </li>
                       ))}
@@ -170,7 +166,7 @@ export default function AnalyticsPage() {
                   ]}
                   rows={HEALTH_ORDER.map((bucket) => ({
                     id: bucket,
-                    state: t(HEALTH_KEYS[bucket]),
+                    state: t(HEALTH_LABEL_KEYS[bucket]),
                     value: data.health[bucket],
                   }))}
                 />

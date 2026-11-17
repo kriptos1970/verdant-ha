@@ -1,4 +1,4 @@
-# Grafici e analisi — fasi 1–2
+# Grafici e analisi — fasi 1–3
 
 Prima fase del riallineamento a Verdant iOS/macOS: dati e calcoli, senza ancora toccare l’interfaccia. Tutto è in sola lettura.
 
@@ -106,3 +106,37 @@ La pagina Analisi usa ora i dati della fase 1. Recharts resta fuori dal chunk pr
 - Controllo visivo su pagina sintetica di 6 piante e 28 cure: 320, 390, 430 e 1280 px, nessun overflow orizzontale; su telefono indicatori 2×2, pannelli a colonna singola e tabelle scorrevoli.
 - Rete verificata: il chunk `charts-*.js` non viene richiesto nella pagina Piante; viene richiesto in Analisi solo dopo lo scorrimento fino al pannello.
 - La pagina completa 30/90/365 giorni e i grafici di tendenza della singola pianta restano nelle fasi 4 e 6.
+
+## Fase 3 — Home (17 novembre 2026)
+
+La pagina Oggi mette in evidenza lo stato della collezione senza appesantire l’avvio: solo SVG e CSS condivisi, nessun grafico Recharts.
+
+### Contenuto
+
+- `home-insights.tsx`, inserito dopo gli indicatori e prima di “Un’attenzione per oggi”.
+- **Salute della collezione** — anello `HealthRing` con la quota di piante valutate in salute, legenda In salute / Da osservare / Non valutate e conteggi.
+- **Ritmo delle cure** — ultimi 14 giorni di attività come barre CSS, totale delle cure e giornate attive, con tabella dati apribile.
+- **Da controllare** — al massimo tre piante con motivo salute (`sick` o `struggling`), ambiente, stato tradotto e apertura della scheda. Le piante in ritardo solo per annaffiatura restano nel pannello cure, per non duplicare la lista.
+
+### Caricamento e stati
+
+- Il blocco vive in `DeferredSection`: `/api/analytics?days=30` parte solo quando la sezione si avvicina alla vista, con 320 px di anticipo.
+- La Home non importa `charts.tsx`: in rete il chunk `charts-*.js` non viene richiesto, né all’avvio né scorrendo.
+- Caricamento con scheletri, errore con “Riprova”, stato vuoto della salute quando nessuna pianta è valutata; con collezione vuota il blocco non compare.
+- Le chiavi di salute sono condivise con la pagina Analisi tramite `HEALTH_LABEL_KEYS` in `health-ring.tsx`.
+
+### Accessibilità
+
+- Anello e barre hanno un nome accessibile che riporta percentuale, cure e giornate attive; le barre hanno una tabella con `caption` e intestazioni.
+- Ogni riga “Da controllare” è un pulsante il cui nome accessibile include nome e stato visibili.
+- Colore mai unico portatore di informazione: legenda con etichette, conteggi e tabella. Nessuna animazione, quindi `prefers-reduced-motion` è rispettato per costruzione.
+
+### Verifica
+
+- Build TypeScript/Vite e i18n: **763 chiavi** italiano/inglese allineate (17 nuove per la Home).
+- **180 test backend** invariati.
+- Archivio sintetico di 6 piante e 28 cure: 60% di salute, 22 cure in 14 giorni su 12 giornate attive, 2 piante da controllare.
+- Layout 320, 390, 430 e 1280 px senza overflow orizzontale; una colonna sotto 760 px, due colonne sopra.
+- Stati verificati in italiano e inglese: caricamento, errore con “Riprova”, nessuna pianta valutata, collezione vuota.
+- Rete: `charts-*.js` assente sulla Home e presente solo in Analisi; `/api/analytics` risponde 200, nessun errore in console.
+- Lighthouse sulla Home: accessibilità 0.96, best practice e SEO 1. I due rilievi restano preesistenti (contrasto del piè di pagina/statistiche e nomi accessibili dei giorni del calendario).

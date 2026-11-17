@@ -3230,3 +3230,219 @@ progress::-webkit-progress-value {
 .analytics-note {
   color: #5f6d62;
 }
+
+/* Home insights: health and care rhythm without the Recharts chunk */
+.home-insights {
+  margin-bottom: 23px;
+}
+.home-insights-deferred {
+  min-height: 0;
+}
+.home-insights-heading {
+  margin-bottom: 14px;
+}
+.home-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.home-insight {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.home-insight-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.home-insight-head h3 {
+  margin: 0;
+  color: #4c5a50;
+  font-size: 14px;
+  font-weight: 600;
+}
+.home-insight-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #eaf0e8;
+  color: var(--moss);
+}
+.home-insight-health {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.home-insight-health .health-ring {
+  flex: none;
+  width: 104px;
+  height: 104px;
+}
+.home-insight-health .health-legend {
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+.home-insight-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 104px;
+  color: #5f6d62;
+}
+.home-insight-empty svg {
+  flex: none;
+  color: var(--moss);
+}
+.home-insight-empty p {
+  max-width: 32ch;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.home-spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 58px;
+  padding: 2px 0;
+}
+.home-spark > span {
+  flex: 1;
+  min-width: 2px;
+  border-radius: 3px 3px 1px 1px;
+  background: var(--moss);
+}
+.home-spark > span.zero {
+  background: #e2ebe3;
+}
+.home-insight-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  color: #5f6d62;
+  font-size: 12px;
+}
+.home-insight-meta strong {
+  color: var(--forest);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+.home-insight .chart-table {
+  margin-top: 0;
+}
+.home-insight .chart-table summary {
+  font-size: 11px;
+}
+.home-risk {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+.home-risk .section-heading {
+  margin-bottom: 6px;
+}
+.home-risk-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: none;
+  text-align: left;
+}
+.home-risk-row:hover {
+  background: #f7f9f5;
+}
+.home-risk-row:first-of-type {
+  border-top: 0;
+}
+.home-risk-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.home-risk-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.home-risk-name strong {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.home-risk-name small {
+  color: #5f6d62;
+  font-size: 11px;
+}
+.home-risk-state {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f2f5f0;
+  color: #4c5a50;
+  font-size: 11px;
+}
+.home-insight-error {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 0;
+}
+@media (max-width: 760px) {
+  .home-insights {
+    margin: 22px 0;
+  }
+  .home-insight-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-insight {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+  .home-insight-head h3 {
+    font-size: 17px;
+  }
+  .home-insight-health {
+    gap: 14px;
+  }
+  .home-insight-health .health-ring {
+    width: 100px;
+    height: 100px;
+  }
+  .home-insight-health .health-legend {
+    width: auto;
+    min-width: 0;
+  }
+  .home-spark {
+    height: 64px;
+  }
+  .home-risk {
+    margin-top: 14px;
+  }
+  .home-risk-row {
+    min-height: 44px;
+    padding: 14px 0;
+  }
+  .home-risk-name strong {
+    font-size: 16px;
+  }
+  .home-risk-name small {
+    font-size: 13px;
+  }
+  .home-risk-state {
+    font-size: 12px;
+  }
+}

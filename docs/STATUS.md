@@ -33,6 +33,15 @@
 - Verifica: build e i18n (746 chiavi), 180 test backend, layout 320/390/430/1280 px senza overflow, chunk grafici non richiesto nella pagina Piante.
 - Restano per le fasi successive il selettore 30/90/365 e i grafici di tendenza della singola pianta.
 
+## Grafici — fase 3, Home (17 novembre 2026)
+
+- La pagina Oggi aggiunge “Il tuo giardino in numeri”: anello salute della collezione, ritmo delle ultime due settimane e fino a tre piante da controllare per motivo salute.
+- Solo componenti condivisi SVG/CSS: la Home non importa Recharts e il chunk `charts-*.js` non viene richiesto né all’avvio né scorrendo.
+- La richiesta `/api/analytics?days=30` parte tramite `DeferredSection` solo quando il blocco si avvicina alla vista; caricamento, errore con “Riprova”, nessuna pianta valutata e collezione vuota sono gestiti.
+- Accessibilità: nomi accessibili su anello e barre, tabella dati per l’attività, righe “Da controllare” come pulsanti con nome e stato visibili, colore sempre affiancato da etichette.
+- Verifica: build, **763 chiavi i18n**, 180 test backend, layout 320/390/430/1280 px senza overflow, italiano e inglese, Lighthouse accessibilità 0.96 con i due rilievi preesistenti.
+- Dettagli in [ANALYTICS.md](ANALYTICS.md).
+
 ## Correzione 0.4.1 — catalogo AI
 
 - Corretti sul server `ai_provider` (Gemini) e `ai_model` (vuoto), senza modificare la chiave.
