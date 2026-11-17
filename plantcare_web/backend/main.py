@@ -19,7 +19,8 @@ from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
 from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession
-from .domain import iso, now, parse, plant_view, schedule, active_history, KINDS, pending_actions
+from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
+from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
 from . import services, ai, care, adaptive
 from .treatments import pin_baselines, update_counts, treatment_view
@@ -81,7 +82,7 @@ def linked_product(plant, db=None):
 
 
 def render_plant(plant, version, db=None):
-    return plant_view(plant,settings.zone,version,product=linked_product(plant,db))
+    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db)))
 
 @app.get('/api/plants')
 def list_plants(summary:bool=False):
@@ -163,7 +164,7 @@ def apply_adaptive(plant_id:str,previewID:str=Query(min_length=1,max_length=100)
     plan=preview['plan']
     candidate={**plant,'carePlanMode':'Intelligente','adaptivePlan':plan,'wateringInterval':plan['wateringDays'],'fertilizingInterval':plan['fertilizingDays']}
     if plant.get('inspectionInterval') is not None: candidate['inspectionInterval']=plan['inspectionDays']
-    candidate['history']=plant['history']+[{'id':str(uuid4()).upper(),'kind':'Aggiornamento piano','date':iso(now()),'status':'completed','note':'Piano intelligente ricalcolato con il pianificatore nativo.','origin':'user','schemaVersion':2}]
+    candidate['history']=plant['history']+[{'id':str(uuid4()).upper(),'kind':'planUpdate','date':iso(now()),'status':'completed','note':'Piano intelligente ricalcolato con il pianificatore nativo.','origin':'user','schemaVersion':2}]
     with store.connection() as db:
         p,v=store.put('plants',candidate,version,db)
     return render_plant(p,v)
@@ -187,7 +188,7 @@ def delete_product(identifier:str,version:int=Query(ge=1)):
     store.delete('fertilizers',identifier,version)
 
 @app.get('/api/schedule')
-def calendar(): return sorted([a for p,_ in store.list('plants') for a in pending_actions(p,settings.zone,product=linked_product(p))],key=lambda a:(a['dueDate'],a['plantName']))
+def calendar(): return sorted([legacy_action(a) for p,_ in store.list('plants') for a in pending_actions(p,settings.zone,product=linked_product(p))],key=lambda a:(a['dueDate'],a['plantName']))
 
 @app.post('/api/plants/{plant_id}/events')
 def add_event(plant_id:str,body:EventRequest):
@@ -208,7 +209,7 @@ def edit_event(plant_id:str,event_id:str,body:EventRequest,version:int=Query(ge=
         pin_baselines(plant)
         if 'treatmentPlanID' in body.model_fields_set and body.treatmentPlanID!=event.get('treatmentPlanID'):
             raise HTTPException(422,'Il ciclo di una registrazione esistente non può essere cambiato.')
-        if event.get('treatmentPlanID') and body.kind!='Trattamento':
+        if event.get('treatmentPlanID') and body.kind!='treatment':
             raise HTTPException(422,'Una registrazione del ciclo deve restare un trattamento.')
         fields=care.event_payload(body)
         for key in ['treatmentPlanID','productID']:
@@ -561,21 +562,24 @@ def add_health_photos(plant_id:str,body:HealthPhotoSession,version:int=Query(ge=
         if any(e.get('id')==body.id for e in plant['history']):raise Conflict('Identificativo del controllo già presente nella cronologia.')
         if any(not (store.photos/photo.path).is_file() for photo in body.photos):raise HTTPException(422,'Una fotografia non è disponibile. Riprova il caricamento.')
         plant['healthPhotoSessions']=sorted(sessions+[payload],key=lambda s:s['date'],reverse=True)
-        plant['history'].append({'id':body.id,'kind':'Controlla salute','date':body.date,'note':body.note.strip(),'health':body.health,'status':'completed','origin':'user','schemaVersion':2})
+        plant['history'].append({'id':body.id,'kind':'inspect','date':body.date,'note':body.note.strip(),'health':body.health,'status':'completed','origin':'user','schemaVersion':2})
         p,v=store.put('plants',plant,current,db)
         return render_plant(p,v,db)
 
 @app.post('/api/plants/{plant_id}/growth',status_code=201)
 def growth(plant_id:str,body:dict=Body()):
-    if body.get('health') not in {'Malata','In difficoltà','Buona','Eccellente'}: raise HTTPException(422,'Stato di salute non valido.')
+    try:
+        health=canonical_health(body.get('health'))
+    except ValueError:
+        raise HTTPException(422,'Stato di salute non valido.') from None
     date=iso(parse(body.get('date') or iso(now())))
     paths=body.get('photoPaths',[])
     if not isinstance(paths,list) or any(not isinstance(p,str) or '/' in p or not (store.photos/p).is_file() for p in paths): raise HTTPException(422,'Fotografia non disponibile.')
     with store.connection() as db:
         plant,version=store.get('plants',plant_id,db)
-        entry={'id':str(uuid4()).upper(),'date':date,'health':body['health'],'heightCM':body.get('heightCM'),'note':str(body.get('note',''))[:20000],'photoPaths':paths}
+        entry={'id':str(uuid4()).upper(),'date':date,'health':health,'heightCM':body.get('heightCM'),'note':str(body.get('note',''))[:20000],'photoPaths':paths}
         plant['growthEntries']=(plant.get('growthEntries') or [])+[entry]
-        plant['history'].append({'id':str(uuid4()).upper(),'kind':'Aggiorna progressi','date':date,'status':'completed','note':entry['note'],'origin':'user','schemaVersion':2})
+        plant['history'].append({'id':str(uuid4()).upper(),'kind':'progress','date':date,'status':'completed','note':entry['note'],'origin':'user','schemaVersion':2})
         p,v=store.put('plants',plant,version,db)
     return render_plant(p,v)
 

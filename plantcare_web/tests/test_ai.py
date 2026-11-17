@@ -23,7 +23,7 @@ def test_daily_preserves_native_prompt_and_clamps_results(tmp_path,monkeypatch):
     assert 'Non applicare nuovamente la percentuale del ritmo' in captured[0]
     applied,_=ai.apply(store,p['id'])
     assert applied['wateringInterval']==30
-    assert applied['history'][-1]['kind']=='Aggiornamento piano'
+    assert applied['history'][-1]['kind']=='planUpdate'
     assert store.list('proposals')==[]
 
 def test_insufficient_evidence_never_proposes_change(tmp_path,monkeypatch):

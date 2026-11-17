@@ -39,6 +39,13 @@ def test_mutations_require_same_origin_custom_header(client):
     other=TestClient(main.app)
     assert other.post('/api/plants',json={'name':'X'}).status_code==403
 
+
+def test_calendar_endpoint_keeps_the_legacy_frontend_values(client):
+    create(client)
+    actions=client.get('/api/schedule').json()
+    assert any(a['kind']=='Annaffia' for a in actions)
+    assert not any(a['kind']=='water' for a in actions)
+
 def test_duplicate_event_and_delete_recalculate(client):
     p=create(client)
     event={'id':str(uuid4()).upper(),'kind':'Annaffia','date':'2026-11-09T12:00:00Z'}

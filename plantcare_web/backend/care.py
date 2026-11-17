@@ -22,15 +22,15 @@ def record(plant, body, zone, product=None):
         return False
     tz = ZoneInfo(zone)
     day = lambda value: parse(value).astimezone(tz).date()
-    if body.kind == 'Annaffia' and body.status == 'completed' and any(
-        e['kind'] == 'Annaffia' and e.get('status') == 'completed' and parse(e['date']) == parse(body.date)
+    if body.kind == 'water' and body.status == 'completed' and any(
+        e['kind'] == 'water' and e.get('status') == 'completed' and parse(e['date']) == parse(body.date)
         for e in active_history(plant)
     ):
         return False
-    if body.kind == 'Concima' and body.status == 'completed':
-        fed = any(e['kind'] == 'Concima' and e.get('status') != 'postponed' and day(e['date']) == day(body.date)
+    if body.kind == 'fertilize' and body.status == 'completed':
+        fed = any(e['kind'] == 'fertilize' and e.get('status') != 'postponed' and day(e['date']) == day(body.date)
                   for e in active_history(plant))
-        if not any(e['kind'] == 'Concima' for e in plant['history']) and plant.get('lastFertilized'):
+        if not any(e['kind'] == 'fertilize' for e in plant['history']) and plant.get('lastFertilized'):
             fed = fed or day(plant['lastFertilized']) == day(body.date)
         if fed:
             return False
@@ -42,7 +42,7 @@ def record(plant, body, zone, product=None):
     pin_baselines(plant)
     plan = None
     if body.treatmentPlanID:
-        if body.kind != 'Trattamento':
+        if body.kind != 'treatment':
             raise ValueError('Un ciclo può essere associato solo a un trattamento.')
         plan = next((p for p in plant.get('treatmentPlans') or [] if p['id'] == body.treatmentPlanID), None)
         if plan is None:
@@ -65,34 +65,34 @@ def record(plant, body, zone, product=None):
             description += ' · ' + plan['dose']
         event['note'] = ' · '.join(p for p in [description, body.note] if p)
     plant['history'].append(event)
-    if body.status == 'completed' and body.kind == 'Annaffia':
+    if body.status == 'completed' and body.kind == 'water':
         plant['lastWatered'] = body.date
         plant['nextWateringOverride'] = None
         from .adaptive import learn_after_watering
         learn_after_watering(plant,zone,parse(body.date))
-        feed = next((a for a in before if a['kind'] == 'Concima'), None)
-        water = next((a for a in before if a['kind'] == 'Annaffia'), None)
+        feed = next((a for a in before if a['kind'] == 'fertilize'), None)
+        water = next((a for a in before if a['kind'] == 'water'), None)
         due = uses_watering(product) and feed and (
             day(feed['dueDate']) <= day(body.date) or
             day(feed['dueDate']) == day(body.scheduledDueDate or water['dueDate'])
         )
-        fed = any(e['kind'] == 'Concima' and e.get('status') != 'postponed' and day(e['date']) == day(body.date)
+        fed = any(e['kind'] == 'fertilize' and e.get('status') != 'postponed' and day(e['date']) == day(body.date)
                   for e in active_history(plant))
-        if not any(e['kind'] == 'Concima' for e in plant['history']) and plant.get('lastFertilized'):
+        if not any(e['kind'] == 'fertilize' for e in plant['history']) and plant.get('lastFertilized'):
             fed = fed or day(plant['lastFertilized']) == day(body.date)
         if due and not fed:
-            feed_event = {**event, 'id': str(uuid4()).upper(), 'kind': 'Concima', 'productID': plant.get('fertilizerProductID')}
+            feed_event = {**event, 'id': str(uuid4()).upper(), 'kind': 'fertilize', 'productID': plant.get('fertilizerProductID')}
             plant['nextFertilizingOverride'] = None
             if body.includingFertilizing:
                 plant['lastFertilized'] = body.date
             else:
-                if not any(e['kind'] == 'Concima' for e in plant['history']) and plant.get('lastFertilized'):
-                    plant['history'].append({**event, 'id': str(uuid4()).upper(), 'kind': 'Concima', 'date': plant['lastFertilized']})
-                feed_event.update(status='postponed', postponedUntil=next(a['dueDate'] for a in schedule(plant, zone) if a['kind'] == 'Annaffia'))
+                if not any(e['kind'] == 'fertilize' for e in plant['history']) and plant.get('lastFertilized'):
+                    plant['history'].append({**event, 'id': str(uuid4()).upper(), 'kind': 'fertilize', 'date': plant['lastFertilized']})
+                feed_event.update(status='postponed', postponedUntil=next(a['dueDate'] for a in schedule(plant, zone) if a['kind'] == 'water'))
             plant['history'].append(feed_event)
             if body.includingFertilizing:
                 event['pairedFertilizingEventID']=feed_event['id']
-    elif body.status == 'completed' and body.kind == 'Concima':
+    elif body.status == 'completed' and body.kind == 'fertilize':
         plant['lastFertilized'] = body.date
         plant['nextFertilizingOverride'] = None
     update_counts(plant)
@@ -102,13 +102,13 @@ def record(plant, body, zone, product=None):
 def recalculate(plant):
     """Ledger facts remain authoritative after edits and tombstones."""
     for kind, last_key, override_key in [
-        ('Annaffia', 'lastWatered', 'nextWateringOverride'),
-        ('Concima', 'lastFertilized', 'nextFertilizingOverride'),
+        ('water', 'lastWatered', 'nextWateringOverride'),
+        ('fertilize', 'lastFertilized', 'nextFertilizingOverride'),
     ]:
         if not any(e['kind'] == kind for e in plant['history']):
             continue
         completions = [parse(e['date']) for e in active_history(plant) if e['kind'] == kind and e.get('status') != 'postponed']
-        plant[last_key] = iso(max(completions)) if completions else (plant['acquiredOn'] if kind == 'Annaffia' else None)
+        plant[last_key] = iso(max(completions)) if completions else (plant['acquiredOn'] if kind == 'water' else None)
         _, deferred = care_state(plant, kind)
         plant[override_key] = iso(deferred) if deferred else None
     update_counts(plant)

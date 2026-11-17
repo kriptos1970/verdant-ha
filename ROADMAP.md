@@ -10,6 +10,7 @@ Current release: **0.10.3**. The project is usable on a real Home Assistant inst
 - [x] CI on every push and pull request; protected `main` (no force pushes or deletions).
 - [x] Tag-driven releases with tests, source package and SHA256 checksum.
 - [x] Contributor guide, security policy and issue/PR templates.
+- [x] Canonical care kinds and health values in the backend, with the legacy Italian API contract preserved.
 
 ## Now — close the consolidation step
 
@@ -28,7 +29,7 @@ These are verification and hardening tasks, not new features. They are tracked i
 - [ ] Compare the complete **growth entry and health album** flows with the native app, including photos.
 - [ ] Evaluate a **camera-based lux meter** and decide whether the browser can provide a trustworthy measurement.
 - [ ] **App localization (IT/EN)**: extract UI strings into message catalogs, add a `t()` helper and locale detection, localize dates/numbers with `Intl`. See [docs/I18N.md](docs/I18N.md).
-- [ ] Introduce **canonical domain values** (`water`, `fertilize`, `good`, `excellent`, …) and keep Italian labels only for display; this is required before a real translation of events, guides and backend messages.
+- [ ] Keep Italian labels only for display once the frontend catalogs exist; the backend now uses canonical values.
 - [ ] Translate the **documentation** into English (`docs/en/`), starting from installation and status.
 - [ ] Realign the **desktop layout** with the native macOS app, after the iOS work is closed.
 

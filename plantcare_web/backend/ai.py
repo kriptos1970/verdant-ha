@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from uuid import uuid4
 import httpx
+from .care_kinds import legacy_kind
 from .domain import active_history, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now
 from .storage import Conflict
 from .ai_support import effective_settings, advice_values, climate_context, ADVICE_CONTEXT_VERSION
@@ -57,7 +58,7 @@ def stable_feed(plant,water):
 
 def daily_context(plant,products):
     water=stable_water(plant)
-    item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage'),'recentCare':[{'kind':e['kind'],'date':e['date']} for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]]}
+    item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage'),'recentCare':[{'kind':legacy_kind(e['kind']),'date':e['date']} for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]]}
     product=next((p for p in products if p['id']==plant.get('fertilizerProductID')),None)
     if product:
         item.update(fertilizerProduct=product['name'],fertilizerManufacturerDays=product.get('applicationIntervalDays'))
@@ -128,7 +129,7 @@ def apply(store,plant_id):
         plant.update(wateringInterval=proposal['proposedWateringDays'],fertilizingInterval=proposal['proposedFertilizingDays'])
         if plant.get('adaptivePlan'):
             plant['adaptivePlan'].update(wateringDays=proposal['proposedWateringDays'],fertilizingDays=proposal['proposedFertilizingDays'],revisionSource='AI',revisedAt=iso(now()),revisionReason=proposal['reason'],revisionProvider=proposal['provider'],revisionChangedIntervals=True)
-        plant['history'].append({'id':str(uuid4()).upper(),'kind':'Aggiornamento piano','date':iso(now()),'status':'completed','origin':'system','note':f"Piano AI applicato ({proposal['provider']}). {proposal['reason']}", 'schemaVersion':2})
+        plant['history'].append({'id':str(uuid4()).upper(),'kind':'planUpdate','date':iso(now()),'status':'completed','origin':'system','note':f"Piano AI applicato ({proposal['provider']}). {proposal['reason']}", 'schemaVersion':2})
         saved=store.put('plants',plant,version,db)
         db.execute('DELETE FROM entities WHERE collection=? AND id=?',('proposals',plant_id))
         return saved

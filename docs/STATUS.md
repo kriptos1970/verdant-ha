@@ -204,6 +204,14 @@ Sezioni espandibili nella scheda iOS; cronologia delle cure separata dalla cresc
 
 Verificati 140 pytest, riepilogo Node, browser mobile 320/390/430 e diario desktop 1440; build e smoke ARM64/AMD64 passati. Trasferiti e verificati SHA256 69 file sorgente; ZIP circa 0,73 MB, senza foto dell’archivio o credenziali. 0.10.3 installata e in esecuzione su Home Assistant il 16 novembre 2026, backup disattivato. Verificata Avocado in Ingress Safari responsive 390×844: pannello prodotto con fotografia reale Compo e dose 10 ml per litro d’acqua; Diario crescita con 6 aggiornamenti e cronologia distinta con 23 attività. Nessuna cura registrata o piano modificato durante il collaudo; collezione ancora a 18 piante.
 
+### Preparazione i18n — dominio canonico (17 novembre 2026)
+
+Le cure e gli stati di salute hanno ora codici canonici inglesi (`water`, `fertilize`, `prune`, `good`, `excellent`…) usati da pianificatore, apprendimento, trattamenti e Care Engine. Il modulo `backend/care_kinds.py` converte i valori italiani dell'archivio nativo e delle API.
+
+Lo storage SQLite scrive i codici canonici; i payload già presenti vengono canonicalizzati in lettura e riscritti al primo salvataggio. L'API continua a restituire i valori italiani attesi dal frontend, quindi nessuna schermata cambia. La cronologia accetta filtri in entrambe le forme e legge i record precedenti alla migrazione.
+
+Verifiche: **149 test**, 7.160 raccomandazioni Care Engine, 4.096 piani adattivi, 162 casi nativi e 1.536 combinazioni AI equivalenti al codice Swift. Prompt AI e note conservano i nomi italiani nativi. Nessun archivio operativo modificato.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

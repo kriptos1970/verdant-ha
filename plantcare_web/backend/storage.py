@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from uuid import uuid4
 from .domain import iso, now, parse
+from .care_kinds import canonical_plant, legacy_plant
 
 class Conflict(Exception):
     pass
@@ -50,7 +51,7 @@ class Store:
         if db is None:
             with self.connection() as conn:
                 return self.list(collection, conn)
-        return [(json.loads(r['payload']), r['version']) for r in db.execute('SELECT payload,version FROM entities WHERE collection=? ORDER BY id', (collection,))]
+        return [(canonical_plant(json.loads(r['payload'])) if collection == 'plants' else json.loads(r['payload']), r['version']) for r in db.execute('SELECT payload,version FROM entities WHERE collection=? ORDER BY id', (collection,))]
 
     def get(self, collection, identifier, db=None):
         if db is None:
@@ -59,12 +60,15 @@ class Store:
         row = db.execute('SELECT payload,version FROM entities WHERE collection=? AND id=?', (collection, identifier)).fetchone()
         if row is None:
             raise KeyError(identifier)
-        return json.loads(row['payload']), row['version']
+        payload = json.loads(row['payload'])
+        return (canonical_plant(payload) if collection == 'plants' else payload), row['version']
 
     def put(self, collection, payload, expected=None, db=None):
         if db is None:
             with self.connection() as conn:
                 return self.put(collection, payload, expected, conn)
+        if collection == 'plants':
+            payload = canonical_plant(payload)
         identifier = payload['id']
         row = db.execute('SELECT version FROM entities WHERE collection=? AND id=?', (collection, identifier)).fetchone()
         if row and expected != row['version']:
@@ -125,6 +129,6 @@ class Store:
         if sum(p.stat().st_size for p in self.photos.glob('*.jpg'))>40*1024*1024:
             raise ValueError('Usa il backup ZIP per archivi fotografici oltre 40 MB.')
         with self.connection() as db:
-            payload = {'createdAt': iso(now()), 'collections': {c:[p for p,_ in self.list(c, db)] for c in ['plants','fertilizers','speciesBiologies','recommendations','proposals']}, 'state': {r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM state')}, 'measurements': [dict(r) for r in db.execute('SELECT * FROM measurements')], 'photos': {p.name:base64.b64encode(p.read_bytes()).decode() for p in self.photos.glob('*.jpg')}}
+            payload = {'createdAt': iso(now()), 'collections': {c:[legacy_plant(p) if c == 'plants' else p for p,_ in self.list(c, db)] for c in ['plants','fertilizers','speciesBiologies','recommendations','proposals']}, 'state': {r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM state')}, 'measurements': [dict(r) for r in db.execute('SELECT * FROM measurements')], 'photos': {p.name:base64.b64encode(p.read_bytes()).decode() for p in self.photos.glob('*.jpg')}}
         raw = json.dumps(payload,ensure_ascii=False,allow_nan=False,separators=(',', ':')).encode()
         return {'format':'plantcare-web','version':1,'checksum':hashlib.sha256(raw).hexdigest(),'payload':base64.b64encode(raw).decode()}

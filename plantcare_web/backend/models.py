@@ -2,6 +2,7 @@ from typing import Any, Literal
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 from .domain import KINDS, EXTRA_KINDS, iso, now, parse
+from .care_kinds import canonical_event, canonical_kind, canonical_health
 
 class Plant(BaseModel):
     model_config = ConfigDict(extra='allow')
@@ -42,7 +43,9 @@ class Plant(BaseModel):
     @classmethod
     def history_valid(cls, value):
         seen=set()
+        result=[]
         for event in value:
+            event=canonical_event(event)
             UUID(event['id'])
             if event['id'] in seen:
                 raise ValueError('Evento duplicato')
@@ -54,7 +57,8 @@ class Plant(BaseModel):
             for key in ['date','deletedAt','postponedUntil']:
                 if event.get(key):
                     parse(event[key])
-        return value
+            result.append(event)
+        return result
 
 class Product(BaseModel):
     model_config = ConfigDict(extra='allow')
@@ -82,7 +86,7 @@ class EventRequest(BaseModel):
     productID: str | None = None
     expectedApplicationNumber: int | None = Field(default=None,ge=1,le=100)
     scheduledDueDate: str | None = None
-    health: Literal['Malata','In difficoltà','Buona','Eccellente'] | None = None
+    health: str | None = None
     @field_validator('id')
     @classmethod
     def identifier(cls,value):
@@ -91,9 +95,11 @@ class EventRequest(BaseModel):
     @field_validator('kind')
     @classmethod
     def kind_valid(cls,value):
-        if value not in set(KINDS) | EXTRA_KINDS:
-            raise ValueError('Tipo di cura non valido')
-        return value
+        return canonical_kind(value)
+    @field_validator('health')
+    @classmethod
+    def health_valid(cls,value):
+        return canonical_health(value) if value else None
     @field_validator('date','postponedUntil','scheduledDueDate')
     @classmethod
     def date_valid(cls,value):
@@ -226,13 +232,17 @@ class HealthPhotoSession(BaseModel):
     model_config=ConfigDict(extra='forbid')
     id: str = Field(default_factory=lambda:str(uuid4()).upper())
     date: str = Field(default_factory=lambda:iso(now()))
-    health: Literal['Malata','In difficoltà','Buona','Eccellente'] = 'Buona'
+    health: str = 'good'
     note: str = Field(default='',max_length=20000)
     photos: list[HealthPhoto] = Field(min_length=4,max_length=4)
 
     @field_validator('id')
     @classmethod
     def session_id(cls,value): return str(UUID(value)).upper()
+
+    @field_validator('health')
+    @classmethod
+    def session_health(cls,value): return canonical_health(value)
 
     @field_validator('date')
     @classmethod

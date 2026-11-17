@@ -6,6 +6,7 @@ from statistics import median
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 from .domain import now, parse, iso, active_history, schedule, care_state
+from .care_kinds import canonical_event, canonical_plant
 
 THRESHOLDS = {'slight':45.,'moderate':35.,'deep':25.,'complete':15.}
 WEIGHTS = dict(profileQuality=.25,measurementCoverage=.30,freshnessReliability=.20,setupCompleteness=.10,historyMaturity=.15)
@@ -21,11 +22,12 @@ def confidence(components, penalties=(), ceiling=None):
 
 
 def dry_down(measurements, events, setup, at, target=None):
-    water = sorted(parse(e['date']) for e in events if e['kind']=='Annaffia' and e.get('status')=='completed' and parse(e['date'])<=at)
+    events = [canonical_event(e) for e in events]
+    water = sorted(parse(e['date']) for e in events if e['kind']=='water' and e.get('status')=='completed' and parse(e['date'])<=at)
     empty = dict(currentTrend=None,baseline=None,estimatedHoursToTarget=None,uncertaintyHours=None,completedCycleCount=0,excludedCycleCount=0)
     if not water: return empty
     recorded = parse(setup['recordedAt']) if setup.get('recordedAt') else None
-    invalidations = [parse(e['date']) for e in events if e['kind'] in ['Rinvasa','Spostamento'] and e.get('status')=='completed']+([recorded] if recorded else [])
+    invalidations = [parse(e['date']) for e in events if e['kind'] in ['repot','move'] and e.get('status')=='completed']+([recorded] if recorded else [])
     points = sorted([m for m in measurements if m['kind']=='moisture' and m['unit']=='%' and 0<=m['value']<=100 and parse(m['date'])<=at],key=lambda m:(parse(m['date']),str(m['id'])))
     def trend(points,start):
         if len(points)<3 or (parse(points[-1]['date'])-parse(points[0]['date'])).total_seconds()<43200: return None
@@ -92,19 +94,20 @@ def profiles(biology):
 
 def plant_state(plant,at):
     events = [e for e in active_history(plant) if parse(e['date'])<=at]
-    repots = [e for e in events if e['kind']=='Rinvasa' and e.get('status')=='completed']
+    repots = [e for e in events if e['kind']=='repot' and e.get('status')=='completed']
     if repots:
         last=max(repots,key=lambda e:parse(e['date']))
         if (at-parse(last['date'])).total_seconds()<=30*86400: return 'recentlyRepotted',1,[last['id']]
     health=sorted([e for e in events if e.get('health')],key=lambda e:parse(e['date']),reverse=True)
-    if health and health[0]['health'] in ['Malata','In difficoltà']: return 'stressed',.9,[health[0]['id']]
-    if len(health)>1 and health[1]['health'] in ['Malata','In difficoltà'] and health[0]['health'] in ['Buona','Eccellente']: return 'recovering',.75,[e['id'] for e in health[:2]]
+    if health and health[0]['health'] in ['sick','struggling']: return 'stressed',.9,[health[0]['id']]
+    if len(health)>1 and health[1]['health'] in ['sick','struggling'] and health[0]['health'] in ['good','excellent']: return 'recovering',.75,[e['id'] for e in health[:2]]
     growth=sorted([e for e in plant.get('growthEntries') or [] if parse(e['date'])<=at],key=lambda e:parse(e['date']),reverse=True)
-    if growth and (at-parse(growth[0]['date'])).total_seconds()<=60*86400: return ('activeGrowth' if growth[0]['health'] in ['Buona','Eccellente'] else 'slowGrowth'),.7,[growth[0]['id']]
+    if growth and (at-parse(growth[0]['date'])).total_seconds()<=60*86400: return ('activeGrowth' if growth[0]['health'] in ['good','excellent'] else 'slowGrowth'),.7,[growth[0]['id']]
     return 'unknown',0,[]
 
 
 def evaluate(plant,rows=(),biology=None,zone='Europe/Rome',at=None):
+    plant=canonical_plant(plant)
     at=at or now(); biology=biology or {}; setup=plant.get('setup') or {}; resolved=profiles(biology) if biology else {}
     measures=normalized_measurements(rows)
     if not measures:
@@ -125,7 +128,7 @@ def evaluate(plant,rows=(),biology=None,zone='Europe/Rome',at=None):
     cycles=drying['completedCycleCount']; maturity=0 if cycles==0 else .35 if cycles<=2 else .60 if cycles<=4 else .80 if cycles<=7 else 1
     setup_score=sum(bool(setup.get(k)) for k in ['container','substrate'])/2
     missing=[name for key,name in [('container','containerSetup'),('substrate','substrateProperties')] if not setup.get(key)]
-    due=next(a for a in schedule(plant,zone,at) if a['kind']=='Annaffia')
+    due=next(a for a in schedule(plant,zone,at) if a['kind']=='water')
     days=due['daysUntil']; schedule_id='legacy-schedule-'+plant['id']
     moisture=fresh('moisture','%',43200)
     if moisture:
@@ -158,7 +161,7 @@ def evaluate(plant,rows=(),biology=None,zone='Europe/Rome',at=None):
     ec=fresh('conductivity','µS/cm',43200); ec=ec[0] if ec else None
     nutrition=resolved.get('nutrition') or {}; quality=nutrition.get('confidence',0); profile=nutrition.get('profile')
     high_ec=bool(ec and ec['value']>=(1200 if (profile or {}).get('saltSensitivity') in ['high','veryHigh'] else 2000))
-    anchor,_=care_state(plant,'Concima'); last_feed=(at-anchor).total_seconds()/86400 if plant.get('lastFertilized') or any(e['kind']=='Concima' for e in plant['history']) else None
+    anchor,_=care_state(plant,'fertilize'); last_feed=(at-anchor).total_seconds()/86400 if plant.get('lastFertilized') or any(e['kind']=='fertilize' for e in plant['history']) else None
     if state=='recentlyRepotted': action,code,outcome='waitToFertilize','nutrition.recently_repotted','blocked'
     elif state in ['stressed','recovering']: action,code,outcome='waitToFertilize','nutrition.plant_stressed','blocked'
     elif high_ec: action,code,outcome='waitToFertilize','nutrition.high_ec','blocked'

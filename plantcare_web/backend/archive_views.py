@@ -3,6 +3,7 @@ from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 import json
 from .domain import iso
+from .care_kinds import canonical_kind, legacy_event, legacy_kind
 
 
 def compact(view):
@@ -20,10 +21,17 @@ def history_page(store,zone,page=1,limit=50,plant_id='',room='',kind='',from_day
         last=date.fromisoformat(to_day) if to_day else None
     except ValueError:raise ValueError('Inserisci date valide per i filtri.')
     if first and last and first>last:raise ValueError('La data iniziale deve precedere quella finale.')
+    if kind:
+        try: kind=canonical_kind(kind)
+        except ValueError: raise ValueError('Tipo di cura non valido.') from None
     where=["p.collection='plants'", "coalesce(json_extract(e.value,'$.deletedAt'),'')=''"]
     params=[]
-    for clause,value in [("p.id=?",plant_id),("json_extract(p.payload,'$.room')=?",room),("json_extract(e.value,'$.kind')=?",kind)]:
+    for clause,value in [("p.id=?",plant_id),("json_extract(p.payload,'$.room')=?",room)]:
         if value:where.append(clause);params.append(value)
+    if kind:
+        # Old payloads keep the Italian value until rewritten; match both.
+        where.append("json_extract(e.value,'$.kind') IN (?,?)")
+        params.extend([kind, legacy_kind(kind)])
     if first:
         where.append("julianday(json_extract(e.value,'$.date'))>=julianday(?)")
         params.append(iso(datetime.combine(first,time.min,tz)))
@@ -34,5 +42,5 @@ def history_page(store,zone,page=1,limit=50,plant_id='',room='',kind='',from_day
     with store.connection() as db:
         total=db.execute('SELECT count(*)'+source,params).fetchone()[0]
         rows=db.execute("SELECT p.id, p.version, json_extract(p.payload,'$.name') name, json_extract(p.payload,'$.room') room,e.value event"+source+" ORDER BY julianday(json_extract(e.value,'$.date')) DESC,p.id,json_extract(e.value,'$.id') LIMIT ? OFFSET ?",[*params,limit,(page-1)*limit]).fetchall()
-        kinds=[r[0] for r in db.execute("SELECT DISTINCT json_extract(e.value,'$.kind')"+" FROM entities p,json_each(p.payload,'$.history') e WHERE p.collection='plants' AND coalesce(json_extract(e.value,'$.deletedAt'),'')='' ORDER BY 1") if r[0]]
-    return dict(items=[dict(plantID=r['id'],plantName=r['name'],room=r['room'],version=r['version'],event=json.loads(r['event'])) for r in rows],total=total,page=page,limit=limit,hasNextPage=page*limit<total,kinds=kinds)
+        kinds=sorted({legacy_kind(r[0]) for r in db.execute("SELECT DISTINCT json_extract(e.value,'$.kind')"+" FROM entities p,json_each(p.payload,'$.history') e WHERE p.collection='plants' AND coalesce(json_extract(e.value,'$.deletedAt'),'')='' ORDER BY 1") if r[0]})
+    return dict(items=[dict(plantID=r['id'],plantName=r['name'],room=r['room'],version=r['version'],event=legacy_event(json.loads(r['event']))) for r in rows],total=total,page=page,limit=limit,hasNextPage=page*limit<total,kinds=kinds)

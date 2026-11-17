@@ -2,11 +2,12 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from plantcare_web.backend.domain import schedule, learning, accepted_water, minimum_water, stable_water
+from plantcare_web.backend.care_kinds import canonical_kind
 
 def plant(**values):
     return dict(id=str(uuid4()).upper(),name='Monstera',species='Monstera deliciosa',room='Salotto',category='Tropicale',light='Luce indiretta',wateringInterval=7,fertilizingInterval=21,acquiredOn='2026-01-01T12:00:00Z',lastWatered='2026-11-01T12:00:00Z',history=[],**values)
 
-def action(p,kind): return next(x for x in schedule(p,'Europe/Rome',datetime(2026,11,8,tzinfo=timezone.utc)) if x['kind']==kind)
+def action(p,kind): return next(x for x in schedule(p,'Europe/Rome',datetime(2026,11,8,tzinfo=timezone.utc)) if x['kind']==canonical_kind(kind))
 
 def test_fertilizer_aligns_with_first_water_on_or_after_requested():
     p=plant();p['lastFertilized']='2026-10-20T12:00:00Z'

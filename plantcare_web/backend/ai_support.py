@@ -132,7 +132,7 @@ def apply_advice(store,plant_id,request):
                 combined='\n\n'.join(s for s in [result.get('notes',''),entry] if s)
                 if len(combined)>20000:raise ValueError('Le note supererebbero il limite di 20.000 caratteri. Riduci le note della scheda prima di applicare il consiglio.')
                 result['notes']=combined
-        result['history'].append(dict(id=str(uuid4()).upper(),kind='Aggiornamento piano',date=iso(now()),status='completed',origin='user',note=f"Consigli AI applicati ({saved['provider']}). Campi: {', '.join(k for k,v in selection.items() if v) or 'solo note'}.",schemaVersion=2))
+        result['history'].append(dict(id=str(uuid4()).upper(),kind='planUpdate',date=iso(now()),status='completed',origin='user',note=f"Consigli AI applicati ({saved['provider']}). Campi: {', '.join(k for k,v in selection.items() if v) or 'solo note'}.",schemaVersion=2))
         p,v=store.put('plants',result,version,db)
         saved.update(applied=True,appliedAt=iso(now()));store.set_state('ai-advice-'+plant_id,saved,db)
         return p,v

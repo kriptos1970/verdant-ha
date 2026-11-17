@@ -31,7 +31,7 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 - Backend: Python 3.13, FastAPI, Pydantic, SQLite.
 - Frontend: React 19, TypeScript, Vite.
 - Packaging: Home Assistant add-on built from a local Dockerfile (aarch64 and amd64).
-- Tests: 140 pytest tests; frontend type-check and build in CI.
+- Tests: 149 pytest tests; frontend type-check and build in CI.
 
 ## Status
 

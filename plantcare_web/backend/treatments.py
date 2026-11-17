@@ -6,10 +6,12 @@ active records, so a deleted application cannot leave a cycle falsely completed.
 """
 from datetime import timedelta
 from .domain import active_history, iso, now, parse
+from .care_kinds import canonical_plant
 
 
 def completed_events(plant, plan_id):
-    return [e for e in active_history(plant) if e.get('kind') == 'Trattamento'
+    plant = canonical_plant(plant)
+    return [e for e in active_history(plant) if e.get('kind') == 'treatment'
             and e.get('treatmentPlanID') == plan_id and e.get('status') != 'postponed']
 
 
@@ -35,12 +37,13 @@ def update_counts(plant):
 
 
 def treatment_view(plant, plan, tz, at=None):
+    plant = canonical_plant(plant)
     at = at or now()
     count = completed_count(plant, plan)
     total = int(plan['totalApplications'])
     interval = max(1, int(plan['intervalDays']))
     due = parse(plan['startDate']).astimezone(tz) + timedelta(days=count * interval)
-    events = [e for e in active_history(plant) if e.get('kind') == 'Trattamento' and e.get('treatmentPlanID') == plan['id']]
+    events = [e for e in active_history(plant) if e.get('kind') == 'treatment' and e.get('treatmentPlanID') == plan['id']]
     completions = [parse(e['date']) for e in events if e.get('status') != 'postponed']
     latest = max(completions) if completions else None
     postponed = [e for e in events if e.get('status') == 'postponed' and e.get('postponedUntil') and (latest is None or parse(e['date']) > latest)]
@@ -74,9 +77,9 @@ def treatment_actions(plant, tz, at=None):
         reason = f"{plan['productName']} · intervento {number} di {plan['totalApplications']}"
         if plan.get('dose'):
             reason += ' · ' + plan['dose']
-        result.append({'id': f"{plant['id']}:Trattamento:{plan['id']}:{number}",
+        result.append({'id': f"{plant['id']}:treatment:{plan['id']}:{number}",
                        'plantID': plant['id'], 'plantName': plant['name'], 'room': plant['room'],
-                       'kind': 'Trattamento', 'dueDate': iso(due),
+                       'kind': 'treatment', 'dueDate': iso(due),
                        'daysUntil': (due.astimezone(tz).date() - at.astimezone(tz).date()).days,
                        'intervalDays': plan['intervalDays'], 'treatmentPlanID': plan['id'],
                        'productID': plan['productID'], 'applicationNumber': number, 'reason': reason})

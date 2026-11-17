@@ -7,10 +7,11 @@ import math
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+from .care_kinds import canonical_kind, canonical_plant
 
 UTC = timezone.utc
-KINDS = {"Annaffia": "wateringInterval", "Concima": "fertilizingInterval", "Ruota": "rotationInterval", "Rinvasa": "repottingInterval", "Pota": "pruningInterval", "Controlla salute": "inspectionInterval", "Aggiorna progressi": "progressInterval"}
-EXTRA_KINDS = {"Spostamento", "Trattamento", "Aggiornamento piano"}
+KINDS = {"water": "wateringInterval", "fertilize": "fertilizingInterval", "rotate": "rotationInterval", "repot": "repottingInterval", "prune": "pruningInterval", "inspect": "inspectionInterval", "progress": "progressInterval"}
+EXTRA_KINDS = {"move", "treatment", "planUpdate"}
 
 def now():
     return datetime.now(UTC)
@@ -36,12 +37,13 @@ def active_history(plant):
     return [e for e in plant.get('history', []) if not e.get('deletedAt')]
 
 def care_state(plant, kind):
+    kind = canonical_kind(kind)
     records = [e for e in plant.get('history', []) if e['kind'] == kind]
     active = [e for e in records if not e.get('deletedAt')]
     completed = [parse(e['date']) for e in active if e.get('status') != 'postponed']
     completion = max(completed) if completed else None
     acquired = parse(plant['acquiredOn'])
-    legacy_key = {'Annaffia': 'lastWatered', 'Concima': 'lastFertilized'}.get(kind)
+    legacy_key = {'water': 'lastWatered', 'fertilize': 'lastFertilized'}.get(kind)
     anchor = completion or (acquired if records else parse(plant.get(legacy_key) or plant['acquiredOn']))
     postponed = [e for e in active if e.get('status') == 'postponed']
     latest = max(postponed, key=lambda e: parse(e['date'])) if postponed else None
@@ -49,7 +51,7 @@ def care_state(plant, kind):
     return anchor, defer
 
 def next_water(plant, tz):
-    anchor, deferred = care_state(plant, 'Annaffia')
+    anchor, deferred = care_state(plant, 'water')
     calculated = anchor.astimezone(tz) + timedelta(days=plant['wateringInterval'])
     return max([calculated] + ([parse(plant['nextWateringOverride'])] if plant.get('nextWateringOverride') else []) + ([deferred] if deferred else []))
 
@@ -60,6 +62,7 @@ def aligned_date(requested, water, interval, tz):
     return first + timedelta(days=steps * max(1, interval))
 
 def schedule(plant, zone='Europe/Rome', at=None):
+    plant = canonical_plant(plant)
     tz = ZoneInfo(zone)
     today = (at or now()).astimezone(tz).date()
     water = next_water(plant, tz)
@@ -69,9 +72,9 @@ def schedule(plant, zone='Europe/Rome', at=None):
         if not interval or interval <= 0:
             continue
         anchor, deferred = care_state(plant, kind)
-        if kind == 'Annaffia':
+        if kind == 'water':
             due = water
-        elif kind == 'Concima':
+        elif kind == 'fertilize':
             if plant.get('nextFertilizingOverride'):
                 due = parse(plant['nextFertilizingOverride'])
             else:
@@ -109,7 +112,8 @@ def stable_water(plant):
     return min(120, max(minimum, plant['wateringInterval']))
 
 def learning(plant, baseline, zone):
-    dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'Annaffia' and e.get('status') != 'postponed')
+    plant = canonical_plant(plant)
+    dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed')
     if len(dates) < 3:
         return None
     recent = dates[-7:]
@@ -174,12 +178,12 @@ def pending_actions(plant, zone='Europe/Rome', at=None, product=None):
         action = {**action, 'id': action['id'] + ':' + action['dueDate'], 'includesFertilizing': False}
         result.append(action)
     if uses_watering(product):
-        raw_feed=next((a for a in schedule(plant,zone,at) if a['kind']=='Concima'),None)
+        raw_feed=next((a for a in schedule(plant,zone,at) if a['kind']=='fertilize'),None)
         for a in result:
-            if a['kind']=='Annaffia':
+            if a['kind']=='water':
                 a['canIncludeFertilizing']=bool(raw_feed and (parse(raw_feed['dueDate']).astimezone(tz).date()<=at.astimezone(tz).date() or parse(raw_feed['dueDate']).astimezone(tz).date()==parse(a['dueDate']).astimezone(tz).date()))
-        water = next((a for a in result if a['kind'] == 'Annaffia'), None)
-        feed = next((a for a in result if a['kind'] == 'Concima'), None)
+        water = next((a for a in result if a['kind'] == 'water'), None)
+        feed = next((a for a in result if a['kind'] == 'fertilize'), None)
         if water and feed and parse(water['dueDate']).astimezone(tz).date() == parse(feed['dueDate']).astimezone(tz).date():
             water['includesFertilizing'] = True
             result.remove(feed)

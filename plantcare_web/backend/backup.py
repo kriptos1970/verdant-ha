@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import UUID
 from pydantic import ValidationError
 from .domain import iso, parse
+from .care_kinds import legacy_plant
 from .models import Plant, Product, TreatmentInput
 from .storage import Conflict
 
@@ -158,7 +159,8 @@ def export_zip(store):
                 first=True
                 for row in db.execute('SELECT payload FROM entities WHERE collection=? ORDER BY id',(collection,)):
                     if not first: out.write(',')
-                    out.write(row['payload']);first=False
+                    # Keep the web backup in the legacy Italian shape so older releases can still import it.
+                    out.write(json.dumps(legacy_plant(json.loads(row['payload']))) if collection == 'plants' else row['payload']);first=False
                 out.write(']')
             out.write('},"state":')
             json.dump({r['key']:json.loads(r['value']) for r in db.execute('SELECT * FROM state')},out)
