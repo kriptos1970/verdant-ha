@@ -39,3 +39,15 @@ Benchmark sintetico ripetuto: 100 piante e 50.000 eventi, risposta della collezi
 - ripristino completo su un’installazione HA isolata;
 - sensori HA e Open-Meteo live;
 - archivio reale molto più grande del benchmark sintetico.
+
+### Collaudo Ingress 0.11.0 — 17 novembre 2026
+
+Accesso reale tramite `https://sicoli.ovh/app/local_plantcare_web` con sessione Home Assistant:
+
+- versione **0.11.0** mostrata in Impostazioni, con archivio reale di **18 piante**, 124 foto (357,7 MB), SQLite 0,6 MB e 174,8 GB liberi;
+- lingua `auto` in italiano; passaggio a inglese verificato con navigazione, impostazioni e calendario tradotti, poi ripristino a `auto`/italiano;
+- calendario del 17 novembre con 1 attività in scadenza e 1 attività precedente ancora in attesa;
+- layout mobile reale a 734 × 766 CSS px, con barra inferiore e schede piante;
+- nessun errore console; nessuna cura registrata e nessun piano modificato durante il controllo.
+
+Restano distinti i collaudi su iPhone fisico/Companion, la scansione QR/NFC reale, il ripristino su HA isolato, i sensori e il meteo live, e un archivio reale molto più grande.
