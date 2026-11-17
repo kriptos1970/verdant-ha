@@ -4,7 +4,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 
 ## Implemented
 
-- **Collection**: plants, rooms, products, photos, growth diary, annotated health album.
+- **Collection**: plants, rooms, products, photos, growth diary, annotated health album, collection pagination.
 - **Care**: guided care round, weekly/monthly calendar, paginated history, treatments, deferrals and reminders.
 - **Planning**: adaptive planner with seasonal rules and optional Open-Meteo. New plants start in manual mode; the advanced Care Engine runs in shadow mode and never rewrites the calendar by itself.
 - **Sensors**: temperature, humidity, light, soil moisture and conductivity from Home Assistant entities mapped to a plant or room.
@@ -29,6 +29,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Phase 6 adds the 30/90/365 selector: the API now returns the whole period day by day and the chart folds it into days, weeks or months. Switching refetches `days=30`, `days=90` or `days=365` while keeping the previous data visible, and the 320/390/1280 px layouts and English labels were checked. Lighthouse accessibility is 0.96 with only the pre-existing footer contrast finding.
 - Phase 5 adds a merged care-and-measurement timeline to the plant diary, fed by `/api/plants/{id}/timeline`: 320/390/1280 px were checked with no horizontal overflow, and loading, empty, error/retry and English states were exercised. The plant card still loads no chart chunk.
 - The add-on was rebuilt from these sources on the real Home Assistant installation on 17 November 2026, keeping version 0.11.1: 99 files verified by SHA256, Ingress checks confirmed 18 plants at 100% health, 495 care events and 83% regularity over 90 days, and a 12-entry plant timeline. No real care was recorded, no archive data changed and no backup was created.
+- The plant collection is now paginated at 12 plants per page with a filter-aware reset; 390 and 1280 px layouts, the Italian/English labels and the 12 + 2 split on a 14-plant synthetic archive were checked.
 - No Home Assistant backup was created during development; no real care or plan was changed by the automated checks.
 
 ## Known limits

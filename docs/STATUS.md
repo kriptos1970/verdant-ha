@@ -321,3 +321,11 @@ Verifiche: 685 chiavi allineate, build frontend, 151 test backend e prova browse
 4. Collaudo Companion fisico, poi passare agli altri dispositivi come richiesto.
 
 Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su dati reali) e 8 (ripristino su macchina isolata). Nessun backup Home Assistant durante lo sviluppo; DB esterno rinviato.
+
+## Collezione — paginazione (17 novembre 2026)
+
+- La pagina Piante mostra **12 piante per pagina**, con intervallo “1–12 di N” e pulsanti Precedenti/Successive; su telefono l’ordine è alfabetico, su desktop resta l’ordine della collezione.
+- Ricerca, ambiente e filtro riportano alla prima pagina; se i risultati scendono sotto le 12 voci la paginazione sparisce e la pagina viene riallineata.
+- Il cambio pagina riporta in cima al contenuto, rispettando `prefers-reduced-motion`.
+- La paginazione è nascosta nella vista Ambienti del telefono; la Home continua a mostrare le prime 6 piante.
+- Verifica: build e **797 chiavi i18n**, 180 test backend; archivio sintetico portato a 14 piante, pagine 12 + 2, ricerca “Monstera” con una sola scheda e nessuna paginazione, layout 390 e 1280 px senza overflow, italiano e inglese.

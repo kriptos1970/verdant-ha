@@ -184,6 +184,7 @@ function App() {
     [search, setSearch] = useState(""),
     [room, setRoom] = useState("Tutte"),
     [filter, setFilter] = useState("Tutte"),
+    [plantPage, setPlantPage] = useState(1),
     [menu, setMenu] = useState(false);
   const [plantEditor, setPlantEditor] = useState<Plant | "new" | null>(null),
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
@@ -281,6 +282,32 @@ function App() {
         (filter === "Rischio animali" &&
           p.safetyProfile?.poisonousToPets === true)),
   );
+  const orderedPlants = phoneLayout
+    ? [...filtered].sort((a, b) => a.name.localeCompare(b.name, locale))
+    : filtered;
+  const plantPageSize = 12;
+  const plantPageCount = Math.max(
+    1,
+    Math.ceil(orderedPlants.length / plantPageSize),
+  );
+  const plantPageCurrent = Math.min(plantPage, plantPageCount);
+  const visiblePlants = orderedPlants.slice(
+    (plantPageCurrent - 1) * plantPageSize,
+    plantPageCurrent * plantPageSize,
+  );
+  useEffect(() => setPlantPage(1), [search, room, filter]);
+  useEffect(() => {
+    if (plantPage > plantPageCount) setPlantPage(plantPageCount);
+  }, [plantPage, plantPageCount]);
+  const changePlantPage = (next: number) => {
+    setPlantPage(next);
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
+  };
   const [detailPlant,setDetailPlant]=useState<Plant>();
   const [detailError,setDetailError]=useState(''),[detailRetry,setDetailRetry]=useState(0);
   const selectedSummary=plants.find(p=>p.id===selected);
@@ -724,15 +751,24 @@ function App() {
                     ))}
                   </div>
                   {filtered.length ? (
-                    <div className="plant-grid">
-                      {(phoneLayout?[...filtered].sort((a,b)=>a.name.localeCompare(b.name, locale)):filtered).map((p) => (
-                        <PlantCard
-                          key={p.id}
-                          plant={p}
-                          onClick={() => openPlant(p.id)}
-                        />
-                      ))}
-                    </div>
+                    <>
+                      <div className="plant-grid">
+                        {visiblePlants.map((p) => (
+                          <PlantCard
+                            key={p.id}
+                            plant={p}
+                            onClick={() => openPlant(p.id)}
+                          />
+                        ))}
+                      </div>
+                      <ArchivePagination
+                        label={t("plants.paginationLabel")}
+                        page={plantPageCurrent}
+                        size={plantPageSize}
+                        total={orderedPlants.length}
+                        onPage={changePlantPage}
+                      />
+                    </>
                   ) : plants.length ? (
                     <div className="empty-state">
                       <Search />

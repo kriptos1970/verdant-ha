@@ -467,6 +467,7 @@ const it = {
   "plants.eyebrow": "OGNI PIANTA, UNA STORIA",
   "plants.title": "Le tue piante",
   "plants.summary": "{plants} piante · {rooms} ambienti",
+  "plants.paginationLabel": "Pagine della collezione",
   "plants.searchAria": "Cerca una pianta",
   "plants.searchPlaceholder": "Cerca nome, specie o ambiente",
   "plants.roomFilterAria": "Filtra per ambiente",

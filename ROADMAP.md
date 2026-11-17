@@ -22,6 +22,7 @@ Current release: **0.11.1**. The project is usable on a real Home Assistant inst
 - [x] Twelve-month care activity chart in every plant card, built from the history already loaded and without a chart runtime.
 - [x] 30/90/365 period selector in Analytics, with the activity series grouped by day, week or month.
 - [x] Merged care-and-measurement timeline in the plant diary, built on the timeline endpoint.
+- [x] Pagination for the plant collection, 12 plants per page with filter-aware reset.
 
 ## Now — close the consolidation step
 
@@ -48,7 +49,6 @@ These are verification and hardening tasks, not new features. They are tracked i
 
 - [ ] Move the **Care Engine** from shadow mode to operational recommendations, with explicit user opt-in and evidence from real measurements.
 - [ ] Validate **OpenAI** and the **daily AI analysis** on real data; keep automatic application off by default.
-- [ ] Add **pagination to the plant collection**.
 - [ ] Add a **maintenance tool for unreferenced photo files** (no automatic deletion).
 - [ ] Add a **relational index or local normalization** if archives grow beyond the current JSON-document approach.
 - [ ] Expand accessibility and automated browser checks.

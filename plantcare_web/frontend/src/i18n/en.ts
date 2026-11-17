@@ -469,6 +469,7 @@ const en: Record<MessageKey, string> = {
   "plants.eyebrow": "EVERY PLANT, A STORY",
   "plants.title": "Your plants",
   "plants.summary": "{plants} plants · {rooms} rooms",
+  "plants.paginationLabel": "Collection pages",
   "plants.searchAria": "Search a plant",
   "plants.searchPlaceholder": "Search name, species or room",
   "plants.roomFilterAria": "Filter by room",
