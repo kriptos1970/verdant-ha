@@ -53,13 +53,13 @@ import type {
   CareSelection,
   Treatment,
 } from "./types";
-import { api, photoURL, uid, todayISO, dateLabel, dueLabel } from "./api";
+import { api, photoURL, uid, todayISO } from "./api";
 import "./style.css";
 import "./ios-layout.css";
 import {IOSProducts,IOSPlantOverview,useIOSLayout} from "./ios-layout";
 import { PlantAssistant, AIModelCatalog } from "./ai-assistant";
 import { AdaptiveEditor, CareInsights } from "./adaptive";
-import { Avatar, ProductPhoto, Modal, eventIcon, actionLabel } from "./ui";
+import { Avatar, ProductPhoto, Modal, eventIcon } from "./ui";
 import { CareRound } from "./care-round";
 import { TreatmentEditor, TreatmentPanel } from "./treatments";
 import { HealthAlbum, HealthPhotoEditor } from "./health-album";
@@ -70,6 +70,7 @@ import { SpeciesCatalog } from "./species-catalog";
 import { IdentificationTool, SpeciesLibrary, BotanicalLookup, type PlantSeed } from "./knowledge";
 import { CareCalendar, WeekStrip } from "./care-calendar";
 import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
+import { useCareLabels } from "./care-labels";
 
 type Page = "today" | "plants" | "care" | "products" | "more" | "analytics";
 const navigation = [
@@ -110,6 +111,43 @@ const kinds = [
   "Aggiorna progressi",
   "Trattamento",
 ];
+const detailTabs = [
+  { id: "Scheda", key: "detail.tabs.sheet" },
+  { id: "Guida", key: "detail.tabs.guide" },
+  { id: "Salute", key: "detail.tabs.health" },
+  { id: "Diario", key: "detail.tabs.diary" },
+  { id: "Trattamenti", key: "detail.tabs.treatments" },
+  { id: "Misure", key: "detail.tabs.measures" },
+  { id: "AI", key: "detail.tabs.ai" },
+] as const;
+const healthStates = ["Eccellente", "Buona", "In difficoltà", "Malata"] as const;
+const healthStateKeys: Record<string, MessageKey> = {
+  Eccellente: "health.state.excellent",
+  Buona: "health.state.good",
+  "In difficoltà": "health.state.struggling",
+  Malata: "health.state.sick",
+};
+const symptomKeys: Record<string, MessageKey> = {
+  "Foglie gialle": "health.symptom.yellowLeaves",
+  "Punte secche": "health.symptom.dryTips",
+  "Foglie cadenti": "health.symptom.droopingLeaves",
+  Macchie: "health.symptom.spots",
+  Parassiti: "health.symptom.pests",
+  "Crescita lenta": "health.symptom.slowGrowth",
+};
+const areaKeys: Record<string, MessageKey> = {
+  Foglie: "health.area.leaves",
+  "Retro foglie": "health.area.leafUnderside",
+  Fusto: "health.area.stem",
+  Terreno: "health.area.soil",
+  Radici: "health.area.roots",
+  Drenaggio: "health.area.drainage",
+};
+const planModeKeys: Record<string, MessageKey> = {
+  Manuale: "detail.planMode.manual",
+  Intelligente: "detail.planMode.smart",
+  AI: "detail.planMode.ai",
+};
 function Botanical({ small = false }: { small?: boolean }) {
   return (
     <div className={`botanical ${small ? "small" : ""}`} aria-hidden="true">
@@ -123,6 +161,7 @@ function Botanical({ small = false }: { small?: boolean }) {
 }
 function App() {
   const { t } = useI18n();
+  const { actionLabel, dueLabel } = useCareLabels();
   const [page, setPage] = useState<Page>("today"),
     [plants, setPlants] = useState<Plant[]>([]),
     [products, setProducts] = useState<Product[]>([]),
@@ -1258,6 +1297,8 @@ function App() {
   );
 }
 function PlantCard({ plant, onClick }: { plant: Plant; onClick: () => void }) {
+  const { t } = useI18n();
+  const { actionLabel, dueLabel } = useCareLabels();
   const next = plant._actions[0];
   return (
     <button className="plant-card" onClick={onClick}>
@@ -1282,7 +1323,7 @@ function PlantCard({ plant, onClick }: { plant: Plant; onClick: () => void }) {
               </b>
             </>
           ) : (
-            <span>Nessuna cura programmata</span>
+            <span>{t("care.noneScheduled")}</span>
           )}
         </div>
       </div>
@@ -1338,6 +1379,7 @@ function PlantEditor({
   onClose: () => void;
   onSave: (p: Plant) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
       ? { ...plant }
@@ -1646,7 +1688,7 @@ function PlantEditor({
           </label>
         </details>
         <label>
-          Note
+          {t("event.note")}
           <textarea
             rows={3}
             value={draft.notes}
@@ -1661,7 +1703,7 @@ function PlantEditor({
         )}
         <div className="modal-actions">
           <button type="button" className="button secondary" onClick={onClose}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button className="button primary" disabled={busy || uploading}>
             {busy ? (
@@ -1688,6 +1730,7 @@ function ProductEditor({
   onClose: () => void;
   onSave: (p: Product) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [p, set] = useState<Product>(
     product || {
       id: uid(),
@@ -1822,7 +1865,7 @@ function ProductEditor({
         </label>
         <div className="modal-actions">
           <button type="button" className="button secondary" onClick={onClose}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button disabled={busy || uploading} className="button primary">
             Salva prodotto
@@ -1843,6 +1886,8 @@ function EventEditor({
   onClose: () => void;
   onSave: (data: unknown) => Promise<void>;
 }) {
+  const { t } = useI18n();
+  const { kindLabel } = useCareLabels();
   const localDate = (s: string) => {
     const d = new Date(s);
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
@@ -1867,8 +1912,8 @@ function EventEditor({
     [feeding, setFeeding] = useState(false),
     [error, setError] = useState("");
   return (
-    <Modal title={action.event ? "Modifica attività" : "Conferma attività"} onClose={onClose}>
-      <div className="care-confirm-heading"><span className="care-confirm-symbol">{(() => {const Icon=eventIcon(action.kind);return <Icon size={26}/>})()}</span><p>{action.kind} · {action.plant.name}</p></div>
+    <Modal title={action.event ? t("event.editTitle") : t("event.confirmTitle")} onClose={onClose}>
+      <div className="care-confirm-heading"><span className="care-confirm-symbol">{(() => {const Icon=eventIcon(action.kind);return <Icon size={26}/>})()}</span><p>{kindLabel(action.kind)} · {action.plant.name}</p></div>
       <ActionGuide kind={action.kind} expanded/>
       <form className="care-event-form"
         onSubmit={(e) => {
@@ -1907,7 +1952,7 @@ function EventEditor({
           <p className="info-note">{action.scheduled.reason}</p>
         )}
         <label>
-          Quando è avvenuta?
+          {t("event.when")}
           <input
             type="datetime-local"
             required
@@ -1921,11 +1966,11 @@ function EventEditor({
             checked={postponed}
             onChange={(e) => setPostponed(e.target.checked)}
           />
-          Rinvia questa attività
+          {t("event.postpone")}
         </label>
         {postponed && (
           <label>
-            Rinvia fino al
+            {t("event.postponeUntil")}
             <input
               type="datetime-local"
               required
@@ -1949,32 +1994,31 @@ function EventEditor({
                   checked={feeding}
                   onChange={(e) => setFeeding(e.target.checked)}
                 />
-                Ho concimato insieme all’annaffiatura
+                {t("event.feedTogether")}
               </label>
               <p className="muted small-text">
-                La concimazione viene registrata insieme solo se prevista in
-                questa scadenza.
+                {t("event.feedHint")}
               </p>
             </>
           )}
-        {requiresHealth&&<fieldset className="care-health-options"><legend>Stato della pianta</legend><div>{["Eccellente","Buona","In difficoltà","Malata"].map(h=><button type="button" key={h} aria-pressed={health===h} onClick={()=>setHealth(h)}><IOSIcon name={h==='Eccellente'?'sparkles':'health'} size={22}/>{h}</button>)}</div></fieldset>}
-        {isNewInspection&&<section className="care-health-details"><fieldset className="care-health-options"><legend>Cosa hai osservato?</legend><div>{healthSymptoms.map(value=><button type="button" key={value} aria-pressed={symptoms.includes(value)} onClick={()=>toggleHealthOption(value,symptoms,setSymptoms)}>{symptoms.includes(value)&&<Check size={16}/>} {value}</button>)}</div></fieldset><fieldset className="care-health-options"><legend>Aree controllate</legend><div>{healthAreas.map(value=><button type="button" key={value} aria-pressed={areas.includes(value)} onClick={()=>toggleHealthOption(value,areas,setAreas)}>{areas.includes(value)&&<Check size={16}/>} {value}</button>)}</div></fieldset><label>Possibile problema<textarea rows={2} value={problem} onChange={e=>setProblem(e.target.value)}/></label><label>Azione consigliata o prossimo controllo<textarea rows={2} value={nextAction} onChange={e=>setNextAction(e.target.value)}/></label></section>}
+        {requiresHealth&&<fieldset className="care-health-options"><legend>{t("event.healthState")}</legend><div>{healthStates.map(h=><button type="button" key={h} aria-pressed={health===h} onClick={()=>setHealth(h)}><IOSIcon name={h==='Eccellente'?'sparkles':'health'} size={22}/>{t(healthStateKeys[h])}</button>)}</div></fieldset>}
+        {isNewInspection&&<section className="care-health-details"><fieldset className="care-health-options"><legend>{t("event.observed")}</legend><div>{healthSymptoms.map(value=><button type="button" key={value} aria-pressed={symptoms.includes(value)} onClick={()=>toggleHealthOption(value,symptoms,setSymptoms)}>{symptoms.includes(value)&&<Check size={16}/>} {t(symptomKeys[value] ?? "event.observed")}</button>)}</div></fieldset><fieldset className="care-health-options"><legend>{t("event.areas")}</legend><div>{healthAreas.map(value=><button type="button" key={value} aria-pressed={areas.includes(value)} onClick={()=>toggleHealthOption(value,areas,setAreas)}>{areas.includes(value)&&<Check size={16}/>} {t(areaKeys[value] ?? "event.areas")}</button>)}</div></fieldset><label>{t("event.problem")}<textarea rows={2} value={problem} onChange={e=>setProblem(e.target.value)}/></label><label>{t("event.nextAction")}<textarea rows={2} value={nextAction} onChange={e=>setNextAction(e.target.value)}/></label></section>}
         <label>
-          Note
+          {t("event.note")}
           <textarea
             rows={3}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Com’era il terreno? Hai notato qualcosa?"
+            placeholder={t("event.notePlaceholder")}
           />
         </label>
         <div className="modal-actions">
           <button className="button secondary" type="button" onClick={onClose}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button className="button primary" disabled={busy}>
             <Check size={16} />
-            {postponed ? "Salva rinvio" : action.event ? "Salva modifiche" : "Completa"}
+            {postponed ? t("event.savePostpone") : action.event ? t("event.saveChanges") : t("event.complete")}
           </button>
         </div>
       </form>
@@ -2006,6 +2050,8 @@ function PlantDetail({
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
   busy: boolean;
 }) {
+  const { t, plural, locale } = useI18n();
+  const { actionLabel, dueLabel, kindLabel, dateLabel } = useCareLabels();
   const [tab, setTab] = useState("Scheda"),
     [error, setError] = useState(""),
     [measurements, setMeasurements] = useState<Measure[]>([]),
@@ -2051,13 +2097,13 @@ function PlantDetail({
           </div>
           <h2 className="plant-title">{plant.name}</h2>
           <p className="scientific">
-            {plant.species || "Specie da identificare"}
+            {plant.species || t("detail.speciesUnknown")}
           </p>
           {!plant.photoPath &&
             plant.catalogImageURL &&
             plant.catalogImageAttribution && (
               <p className="muted small-text">
-                Foto: {plant.catalogImageAttribution}
+                {t("detail.photoCredit", { credit: plant.catalogImageAttribution })}
               </p>
             )}
           <div className="quick-actions">
@@ -2066,31 +2112,31 @@ function PlantDetail({
               onClick={() => onAction("Annaffia")}
             >
               <Droplets size={17} />
-              Annaffia
+              {t("detail.water")}
             </button>
             <select
-              aria-label="Registra altra cura"
+              aria-label={t("detail.otherCareAria")}
               value=""
               onChange={(e) => {
                 if (e.target.value) onAction(e.target.value);
               }}
             >
-              <option value="">Altra cura…</option>
+              <option value="">{t("detail.otherCare")}</option>
               {kinds
                 .filter((k) => k !== "Annaffia")
                 .map((k) => (
-                  <option key={k}>{k}</option>
+                  <option key={k} value={k}>{kindLabel(k)}</option>
                 ))}
             </select>
           </div>
           <div className="detail-tabs">
-            {["Scheda", "Guida", "Salute", "Diario", "Trattamenti", "Misure", "AI"].map((t) => (
+            {detailTabs.map((tabItem) => (
               <button
-                key={t}
-                className={tab === t ? "active" : ""}
-                onClick={() => setTab(t)}
+                key={tabItem.id}
+                className={tab === tabItem.id ? "active" : ""}
+                onClick={() => setTab(tabItem.id)}
               >
-                {t}
+                {t(tabItem.key)}
               </button>
             ))}
           </div>
@@ -2101,9 +2147,9 @@ function PlantDetail({
           )}
           {tab === "Scheda" && (
             <>
-              <button className="button secondary" onClick={()=>setLabelOpen(true)}>Etichetta QR/NFC</button>
+              <button className="button secondary" onClick={()=>setLabelOpen(true)}>{t("detail.qr")}</button>
               <div className="detail-section ios-plan-content">
-                <h3>Il suo ritmo</h3>
+                <h3>{t("detail.rhythm")}</h3>
                 {plant._actions.map((a) => {
                   const Icon = eventIcon(a.kind);
                   return (
@@ -2118,7 +2164,7 @@ function PlantDetail({
                       <span>
                         <strong>{actionLabel(a)}</strong>
                         <small>
-                          {a.reason || `Ogni ${a.intervalDays} giorni`}
+                          {a.reason || plural("care.everyDays", a.intervalDays)}
                         </small>
                       </span>
                       <span className={a.daysUntil < 0 ? "danger" : ""}>
@@ -2130,26 +2176,26 @@ function PlantDetail({
                 })}
               </div>
               <div className="detail-section">
-                <h3>La sua casa</h3>
+                <h3>{t("detail.home")}</h3>
                 <div className="fact">
                   <Sun size={18} />
-                  <span>Esposizione</span>
+                  <span>{t("detail.exposure")}</span>
                   <strong>{plant.light}</strong>
                 </div>
                 <div className="fact">
                   <MapPin size={18} />
-                  <span>Ambiente</span>
+                  <span>{t("detail.room")}</span>
                   <strong>{plant.room}</strong>
                 </div>
                 <div className="fact">
                   <Settings2 size={18} />
-                  <span>Piano</span>
-                  <strong>{plant.carePlanMode || "Manuale"}</strong>
+                  <span>{t("detail.plan")}</span>
+                  <strong>{t(planModeKeys[plant.carePlanMode || "Manuale"] ?? "detail.planMode.manual")}</strong>
                 </div>
                 {plant.potDiameterCM && (
                   <div className="fact">
                     <Flower2 size={18} />
-                    <span>Vaso</span>
+                    <span>{t("detail.pot")}</span>
                     <strong>
                       {plant.potDiameterCM} cm · {plant.potMaterial || "—"}
                     </strong>
@@ -2158,7 +2204,7 @@ function PlantDetail({
                 {product && (
                   <div className="fact">
                     <FlaskConical size={18} />
-                    <span>Prodotto</span>
+                    <span>{t("detail.product")}</span>
                     <strong>{product.name}</strong>
                   </div>
                 )}
@@ -2166,26 +2212,26 @@ function PlantDetail({
               {plant._learning && (
                 <div className="learning ios-plan-content">
                   <Sprout size={19} />
-                  <h3>Impariamo dalle tue cure</h3>
+                  <h3>{t("detail.learning")}</h3>
                   <p>{plant._learning.explanation}</p>
                   <small>
-                    Confidenza {Math.round(plant._learning.confidence * 100)}% ·
-                    {plant.carePlanMode === "Intelligente" ? "apprendimento del piano" : "suggerimento informativo"}
+                    {t("detail.confidence", { percent: Math.round(plant._learning.confidence * 100) })} ·
+                    {plant.carePlanMode === "Intelligente" ? t("detail.learningPlan") : t("detail.informative")}
                   </small>
                 </div>
               )}
               <div className="detail-section ios-plan-content">
-                <button className="button secondary" onClick={()=>{if(phone&&plant.carePlanMode==='Manuale')onEdit();else if(phone&&plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else setAdaptiveOpen(true)}}><Sprout size={16}/>{phone&&plant.carePlanMode==='Manuale'?'Modifica piano manuale':phone&&plant.carePlanMode==='AI'?'Imposta piano AI':plant.adaptivePlan ? "Ricalcola piano intelligente" : "Configura piano intelligente"}</button>
+                <button className="button secondary" onClick={()=>{if(phone&&plant.carePlanMode==='Manuale')onEdit();else if(phone&&plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else setAdaptiveOpen(true)}}><Sprout size={16}/>{phone&&plant.carePlanMode==='Manuale'?t('detail.planEditManual'):phone&&plant.carePlanMode==='AI'?t('detail.planSetAI'):plant.adaptivePlan ? t('detail.planRecalc') : t('detail.planConfigure')}</button>
               </div>
               {plant.adaptivePlan && (
                 <div className="detail-section ios-plan-content">
-                  <h3>Il suo piano intelligente</h3>
+                  <h3>{t("detail.smartPlan")}</h3>
                   <p>
                     {plant.adaptivePlan.seasonName} ·{" "}
                     {plant.adaptivePlan.placement}
                   </p>
                   <p className="muted small-text">{plant.adaptivePlan.locationName} · {plant.adaptivePlan.averageTemperature} °C · {plant.adaptivePlan.relativeHumidity}% umidità · {plant.adaptivePlan.precipitationNextWeek} mm in 7 giorni</p>
-                  <p className="muted small-text">{plant.adaptivePlan.weatherEnabled ? "Aggiornamento meteo giornaliero attivo" : "Meteo automatico disattivato"} · Calcolato il {dateLabel(plant.adaptivePlan.generatedAt)}</p>
+                  <p className="muted small-text">{plant.adaptivePlan.weatherEnabled ? t("detail.weatherOn") : t("detail.weatherOff")} · {t("detail.calculated", { date: dateLabel(plant.adaptivePlan.generatedAt) })}</p>
                   {plant.adaptivePlan.rationale?.map((r, i) => (
                     <p className="muted small-text" key={i}>
                       {r}
@@ -2193,19 +2239,19 @@ function PlantDetail({
                   ))}
                 </div>
               )}
-              {plant.adaptivePlan?.climateRevisionHistory?.length ? <details className="detail-section ios-plan-content"><summary>Come è cambiato il piano</summary>{[...plant.adaptivePlan.climateRevisionHistory].reverse().map(r=><p className="small-text" key={r.id}>{dateLabel(r.date)} · Acqua {r.previousWateringDays} → {r.newWateringDays} g · Concime {r.previousFertilizingDays} → {r.newFertilizingDays} g</p>)}</details> : null}
+              {plant.adaptivePlan?.climateRevisionHistory?.length ? <details className="detail-section ios-plan-content"><summary>{t("detail.climateHistory")}</summary>{[...plant.adaptivePlan.climateRevisionHistory].reverse().map(r=><p className="small-text" key={r.id}>{dateLabel(r.date)} · {t("detail.climateLine", { from: r.previousWateringDays, to: r.newWateringDays, feedFrom: r.previousFertilizingDays, feedTo: r.newFertilizingDays })}</p>)}</details> : null}
               {!phone&&<CareInsights plant={plant} revision={measureRevision}/>}
               <div className="detail-section safety-section">
-                <h3>Sicurezza</h3>
+                <h3>{t("detail.safety")}</h3>
                 {plant.safetyProfile ? (
                   <>
                     <p>
-                      Animali:{" "}
+                      {t("detail.pets")}{" "}
                       {plant.safetyProfile.poisonousToPets === true
-                        ? "rischio noto"
+                        ? t("detail.petsRisk")
                         : plant.safetyProfile.poisonousToPets === false
-                          ? "non tossica secondo la fonte"
-                          : "dato non disponibile"}
+                          ? t("detail.petsSafe")
+                          : t("detail.petsUnknown")}
                       .
                     </p>
                     <p>
@@ -2265,7 +2311,7 @@ function PlantDetail({
               {growth.slice((growthPage-1)*12,growthPage*12).map((g) => (
                   <div className="growth-entry" key={g.id}>
                     <small>
-                      {dateLabel(g.date)} · {g.health}
+                      {dateLabel(g.date)} · {t(healthStateKeys[g.health] ?? "health.state.good")}
                       {g.heightCM ? ` · ${g.heightCM} cm` : ""}
                     </small>
                     <p>{g.note}</p>
@@ -2281,7 +2327,7 @@ function PlantDetail({
                             >
                               <img
                                 src={photoURL(p, true)}
-                                alt={`Crescita del ${dateLabel(g.date)}`}
+                                alt={t("detail.growthPhotoAlt", { date: dateLabel(g.date) })}
                                 loading="lazy"
                               />
                             </a>
@@ -2315,7 +2361,7 @@ function PlantDetail({
                         {e.note && <p>{e.note}</p>}
                         {e.postponedUntil && (
                           <small>
-                            Rinviata al {dateLabel(e.postponedUntil)}
+                            {t("detail.postponedTo", { date: dateLabel(e.postponedUntil) })}
                           </small>
                         )}
                         <div className="history-actions">
@@ -2466,6 +2512,7 @@ function ManualMeasurement({
   plant: Plant;
   onSave: (data: unknown) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [kind, setKind] = useState("illuminance"),
     [value, setValue] = useState(""),
     [error, setError] = useState("");
@@ -2492,19 +2539,19 @@ function ManualMeasurement({
       }}
     >
       <label>
-        Tipo
+        {t("measure.type")}
         <select value={kind} onChange={(e) => setKind(e.target.value)}>
-          <option value="illuminance">Luce · lux</option>
-          <option value="moisture">Umidità terreno · %</option>
-          <option value="humidity">Umidità aria · %</option>
-          <option value="temperature">Temperatura · °C</option>
-          <option value="conductivity">Conducibilità · µS/cm</option>
+          <option value="illuminance">{t("measure.light")}</option>
+          <option value="moisture">{t("measure.soilMoisture")}</option>
+          <option value="humidity">{t("measure.airHumidity")}</option>
+          <option value="temperature">{t("measure.temperature")}</option>
+          <option value="conductivity">{t("measure.conductivity")}</option>
         </select>
       </label>
       <label>
-        Valore
+        {t("measure.value")}
         <input
-          aria-label={`Valore misurato per ${plant.name}`}
+          aria-label={t("measure.valueAria", { name: plant.name })}
           type="number"
           required
           step="any"
@@ -2512,7 +2559,7 @@ function ManualMeasurement({
           onChange={(e) => setValue(e.target.value)}
         />
       </label>
-      <button className="button secondary">Salva misura</button>
+      <button className="button secondary">{t("measure.save")}</button>
       {error && <p className="form-error">{error}</p>}
     </form>
   );
@@ -2526,6 +2573,7 @@ function GrowthEditor({
   onClose: () => void;
   onSave: (value: unknown) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [note, setNote] = useState(""),
     [health, setHealth] = useState("Buona"),
     [height, setHeight] = useState(""),
@@ -2533,7 +2581,7 @@ function GrowthEditor({
     [uploading, setUploading] = useState(false),
     [error, setError] = useState("");
   return (
-    <Modal title="Un nuovo capitolo" onClose={onClose}>
+    <Modal title={t("growth.title")} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -2546,15 +2594,15 @@ function GrowthEditor({
         }}
       >
         <label>
-          Come sta?
+          {t("growth.health")}
           <select value={health} onChange={(e) => setHealth(e.target.value)}>
-            {["Eccellente", "Buona", "In difficoltà", "Malata"].map((s) => (
-              <option key={s}>{s}</option>
+            {healthStates.map((s) => (
+              <option key={s} value={s}>{t(healthStateKeys[s])}</option>
             ))}
           </select>
         </label>
         <label>
-          Altezza · cm
+          {t("growth.height")}
           <input
             type="number"
             min={0}
@@ -2565,7 +2613,7 @@ function GrowthEditor({
           />
         </label>
         <label>
-          Il tuo aggiornamento
+          {t("growth.note")}
           <textarea
             rows={4}
             value={note}
@@ -2574,7 +2622,7 @@ function GrowthEditor({
         </label>
         <label className="file-label">
           <ImagePlus size={20} />
-          {uploading ? "Caricamento…" : "Aggiungi fotografie"}
+          {uploading ? t("common.loading") : t("growth.photos")}
           <input
             type="file"
             multiple
@@ -2603,16 +2651,16 @@ function GrowthEditor({
         </label>
         <div className="growth-photos">
           {paths.map((p) => (
-            <img key={p} src={photoURL(p, true)} alt="Fotografia caricata" />
+            <img key={p} src={photoURL(p, true)} alt={t("growth.photoAlt")} />
           ))}
         </div>
         {error && <p className="form-error">{error}</p>}
         <div className="modal-actions">
           <button type="button" className="button secondary" onClick={onClose}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button className="button primary" disabled={busy || uploading}>
-            Salva aggiornamento
+            {t("growth.save")}
           </button>
         </div>
       </form>
