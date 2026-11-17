@@ -2205,7 +2205,7 @@ function PlantDetail({
                 </div>
               )}
               <div className="detail-section ios-plan-content">
-                <button className="button secondary" onClick={()=>{if(phone&&plant.carePlanMode==='Manuale')onEdit();else if(phone&&plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else setAdaptiveOpen(true)}}><Sprout size={16}/>{phone&&plant.carePlanMode==='Manuale'?t('detail.planEditManual'):phone&&plant.carePlanMode==='AI'?t('detail.planSetAI'):plant.adaptivePlan ? t('detail.planRecalc') : t('detail.planConfigure')}</button>
+                <button className="button secondary" onClick={()=>{if(phone&&plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else setAdaptiveOpen(true)}}><Sprout size={16}/>{phone&&plant.carePlanMode==='AI'?t('detail.planSetAI'):plant.adaptivePlan ? t('detail.planRecalc') : t('detail.planConfigure')}</button>
               </div>
               {plant.adaptivePlan && (
                 <div className="detail-section ios-plan-content">

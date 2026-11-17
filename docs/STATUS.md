@@ -337,3 +337,9 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **#4 sensori e meteo (bloccato sulla configurazione)** — `exposed_entities` è vuoto nell’add-on, `/api/sensors` restituisce 0 letture e non esistono associazioni. In Home Assistant ci sono 90 entità con classi supportate, tra cui `sensor.dracena_moisture` (36%), `sensor.dracena_illuminance` (6 lx) e `sensor.dracena_conductivity` (74 µS/cm). Tutti i 18 piani adattivi hanno il meteo disattivato; l’ultimo calcolo è del 20 settembre 2026.
 - **#2 QR/NFC (link verificato)** — etichetta di Ficus Elastica con URL stabile `https://sicoli.ovh/app/local_plantcare_web/plant/170F12A0-7D2E-489E-AF4A-116A108D6985`, senza token Ingress; senza sessione la pagina richiede l’accesso a Home Assistant. La scansione con la fotocamera resta da fare.
 - **#1 iPhone fisico** e **#3 ripristino isolato** — richiedono dispositivo e istanza separata; procedure pronte, esito da registrare.
+
+## Piano intelligente da telefono (17 novembre 2026)
+
+- Nella scheda pianta da telefono il pulsante del piano apre ora **Configura/Ricalcola piano intelligente** anche per le piante in modalità Manuale; prima apriva solo la modifica manuale, rendendo irraggiungibile l’opzione meteo di Open-Meteo.
+- Resta separata la matita della sezione Piano per modificare le frequenze manuali.
+- Verifica: 390 px, modale con casella “Usa il meteo e aggiorna il piano ogni giorno”, campi località e clima; desktop invariato.
