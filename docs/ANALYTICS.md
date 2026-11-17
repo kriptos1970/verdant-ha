@@ -168,6 +168,25 @@ La scheda della singola pianta mostra l’attività di cura degli ultimi dodici 
 - Italiano e inglese verificati, compreso lo stato vuoto; nessun errore in console.
 - Lighthouse sulla scheda con il grafico: accessibilità 0.95, best practice e SEO 1; i due rilievi restano i preesistenti elementi del riepilogo iOS.
 
+## Fase 5 — Linea del tempo della pianta (17 novembre 2026)
+
+La scheda pianta mostra ora anche le misure accanto alle cure, usando l’endpoint costruito nella fase 1.
+
+### Contenuto
+
+- `plant-timeline.tsx` legge `/api/plants/{id}/timeline?limit=12`: eventi di cura e misure uniti, dal più recente.
+- La linea è nella scheda pianta → Diario, subito dopo il grafico dei dodici mesi e prima di storie di crescita e cronologia.
+- Ogni voce ha un punto colorato per tipo di cura (o verde salvia per le misure), la data breve, l’etichetta e il valore con unità per le misure; i controlli salute mostrano lo stato e i rinvii sono marcati.
+- Le etichette delle misure sono tradotte (umidità del terreno e dell’aria, temperatura, luce, conducibilità) e i valori usano il formato numerico locale.
+- La richiesta parte all’apertura del Diario, con caricamento, stato vuoto e errore con “Riprova”; nessun motore grafico aggiuntivo.
+
+### Verifica
+
+- Build e i18n: **796 chiavi** allineate (9 nuove).
+- Archivio sintetico con due misure inserite solo nella copia di prova: 8 voci in linea, comprese “Umidità del terreno 42 %” e “Temperatura 21,5 °C”, con controllo salute “Eccellente”.
+- Layout 320, 390 e 1280 px senza overflow; italiano e inglese; stato vuoto ed errore con “Riprova” verificati.
+- Rete: una richiesta `timeline?limit=12` per apertura, nessun chunk `charts-*.js` sulla scheda, nessun errore in console.
+
 ## Fase 6 — selettore 30/90/365 nella pagina Analisi (17 novembre 2026)
 
 La pagina Analisi copre ora i tre periodi previsti dal contratto, con grafici leggibili anche sulle finestre lunghe.
@@ -194,21 +213,3 @@ La pagina Analisi copre ora i tre periodi previsti dal contratto, con grafici le
 - Layout 320, 390 e 1280 px senza overflow; italiano e inglese verificati, comprese le etichette del selettore.
 - Lighthouse sulla pagina Analisi: accessibilità 0.96, best practice e SEO 1; unico rilievo il contrasto preesistente del piè di pagina.
 
-## Fase 5 — Linea del tempo della pianta (17 novembre 2026)
-
-La scheda pianta mostra ora anche le misure accanto alle cure, usando l’endpoint costruito nella fase 1.
-
-### Contenuto
-
-- `plant-timeline.tsx` legge `/api/plants/{id}/timeline?limit=12`: eventi di cura e misure uniti, dal più recente.
-- La linea è nella scheda pianta → Diario, subito dopo il grafico dei dodici mesi e prima di storie di crescita e cronologia.
-- Ogni voce ha un punto colorato per tipo di cura (o verde salvia per le misure), la data breve, l’etichetta e il valore con unità per le misure; i controlli salute mostrano lo stato e i rinvii sono marcati.
-- Le etichette delle misure sono tradotte (umidità del terreno e dell’aria, temperatura, luce, conducibilità) e i valori usano il formato numerico locale.
-- La richiesta parte all’apertura del Diario, con caricamento, stato vuoto e errore con “Riprova”; nessun motore grafico aggiuntivo.
-
-### Verifica
-
-- Build e i18n: **796 chiavi** allineate (9 nuove).
-- Archivio sintetico con due misure inserite solo nella copia di prova: 8 voci in linea, comprese “Umidità del terreno 42 %” e “Temperatura 21,5 °C”, con controllo salute “Eccellente”.
-- Layout 320, 390 e 1280 px senza overflow; italiano e inglese; stato vuoto ed errore con “Riprova” verificati.
-- Rete: una richiesta `timeline?limit=12` per apertura, nessun chunk `charts-*.js` sulla scheda, nessun errore in console.
