@@ -1,6 +1,7 @@
 # Non pubblicato
 
 - Infrastruttura i18n italiano/inglese: cataloghi delle stringhe, selettore lingua in Impostazioni, prime schermate tradotte e controllo automatico delle traduzioni in CI.
+- Giro di cure, calendario e cronologia tradotti in italiano e inglese, con plurali per scadenze e conteggi.
 - Codici canonici per tipi di cura e stati di salute nel backend, con API e backup ancora nel formato italiano per compatibilità.
 
 # 0.10.3 — sezioni della scheda iOS

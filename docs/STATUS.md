@@ -220,6 +220,12 @@ Sono migrate le parti di struttura: navigazione desktop e mobile, titoli delle p
 
 Verifiche: build TypeScript/Vite passata, 95 chiavi allineate tra italiano e inglese, controllo di chiavi e segnaposto in CI (`scripts/check_i18n.mjs`). Nessun cambiamento al backend o ai dati.
 
+### Internazionalizzazione P3a — giro e calendario (17 novembre 2026)
+
+Etichette delle cure, scadenze e date usano la lingua attiva tramite `care-labels.ts`. Il **giro di cure** e il **calendario/cronologia** sono tradotti in italiano e inglese: selezione ambiente, conteggi, avvio, conferma, rinvio, salto, riepilogo, viste settimana/mese, filtri, paginazione e stati vuoti. I nomi di piante, ambienti e prodotti restano dati dell'utente.
+
+Verifiche: 191 chiavi allineate, build TypeScript/Vite, 149 test backend e prova browser su archivio sintetico con giro, calendario e cronologia in inglese, senza errori console. Restano da migrare home, scheda pianta, prodotti, trattamenti, moduli di cura, guide e messaggi di errore del backend. Nessun dato reale modificato.
+
 ### Prossimi confronti iOS
 
 1. Grafico della timeline e indice salute nativo: portare il calcolo, senza simulare valori.

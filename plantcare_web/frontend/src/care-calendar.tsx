@@ -10,8 +10,10 @@ import {
   Pencil,
 } from "lucide-react";
 import type { Action, Plant, CareEvent } from "./types";
-import { api, dueLabel } from "./api";
-import { Avatar, actionLabel, eventIcon } from "./ui";
+import { api } from "./api";
+import { Avatar, eventIcon } from "./ui";
+import { useI18n } from "./i18n";
+import { useCareLabels } from "./care-labels";
 
 export function dayKey(value: string, zone: string) {
   const parts = new Intl.DateTimeFormat("en", {
@@ -28,8 +30,8 @@ const shift = (day: string, days: number) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
-const display = (day: string, options: Intl.DateTimeFormatOptions) =>
-  new Date(day + "T12:00:00Z").toLocaleDateString("it-IT", {
+const display = (day: string, options: Intl.DateTimeFormatOptions, locale = "it") =>
+  new Date(day + "T12:00:00Z").toLocaleDateString(locale, {
     ...options,
     timeZone: "UTC",
   });
@@ -46,14 +48,16 @@ function DayButton({
   actions: Action[];
   onClick: () => void;
 }) {
+  const { plural, locale } = useI18n();
+  const dateText = display(day, { weekday: "long", day: "numeric", month: "long" }, locale);
   return (
     <button
       className={`calendar-day ${selected ? "selected" : ""} ${day === today ? "is-today" : ""}`}
       onClick={onClick}
       aria-pressed={Boolean(selected)}
-      aria-label={`${display(day, { weekday: "long", day: "numeric", month: "long" })}, ${actions.length} attività`}
+      aria-label={plural("calendar.dayAria", actions.length, { date: dateText })}
     >
-      <small>{display(day, { weekday: "short" })}</small>
+      <small>{display(day, { weekday: "short" }, locale)}</small>
       <strong>{Number(day.slice(-2))}</strong>
       <span className="day-dots" aria-hidden="true">
         {actions.slice(0, 3).map((a) => (
@@ -81,16 +85,17 @@ export function WeekStrip({
   zone: string;
   onOpen: () => void;
 }) {
+  const { t, locale } = useI18n();
   const today = dayKey(new Date().toISOString(), zone);
   return (
     <section className="panel native-week">
       <div className="section-heading">
         <div>
-          <h2>La tua settimana</h2>
-          <p>Attività pianificate giorno per giorno</p>
+          <h2>{t("calendar.title")}</h2>
+          <p>{t("calendar.subtitle")}</p>
         </div>
         <button className="button secondary" onClick={onOpen}>
-          Apri calendario
+          {t("calendar.open")}
         </button>
       </div>
       <div className="calendar-week">
@@ -129,6 +134,8 @@ export function CareCalendar({
   onAction: (a: Action) => void;
   onEditEvent: (plant: Plant, event: CareEvent) => void;
 }) {
+  const { t, plural, locale } = useI18n();
+  const { actionLabel, dueLabel, kindLabel } = useCareLabels();
   const today = dayKey(new Date().toISOString(), zone);
   const [mode, setMode] = useState("Calendario"),
     [selected, setSelected] = useState(today),
@@ -138,7 +145,7 @@ export function CareCalendar({
     [from, setFrom] = useState(""),
     [to, setTo] = useState("");
   const rooms = [...new Set(plants.map((p) => p.room))].sort((a, b) =>
-    a.localeCompare(b, "it"),
+    a.localeCompare(b, locale),
   );
   const filtered = actions.filter((a) => room === "Tutte" || a.room === room);
   const weekday = new Date(selected + "T12:00:00Z").getUTCDay();
@@ -210,21 +217,21 @@ export function CareCalendar({
   return (
     <>
       <div className="care-mode-toolbar">
-        <div className="segmented" aria-label="Vista cure">
-          {["Calendario", "Cronologia"].map((m) => (
+        <div className="segmented" aria-label={t("calendar.viewAria")}>
+          {([["Calendario", "calendar.view.calendar"], ["Cronologia", "calendar.view.history"]] as const).map(([m, key]) => (
             <button
               key={m}
               className={mode === m ? "selected" : ""}
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
             >
-              {m}
+              {t(key)}
             </button>
           ))}
         </div>
         <button className="button primary" onClick={onRound}>
           <Play size={16} />
-          Giro di cure
+          {t("calendar.round")}
         </button>
       </div>
       <div className="chips">
@@ -234,7 +241,7 @@ export function CareCalendar({
             className={room === r ? "selected" : ""}
             onClick={() => setRoom(r)}
           >
-            {r}
+            {r === "Tutte" ? t("calendar.allRooms") : r}
           </button>
         ))}
       </div>
@@ -243,40 +250,38 @@ export function CareCalendar({
           <section className="panel calendar-panel">
             <div className="section-heading">
               <div>
-                <h2>{display(selected, { month: "long", year: "numeric" })}</h2>
-                <p className="muted small-text">
-                  Scegli un giorno per vedere le sue attività
-                </p>
+                <h2>{display(selected, { month: "long", year: "numeric" }, locale)}</h2>
+                <p className="muted small-text">{t("calendar.pickDay")}</p>
               </div>
               <div className="button-row">
                 <button
                   className="text-button"
                   onClick={() => setSelected(today)}
                 >
-                  Oggi
+                  {t("calendar.today")}
                 </button>
                 <button
                   className="icon-button"
-                  aria-label={month ? "Chiudi vista mensile" : "Vista mensile"}
+                  aria-label={month ? t("calendar.closeMonth") : t("calendar.monthAria")}
                   aria-pressed={month}
                   onClick={() => setMonth(!month)}
                 >
-                  <CalendarDays size={19} /><span className="ios-control-label">{month?"Settimana":"Vista mensile"}</span>
+                  <CalendarDays size={19} /><span className="ios-control-label">{month ? t("calendar.week") : t("calendar.month")}</span>
                 </button>
               </div>
             </div>
             <div className="calendar-navigation">
               <button
                 className="icon-button"
-                aria-label={month ? "Mese precedente" : "Settimana precedente"}
+                aria-label={month ? t("calendar.prevMonth") : t("calendar.prevWeek")}
                 onClick={() => go(-1)}
               >
                 <ChevronLeft size={18} />
               </button>
-              <span>{month ? "Vista mensile" : "Vista settimanale"}</span>
+              <span>{month ? t("calendar.month") : t("calendar.week")}</span>
               <button
                 className="icon-button"
-                aria-label={month ? "Mese successivo" : "Settimana successiva"}
+                aria-label={month ? t("calendar.nextMonth") : t("calendar.nextWeek")}
                 onClick={() => go(1)}
               >
                 <ChevronRight size={18} />
@@ -304,7 +309,7 @@ export function CareCalendar({
                   weekday: "long",
                   day: "numeric",
                   month: "long",
-                })}
+                }, locale)}
                 <span>{selectedActions.length}</span>
               </h2>
             </div>
@@ -314,11 +319,8 @@ export function CareCalendar({
               <div className="gentle-empty">
                 <Leaf size={25} />
                 <div>
-                  <strong>Nessuna attività prevista</strong>
-                  <p>
-                    Qui compaiono le prossime cure in attesa, senza creare
-                    registrazioni future.
-                  </p>
+                  <strong>{t("calendar.noActions")}</strong>
+                  <p>{t("calendar.noActionsText")}</p>
                 </div>
               </div>
             )}
@@ -327,7 +329,7 @@ export function CareCalendar({
             <details className="panel overdue-panel">
               <summary>
                 <Clock3 size={17} />
-                {oldActions.length} attività precedenti ancora in attesa
+                {plural("calendar.older", oldActions.length)}
               </summary>
               {oldActions.map(row)}
             </details>
@@ -335,15 +337,15 @@ export function CareCalendar({
         </>
       ) : (
         <section className="panel">
-          <h2>Cronologia delle cure</h2>
+          <h2>{t("calendar.historyTitle")}</h2>
           <div className="history-filters">
             <label>
-              Pianta
+              {t("calendar.plantFilter")}
               <select
                 value={historyPlant}
                 onChange={(e) => setHistoryPlant(e.target.value)}
               >
-                <option value="">Tutte le piante</option>
+                <option value="">{t("calendar.allPlants")}</option>
                 {plants.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
@@ -352,9 +354,9 @@ export function CareCalendar({
               </select>
             </label>
             <label>
-              Tipo
+              {t("calendar.typeFilter")}
               <select value={kind} onChange={(e) => setKind(e.target.value)}>
-                <option value="">Tutte le cure</option>
+                <option value="">{t("calendar.allCare")}</option>
                 {(historyData?.kinds || [])
                   .sort()
                   .map((k) => (
@@ -363,7 +365,7 @@ export function CareCalendar({
               </select>
             </label>
             <label>
-              Dal
+              {t("calendar.from")}
               <input
                 type="date"
                 value={from}
@@ -371,7 +373,7 @@ export function CareCalendar({
               />
             </label>
             <label>
-              Al
+              {t("calendar.to")}
               <input
                 type="date"
                 min={from}
@@ -380,9 +382,9 @@ export function CareCalendar({
               />
             </label>
           </div>
-          {historyBusy&&<p role="status">Carico le registrazioni…</p>}
+          {historyBusy&&<p role="status">{t("calendar.loading")}</p>}
           {historyError&&<p role="alert">{historyError}</p>}
-          {historyData&&<p className="muted small-text">{historyData.total} registrazioni · Pagina {currentPage}</p>}
+          {historyData&&<p className="muted small-text">{t("calendar.count", { total: historyData.total, page: currentPage })}</p>}
           {history.map(({ plant, event }) => {
             const Icon = eventIcon(event.kind);
             return (
@@ -399,13 +401,13 @@ export function CareCalendar({
                     <ChevronRight size={12} />
                   </button>
                   <strong>
-                    {event.kind}
-                    {event.status === "postponed" ? " · Rinviata" : ""}
+                    {kindLabel(event.kind)}
+                    {event.status === "postponed" ? ` · ${t("calendar.postponed")}` : ""}
                   </strong>
                   <small>
                     <MapPin size={11} />
                     {plant.room} ·{" "}
-                    {new Date(event.date).toLocaleString("it-IT", {
+                    {new Date(event.date).toLocaleString(locale, {
                       timeZone: zone,
                       dateStyle: "medium",
                       timeStyle: "short",
@@ -415,7 +417,7 @@ export function CareCalendar({
                 </div>
                 <button
                   className="icon-button"
-                  aria-label={`Modifica ${event.kind} di ${plant.name}`}
+                  aria-label={t("calendar.editAria", { kind: kindLabel(event.kind), name: plant.name })}
                   onClick={() => onEditEvent(plant, event)}
                 >
                   <Pencil size={15} />
@@ -423,11 +425,11 @@ export function CareCalendar({
               </div>
             );
           })}
-          {historyData&&<nav className="button-row" aria-label="Pagine cronologia"><button className="button secondary" disabled={historyBusy||currentPage===1} onClick={()=>setHistoryPage(p=>p-1)}>Pagina precedente</button><button className="button secondary" disabled={historyBusy||!historyData.hasNextPage} onClick={()=>setHistoryPage(p=>p+1)}>Pagina successiva</button></nav>}
+          {historyData&&<nav className="button-row" aria-label={t("calendar.pagesAria")}><button className="button secondary" disabled={historyBusy||currentPage===1} onClick={()=>setHistoryPage(p=>p-1)}>{t("calendar.prevPage")}</button><button className="button secondary" disabled={historyBusy||!historyData.hasNextPage} onClick={()=>setHistoryPage(p=>p+1)}>{t("calendar.nextPage")}</button></nav>}
           {!historyBusy&&!historyError&&historyData&&!history.length && (
             <div className="gentle-empty">
               <CalendarDays size={24} />
-              <p>Nessuna registrazione con questi filtri.</p>
+              <p>{t("calendar.empty")}</p>
             </div>
           )}
         </section>

@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import type { Action, Plant } from "./types";
 import { api, uid } from "./api";
-import { Avatar, Modal, actionLabel, eventIcon } from "./ui";
+import { Avatar, Modal, eventIcon } from "./ui";
+import { useI18n } from "./i18n";
+import { useCareLabels } from "./care-labels";
 
 export function CareRound({
   plants,
@@ -26,6 +28,8 @@ export function CareRound({
   onClose: () => void;
   reload: () => Promise<void>;
 }) {
+  const { t, plural, locale } = useI18n();
+  const { actionLabel } = useCareLabels();
   const [stage, setStage] = useState<"setup" | "active">("setup");
   const [selectedRoom, setSelectedRoom] = useState(room);
   const [queue, setQueue] = useState<Action[]>([]),
@@ -42,7 +46,7 @@ export function CareRound({
     [note, setNote] = useState("");
   const commands = useRef(new Map<string, string>());
   const rooms = [...new Set(plants.map((p) => p.room))].sort((a, b) =>
-    a.localeCompare(b, "it"),
+    a.localeCompare(b, locale),
   );
   const pending = plants
     .flatMap((p) => p._actions)
@@ -53,9 +57,9 @@ export function CareRound({
     )
     .sort(
       (a, b) =>
-        a.room.localeCompare(b.room, "it") ||
+        a.room.localeCompare(b.room, locale) ||
         a.dueDate.localeCompare(b.dueDate) ||
-        a.plantName.localeCompare(b.plantName, "it") ||
+        a.plantName.localeCompare(b.plantName, locale) ||
         a.id.localeCompare(b.id),
     );
   const current = queue[index];
@@ -120,24 +124,21 @@ export function CareRound({
   };
   const Icon = eventIcon(current?.kind || "Annaffia");
   return (
-    <Modal title="Giro di cure" onClose={onClose}>
+    <Modal title={t("round.title")} onClose={onClose}>
       {stage === "setup" ? (
         <div className="round-setup">
           <div className="round-symbol">
             <Droplets size={31} />
           </div>
-          <h3>Una stanza, una pianta alla volta.</h3>
-          <p>
-            Le attività di oggi, ordinate per ambiente. Le cure precedenti
-            restano nel calendario.
-          </p>
+          <h3>{t("round.setupTitle")}</h3>
+          <p>{t("round.setupText")}</p>
           <label>
-            Ambiente
+            {t("round.room")}
             <select
               value={selectedRoom}
               onChange={(e) => setSelectedRoom(e.target.value)}
             >
-              <option>Tutte</option>
+              <option value="Tutte">{t("round.allRooms")}</option>
               {rooms.map((r) => (
                 <option key={r}>{r}</option>
               ))}
@@ -146,8 +147,8 @@ export function CareRound({
           <div className="round-ready">
             <strong>{pending.length}</strong>
             <span>
-              {pending.length === 1 ? "attività di oggi" : "attività di oggi"} ·{" "}
-              {new Set(pending.map((a) => a.plantID)).size} piante
+              {plural("round.tasks", pending.length)} ·{" "}
+              {plural("round.plants", new Set(pending.map((a) => a.plantID)).size)}
             </span>
           </div>
           <button
@@ -155,51 +156,45 @@ export function CareRound({
             disabled={!pending.length}
             onClick={start}
           >
-            Inizia il giro <ChevronRight size={17} />
+            {t("round.start")} <ChevronRight size={17} />
           </button>
           {!pending.length && (
             <p className="muted">
-              Nessuna attività prevista oggi per questo ambiente.
+              {t("round.empty")}
             </p>
           )}
         </div>
       ) : finished ? (
         <div className="round-finish" role="status">
           <CheckCircle2 size={55} />
-          <h3>Giro completato</h3>
-          <p>
-            Hai completato <strong>{stats.completed}</strong>{" "}
-            {stats.completed === 1 ? "attività" : "attività"}.
-          </p>
+          <h3>{t("round.finishedTitle")}</h3>
+          <p>{plural("round.completed", stats.completed)}</p>
           <dl>
             <div>
-              <dt>Rimandate a domani</dt>
+              <dt>{t("round.postponed")}</dt>
               <dd>{stats.postponed}</dd>
             </div>
             <div>
-              <dt>Saltate</dt>
+              <dt>{t("round.skipped")}</dt>
               <dd>{stats.skipped}</dd>
             </div>
             {stats.changed > 0 && (
               <div>
-                <dt>Già cambiate durante il giro</dt>
+                <dt>{t("round.changed")}</dt>
                 <dd>{stats.changed}</dd>
               </div>
             )}
           </dl>
-          <p className="muted">
-            Le attività saltate restano disponibili. Nessuna cura è stata
-            registrata per le attività cambiate altrove.
-          </p>
+          <p className="muted">{t("round.finishedNote")}</p>
           <div className="button-row">
             <button
               className="button secondary"
               onClick={() => setStage("setup")}
             >
-              Torna agli ambienti
+              {t("round.back")}
             </button>
             <button className="button primary" onClick={onClose}>
-              Chiudi
+              {t("common.close")}
             </button>
           </div>
         </div>
@@ -211,11 +206,11 @@ export function CareRound({
               {current.room}
             </span>
             <span>
-              {index + 1} di {queue.length}
+              {t("round.of", { current: index + 1, total: queue.length })}
             </span>
           </div>
           <progress
-            aria-label="Avanzamento del giro"
+            aria-label={t("round.progress")}
             max={queue.length}
             value={index}
           />
@@ -228,8 +223,7 @@ export function CareRound({
           {current.reason && <p className="round-reason">{current.reason}</p>}
           {current.kind === "Annaffia" && (
             <p className="round-caution">
-              Controlla che il substrato abbia bisogno d’acqua prima di
-              annaffiare.
+              {t("round.caution")}
             </p>
           )}
           {current.kind === "Annaffia" &&
@@ -241,11 +235,11 @@ export function CareRound({
                   onChange={(e) => setIncludeFeed(e.target.checked)}
                   disabled={busy}
                 />
-                Ho concimato insieme all’annaffiatura
+                {t("round.feedTogether")}
               </label>
             )}
           <label>
-            Note facoltative
+            {t("round.note")}
             <textarea
               rows={2}
               maxLength={20000}
@@ -269,7 +263,7 @@ export function CareRound({
                 }}
               >
                 <RotateCw size={15} />
-                Aggiorna le attività
+                {t("round.refresh")}
               </button>
             </div>
           )}
@@ -284,7 +278,7 @@ export function CareRound({
               ) : (
                 <Check size={18} />
               )}
-              Completata
+              {t("round.complete")}
             </button>
             <button
               className="button secondary"
@@ -292,7 +286,7 @@ export function CareRound({
               onClick={() => void record("postpone")}
             >
               <Clock3 size={18} />
-              Rimanda a domani
+              {t("round.postpone")}
             </button>
             <button
               className="text-button"
@@ -303,13 +297,13 @@ export function CareRound({
                 setIndex((i) => i + 1);
               }}
             >
-              Salta
+              {t("round.skip")}
             </button>
           </div>
-          <small className="muted">Calendario: {zone}</small>
+          <small className="muted">{t("round.zone", { zone })}</small>
         </div>
       ) : (
-        <p className="muted">Aggiorno le attività del giro…</p>
+        <p className="muted">{t("round.updating")}</p>
       )}
     </Modal>
   );

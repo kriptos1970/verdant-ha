@@ -708,9 +708,9 @@ function App() {
                 <>
                   <div className="page-heading">
                     <div>
-                      <div className="eyebrow">UN GESTO ALLA VOLTA</div>
-                      <h1>Il calendario delle cure</h1>
-                      <p>Controlla sempre il terreno prima di annaffiare.</p>
+                      <div className="eyebrow">{t("care.pageEyebrow")}</div>
+                      <h1>{t("care.pageTitle")}</h1>
+                      <p>{t("care.pageSubtitle")}</p>
                     </div>
                     <CalendarDays size={30} className="muted" />
                   </div>
