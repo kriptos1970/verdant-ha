@@ -440,6 +440,7 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Aggiornamento successivo `4201ee8` (modalità Verdant nel form): **104 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress l’editor mostra le tre opzioni **Manuale / Verdant / AI**; nessun salvataggio sul dato reale, nessun overflow a 686 px.
 - Aggiornamento successivo `817e349` (impaginazione nativa): **104 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress a 686 px l’editor mostra le otto sezioni nell’ordine nativo, i campi con controllo sopra ed etichetta sotto, le tre modalità e la scheda pianta con hero, “In sintesi” e card richiudibili; nessun salvataggio sui dati reali e nessun overflow. Struttura desktop verificata a 1280 px in locale.
 - Aggiornamento successivo `966fee9` (azioni rapide e pulizia foto): **105 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress le card mostrano il menu con annaffiatura/modifica/cestino e lo strumento Archivio elenca **1 foto non utilizzata da 0,7 MB**, senza eliminarla.
+- Aggiornamento successivo `a757c39` (motore di cura operativo): **107 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress `/api/settings` e `/api/plants/{id}/care-engine` riportano **active**; la prova AI reale con Gemini è stata rifiutata per la località dell’istanza, senza proposte né modifiche ai piani.
 - Nessuna cura registrata, nessun rinvio confermato e nessun dato reale modificato durante le verifiche.
 
 ## Schermate — confronto con il nativo (17 novembre 2026)
