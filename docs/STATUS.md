@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Cure e calendario — rinvio e cronologia (18 novembre 2026)
+
+- Le attività del giorno selezionato sono **raggruppate per tipo** con intestazione, come nel calendario nativo.
+- Ogni riga programmata ha **Rinvia**: apre il modulo di registrazione già impostato sul rinvio, con data precompilata a domani; il salvataggio crea un evento `postponed` con `postponedUntil`. Restano disponibili registrazione, modifica e annullamento.
+- La **cronologia** è raggruppata per giorno con conteggio, mostra la salute dell’evento e ha **Azzera filtri** quando pianta, tipo o date sono impostati.
+- Verifica su archivio sintetico: rinvio reale di un’annaffiatura con evento `postponed` e `postponedUntil` al giorno successivo; cronologia raggruppata con quattro eventi nello stesso giorno; nessun overflow a 390 e 1280 px. Build, **926 chiavi i18n**, **197 test backend**.
+
 ## Impostazioni — località predefinita (18 novembre 2026)
 
 - Nuova sezione **Località predefinita** in Impostazioni: ricerca con Open-Meteo (`GET /api/weather/locations`), elenco di risultati con area e paese, coordinate, salvataggio (`PUT /api/preferences/location`) e rimozione (`DELETE /api/preferences/location`). La scelta è conservata nello stato `location` e restituita anche da `/api/settings`.

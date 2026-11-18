@@ -3924,3 +3924,41 @@ dialog:has(.plant-editor-form) {
   border-color: var(--moss);
   background: #eef5ea;
 }
+
+/* Care calendar: grouped day actions and history */
+.care-kind-group {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.care-kind-group > h3 {
+  margin: 0 0 2px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--moss);
+}
+.postpone-action {
+  flex: none;
+  white-space: nowrap;
+}
+.history-day-group {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.history-day {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 2px;
+  font-size: 13px;
+  text-transform: capitalize;
+  color: var(--muted);
+}
+.history-day span {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef2e9;
+  color: var(--moss);
+  font-size: 11px;
+}

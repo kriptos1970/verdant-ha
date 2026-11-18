@@ -122,6 +122,7 @@ export function CareCalendar({
   onRound,
   onOpenPlant,
   onAction,
+  onPostpone,
   onEditEvent,
 }: {
   plants: Plant[];
@@ -132,6 +133,7 @@ export function CareCalendar({
   onRound: () => void;
   onOpenPlant: (id: string) => void;
   onAction: (a: Action) => void;
+  onPostpone: (a: Action) => void;
   onEditEvent: (plant: Plant, event: CareEvent) => void;
 }) {
   const { t, plural, locale } = useI18n();
@@ -185,6 +187,13 @@ export function CareCalendar({
     const plant=plants.find(p=>p.id===row.plantID);
     return plant?[{plant:{...plant,_version:row.version},event:row.event}]:[];
   });
+  const historyByDay: { day: string; items: typeof history }[] = [];
+  for (const item of history) {
+    const day = dayKey(item.event.date, zone);
+    const last = historyByDay[historyByDay.length - 1];
+    if (last?.day === day) last.items.push(item);
+    else historyByDay.push({ day, items: [item] });
+  }
   const row = (a: Action) => {
     const plant = plants.find((p) => p.id === a.plantID);
     if (!plant) return null;
@@ -204,6 +213,13 @@ export function CareCalendar({
         <span className={`pill ${a.daysUntil < 0 ? "late" : ""}`}>
           {dueLabel(a.daysUntil)}
         </span>
+        <button
+          className="text-button postpone-action"
+          aria-label={t("calendar.postponeAria", { kind: actionLabel(a), name: plant.name })}
+          onClick={() => onPostpone(a)}
+        >
+          {t("calendar.postpone")}
+        </button>
         <button
           className="round-action"
           aria-label={`${actionLabel(a)}: ${plant.name}`}
@@ -314,7 +330,20 @@ export function CareCalendar({
               </h2>
             </div>
             {selectedActions.length ? (
-              selectedActions.map(row)
+              Object.entries(
+                selectedActions.reduce<Record<string, Action[]>>(
+                  (groups, action) => {
+                    (groups[action.kind] ||= []).push(action);
+                    return groups;
+                  },
+                  {},
+                ),
+              ).map(([careKind, items]) => (
+                <div className="care-kind-group" key={careKind}>
+                  <h3>{kindLabel(careKind)}</h3>
+                  {items.map(row)}
+                </div>
+              ))
             ) : (
               <div className="gentle-empty">
                 <Leaf size={25} />
@@ -381,11 +410,31 @@ export function CareCalendar({
                 onChange={(e) => setTo(e.target.value)}
               />
             </label>
+            {(historyPlant || kind || from || to) && (
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => {
+                  setHistoryPlant("");
+                  setKind("");
+                  setFrom("");
+                  setTo("");
+                }}
+              >
+                {t("calendar.clearFilters")}
+              </button>
+            )}
           </div>
           {historyBusy&&<p role="status">{t("calendar.loading")}</p>}
           {historyError&&<p role="alert">{historyError}</p>}
           {historyData&&<p className="muted small-text">{t("calendar.count", { total: historyData.total, page: currentPage })}</p>}
-          {history.map(({ plant, event }) => {
+          {historyByDay.map((group) => (
+            <div className="history-day-group" key={group.day}>
+              <h3 className="history-day">
+                {display(group.day, { weekday: "long", day: "numeric", month: "long" }, locale)}
+                <span>{group.items.length}</span>
+              </h3>
+              {group.items.map(({ plant, event }) => {
             const Icon = eventIcon(event.kind);
             return (
               <div className="global-history-event" key={plant.id + event.id}>
@@ -403,6 +452,7 @@ export function CareCalendar({
                   <strong>
                     {kindLabel(event.kind)}
                     {event.status === "postponed" ? ` · ${t("calendar.postponed")}` : ""}
+                    {event.health ? ` · ${event.health}` : ""}
                   </strong>
                   <small>
                     <MapPin size={11} />
@@ -425,6 +475,8 @@ export function CareCalendar({
               </div>
             );
           })}
+            </div>
+          ))}
           {historyData&&<nav className="button-row" aria-label={t("calendar.pagesAria")}><button className="button secondary" disabled={historyBusy||currentPage===1} onClick={()=>setHistoryPage(p=>p-1)}>{t("calendar.prevPage")}</button><button className="button secondary" disabled={historyBusy||!historyData.hasNextPage} onClick={()=>setHistoryPage(p=>p+1)}>{t("calendar.nextPage")}</button></nav>}
           {!historyBusy&&!historyError&&historyData&&!history.length && (
             <div className="gentle-empty">

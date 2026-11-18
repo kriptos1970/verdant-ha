@@ -874,6 +874,16 @@ function App() {
                       if (plant)
                         setAction({ plant, kind: a.kind, scheduled: a });
                     }}
+                    onPostpone={(a) => {
+                      const plant = plants.find((p) => p.id === a.plantID);
+                      if (plant)
+                        setAction({
+                          plant,
+                          kind: a.kind,
+                          scheduled: a,
+                          postponed: true,
+                        });
+                    }}
                     onEditEvent={(plant, event) =>
                       setAction({ plant, kind: event.kind, event })
                     }
@@ -2547,7 +2557,9 @@ function EventEditor({
   const [id] = useState(action.event?.id || uid()),
     [date, setDate] = useState(localDate(action.event?.date || todayISO())),
     [note, setNote] = useState(action.event?.note || ""),
-    [postponed, setPostponed] = useState(action.event?.status === "postponed"),
+    [postponed, setPostponed] = useState(
+      action.postponed || action.event?.status === "postponed",
+    ),
     [until, setUntil] = useState(
       localDate(
         action.event?.postponedUntil ||

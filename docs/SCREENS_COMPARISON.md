@@ -39,9 +39,12 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Cronologia | sì, filtri | sì, filtri e paginazione |
 | Giro di cura | sì | sì |
 | Sezioni “Oggi e in ritardo” / “In arrivo” | sì | il giro e la Home coprono le scadenze |
-| Rinvi/annulla | sì | sì |
+| Attività raggruppate per tipo | sì | sì, nel giorno selezionato |
+| Rinvi/annulla | sì, azione dedicata sulla riga | sì, “Rinvia” sulla riga con data precompilata; modifica e annulla dalla cronologia |
+| Cronologia raggruppata per giorno | sì, con salute | sì, con salute e conteggio per giorno |
+| Filtri cronologia | pianta, tipo, date con azzeramento | pianta, tipo, date con **Azzera filtri** |
 
-Confronto puntuale da completare sul campo; le funzioni principali risultano presenti.
+**Allineato (C5, 18 novembre 2026)**: le attività del giorno sono raggruppate per tipo, ogni riga ha **Rinvia** (il modulo si apre già impostato sul rinvio con data a domani) e la cronologia è raggruppata per giorno con salute e conteggio, oltre al pulsante **Azzera filtri**. Verificati rinvio reale (evento `postponed` con `postponedUntil`), modifica/eliminazione dalla cronologia e layout a 390/1280 px. Resta la verifica sul campo con notifiche e Companion fisico.
 
 ## 4. Prodotti — `FertilizerViews.swift`
 
@@ -85,7 +88,7 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 2. **C2 Prodotti** — ✅ filtro categoria, “registra utilizzo” e date di acquisto/scadenza.
 3. **C3 Dettaglio** — ✅ “Sposta pianta”, aggiornamento sicurezza e affidabilità del profilo luce nei consigli.
 4. **C4 Impostazioni** — ✅ località predefinita con ricerca e stato meteo.
-5. **C5 Cure** — verifica puntuale di calendario, rinvii e storico sul campo.
+5. **C5 Cure** — ✅ raggruppamento per tipo, rinvio dalla riga e cronologia per giorno con filtri azzerabili; resta il collaudo sul campo.
 6. **C6 Misure** — affidabilità e sorgente visibili nella tabella.
 
-C1–C4 sono implementate e verificate; restano C5–C6.
+C1–C5 sono implementate e verificate; resta C6.

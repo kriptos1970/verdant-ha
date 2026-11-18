@@ -258,4 +258,5 @@ export type CareSelection = {
   kind: string;
   event?: CareEvent;
   scheduled?: Action;
+  postponed?: boolean;
 };
