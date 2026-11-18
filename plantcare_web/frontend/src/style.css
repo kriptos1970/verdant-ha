@@ -3878,3 +3878,17 @@ dialog:has(.plant-editor-form) {
   min-width: 0;
   max-width: 100%;
 }
+
+/* Products: category filter on desktop */
+.product-toolbar {
+  margin-bottom: 14px;
+}
+.product-category-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+.product-category-filter select {
+  min-width: 180px;
+}

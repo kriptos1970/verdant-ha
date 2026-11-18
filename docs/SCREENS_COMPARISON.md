@@ -48,13 +48,13 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 | Funzione | Nativo | Web |
 |---|---|---|
 | Elenco e schede | sì | sì |
-| Filtro per categoria | picker “Tutti” + categorie | assente |
-| Registra utilizzo | sì | non nella lista |
+| Filtro per categoria | picker “Tutti” + categorie | selettore su telefono e desktop |
+| Registra utilizzo | sì, con pianta, data, dose e note | sì, scheda prodotto e griglia desktop |
 | Pianifica ciclo | sì | sì |
-| Scheda etichetta: acquisto, scadenza, foto | sì | dose, note, foto, NPK; verificare acquisto/scadenza |
+| Scheda etichetta: acquisto, scadenza, foto | sì | sì: acquisto e scadenza con interruttori, foto, dose, note |
 | Eliminazione | conferma | conferma |
 
-**Lacune**: filtro categoria e “registra utilizzo” dalla lista.
+**Allineato (C2, 18 novembre 2026)**: filtro per categoria su telefono e desktop, “Registra utilizzo” con pianta, data, dose e note (registra una concimazione o un trattamento secondo la categoria del prodotto) e date di acquisto/scadenza nell’editor e nella scheda.
 
 ## 5. Misure e sensori — `MeasurementModels.swift`, `LightMeterView.swift`, `HomeAssistantSensors.swift`
 
@@ -82,7 +82,7 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 ## Piano C
 
 1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni (backend + UI), con pulizia automatica; restano le azioni rapide sulle righe.
-2. **C2 Prodotti** — filtro categoria e “registra utilizzo” dalla lista; verifica acquisto/scadenza nell’editor.
+2. **C2 Prodotti** — ✅ filtro categoria, “registra utilizzo” e date di acquisto/scadenza.
 3. **C3 Dettaglio** — azione “Sposta pianta”, aggiornamento sicurezza, profilo luce con affidabilità.
 4. **C4 Impostazioni** — località predefinita e stato meteo.
 5. **C5 Cure** — verifica puntuale di calendario, rinvii e storico sul campo.

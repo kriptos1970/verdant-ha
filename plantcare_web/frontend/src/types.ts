@@ -159,6 +159,8 @@ export type Product = {
   applicationMethod?: string;
   suitableFor?: string;
   photoPath?: string;
+  purchasedOn?: string | null;
+  expiresOn?: string | null;
   _version: number;
 };
 export type Proposal = {

@@ -191,12 +191,14 @@ function App() {
     [room, setRoom] = useState("Tutte"),
     [filter, setFilter] = useState("Tutte"),
     [plantPage, setPlantPage] = useState(1),
+    [productCategory, setProductCategory] = useState(""),
     [menu, setMenu] = useState(false),
     [trashOpen, setTrashOpen] = useState(false),
     [trashItems, setTrashItems] = useState<TrashItem[]>([]),
     [trashBusy, setTrashBusy] = useState(false);
   const [plantEditor, setPlantEditor] = useState<Plant | "new" | null>(null),
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
+    [useProduct, setUseProduct] = useState<Product | null>(null),
     [action, setAction] = useState<CareSelection | null>(null),
     [roundOpen, setRoundOpen] = useState(false),
     [cycleProduct, setCycleProduct] = useState<Product | null>(null),
@@ -319,6 +321,12 @@ function App() {
       },
     });
   const rooms = [...new Set(plants.map((p) => p.room))].sort();
+  const productCategories = [
+    ...new Set(products.map((p) => p.category).filter(Boolean)),
+  ].sort() as string[];
+  const filteredProducts = products.filter(
+    (p) => !productCategory || p.category === productCategory,
+  );
   const latestPlan = plants
     .map((p) => p.adaptivePlan)
     .filter((plan): plan is NonNullable<typeof plan> => !!plan)
@@ -880,10 +888,29 @@ function App() {
                     </div>
                     <FlaskConical size={30} className="muted" />
                   </div>
-                  <IOSProducts products={products} onEdit={setProductEditor} onCycle={setCycleProduct} onDelete={p=>setConfirm({title:`Eliminare ${p.name}?`,run:async()=>{await run(()=>api(`fertilizers/${p.id}?version=${p._version}`,{method:"DELETE"}),"Prodotto eliminato");setConfirm(null)}})}/>
-                  {products.length ? (
+                  <IOSProducts products={products} onEdit={setProductEditor} onCycle={setCycleProduct} onUse={setUseProduct} onDelete={p=>setConfirm({title:`Eliminare ${p.name}?`,run:async()=>{await run(()=>api(`fertilizers/${p.id}?version=${p._version}`,{method:"DELETE"}),"Prodotto eliminato");setConfirm(null)}})}/>
+                  {products.length > 0 && productCategories.length > 0 && (
+                    <div className="collection-toolbar product-toolbar">
+                      <label className="product-category-filter">
+                        {t("products.categoryFilter")}
+                        <select
+                          aria-label={t("products.categoryFilter")}
+                          value={productCategory}
+                          onChange={(e) => setProductCategory(e.target.value)}
+                        >
+                          <option value="">{t("products.allCategories")}</option>
+                          {productCategories.map((c) => (
+                            <option key={c} value={c}>
+                              {categoryLabel(c)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  )}
+                  {products.length ? filteredProducts.length ? (
                     <div className="product-grid">
-                      {products.map((p) => (
+                      {filteredProducts.map((p) => (
                         <section className="panel product" key={p.id}>
                           <ProductPhoto product={p}/>
                           <h2>{p.name}</h2>
@@ -909,6 +936,14 @@ function App() {
                             >
                               <CalendarDays size={15} />
                               {t("products.planCycle")}
+                            </button>
+                            <button
+                              className="button secondary"
+                              disabled={!plants.length}
+                              onClick={() => setUseProduct(p)}
+                            >
+                              <CheckCircle2 size={15} />
+                              {t("products.registerUse")}
                             </button>
                             <button
                               className="button secondary"
@@ -941,6 +976,12 @@ function App() {
                           </div>
                         </section>
                       ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <Search />
+                      <h2>{t("products.noMatch")}</h2>
+                      <p>{t("products.noMatchText")}</p>
                     </div>
                   ) : (
                     <div className="empty-state">
@@ -1243,6 +1284,40 @@ function App() {
               "Prodotto salvato",
             );
             setProductEditor(null);
+          }}
+        />
+      )}
+      {useProduct && (
+        <ProductUseModal
+          product={useProduct}
+          plants={plants}
+          busy={busy}
+          onClose={() => setUseProduct(null)}
+          onSave={async (data) => {
+            const detail = [
+              useProduct.name,
+              useProduct.category ? categoryLabel(useProduct.category) : "",
+              data.dose ? t("products.dose", { dose: data.dose }) : "",
+              data.note,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            await run(
+              () =>
+                api(`plants/${data.plantID}/events`, {
+                  method: "POST",
+                  body: JSON.stringify({
+                    kind:
+                      useProduct.category === "Fertilizzante"
+                        ? "fertilize"
+                        : "treatment",
+                    date: data.date,
+                    note: detail,
+                    productID: useProduct.id,
+                  }),
+                }),
+              t("products.useRecorded"),
+            );
           }}
         />
       )}
@@ -2109,6 +2184,122 @@ function PlantEditor({
     </Modal>
   );
 }
+function ProductUseModal({
+  product,
+  plants,
+  busy,
+  onClose,
+  onSave,
+}: {
+  product: Product;
+  plants: Plant[];
+  busy: boolean;
+  onClose: () => void;
+  onSave: (data: {
+    plantID: string;
+    date: string;
+    dose: string;
+    note: string;
+  }) => Promise<void>;
+}) {
+  const { t } = useI18n();
+  const localDate = (d: Date) =>
+    new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  const [plantID, setPlantID] = useState("");
+  const [date, setDate] = useState(() => localDate(new Date()));
+  const [dose, setDose] = useState(product.dosage || "");
+  const [note, setNote] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  return (
+    <Modal title={t("products.useTitle")} onClose={onClose}>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!plantID) return;
+          setError("");
+          setSaving(true);
+          try {
+            await onSave({
+              plantID,
+              date: new Date(date).toISOString(),
+              dose: dose.trim(),
+              note: note.trim(),
+            });
+            onClose();
+          } catch (e) {
+            setError((e as Error).message);
+          } finally {
+            setSaving(false);
+          }
+        }}
+      >
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
+        <p className="muted small-text">{product.name}</p>
+        <label>
+          {t("products.usePlant")}
+          <select
+            required
+            value={plantID}
+            onChange={(e) => setPlantID(e.target.value)}
+          >
+            <option value="">{t("products.usePlantPlaceholder")}</option>
+            {[...plants]
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} · {p.room}
+                </option>
+              ))}
+          </select>
+        </label>
+        <label>
+          {t("products.useDate")}
+          <input
+            required
+            type="datetime-local"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
+        <label>
+          {t("products.useDose")}
+          <input
+            value={dose}
+            onChange={(e) => setDose(e.target.value)}
+            placeholder={product.dosage || t("products.useDosePlaceholder")}
+          />
+        </label>
+        <label>
+          {t("products.useNotes")}
+          <textarea
+            rows={3}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </label>
+        <div className="modal-actions">
+          <button type="button" className="button secondary" onClick={onClose}>
+            {t("common.cancel")}
+          </button>
+          <button
+            className="button primary"
+            disabled={!plantID || busy || saving}
+          >
+            {t("products.useConfirm")}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 function ProductEditor({
   product,
   busy,
@@ -2246,6 +2437,66 @@ function ProductEditor({
             }
           />
         </label>
+        <label className="check-label">
+          <input
+            type="checkbox"
+            checked={!!p.purchasedOn}
+            onChange={(e) =>
+              set({
+                ...p,
+                purchasedOn: e.target.checked ? new Date().toISOString() : null,
+              })
+            }
+          />
+          {t("products.purchased")}
+        </label>
+        {p.purchasedOn && (
+          <label>
+            {t("products.purchasedOn")}
+            <input
+              type="date"
+              value={new Date(p.purchasedOn).toLocaleDateString("en-CA")}
+              onChange={(e) =>
+                set({
+                  ...p,
+                  purchasedOn: e.target.value
+                    ? new Date(e.target.value + "T12:00:00").toISOString()
+                    : null,
+                })
+              }
+            />
+          </label>
+        )}
+        <label className="check-label">
+          <input
+            type="checkbox"
+            checked={!!p.expiresOn}
+            onChange={(e) =>
+              set({
+                ...p,
+                expiresOn: e.target.checked ? new Date().toISOString() : null,
+              })
+            }
+          />
+          {t("products.expiry")}
+        </label>
+        {p.expiresOn && (
+          <label>
+            {t("products.expiresOn")}
+            <input
+              type="date"
+              value={new Date(p.expiresOn).toLocaleDateString("en-CA")}
+              onChange={(e) =>
+                set({
+                  ...p,
+                  expiresOn: e.target.value
+                    ? new Date(e.target.value + "T12:00:00").toISOString()
+                    : null,
+                })
+              }
+            />
+          </label>
+        )}
         <label>
           {t("product.notes")}
           <textarea

@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Prodotti — registrazione utilizzo (18 novembre 2026)
+
+- Le schede prodotto (telefono e griglia desktop) hanno **Registra utilizzo**: si sceglie la pianta, data e ora, dose e note; il web registra una **concimazione** per i fertilizzanti e un **trattamento** per le altre categorie, con prodotto collegato e dettaglio leggibile nello storico.
+- **Filtro per categoria** anche nella griglia desktop, oltre a quello già presente nella vista telefono.
+- L’editor prodotto ha **data di acquisto** e **scadenza** con interruttori, mostrate nella scheda del prodotto.
+- Verifica su archivio sintetico: utilizzo registrato su Monstera (evento “Concima” con prodotto, dose e note, `lastFertilized` aggiornato); acquisto 15 marzo 2026 e scadenza 15 marzo 2028 salvati e riletti; filtro “Antiparassitario” con un solo prodotto coerente; nessun overflow a 390 e 1280 px. Build, **889 chiavi i18n**, 185 test backend.
+
 ## Cestino con ripristino (18 novembre 2026)
 
 - **Backend**: soft delete sulla tabella `entities` (`deleted_at`), `GET /api/trash`, `POST /api/trash/{id}/restore`, `DELETE /api/trash/{id}` e `DELETE /api/trash`; pulizia automatica dopo 30 giorni all’avvio e all’apertura del cestino. Le piante nel cestino escono da collezione, calendario, analisi, storico e backup; al ripristino tornano con una nuova versione.
