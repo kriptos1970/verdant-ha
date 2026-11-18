@@ -4101,9 +4101,23 @@ function SettingsTool({
           <div>
             <dt>{t("settings.careEngine")}</dt>
             <dd>
-              {settings.careEngineMode === "active"
-                ? t("settings.careEngineActive")
-                : t("settings.careEngineShadow")}
+              <select
+                aria-label={t("settings.careEngine")}
+                value={settings.careEngineMode}
+                onChange={(e) => {
+                  void run(
+                    () =>
+                      api("preferences/care-engine", {
+                        method: "PUT",
+                        body: JSON.stringify({ mode: e.target.value }),
+                      }),
+                    t("settings.careEngineSaved"),
+                  );
+                }}
+              >
+                <option value="shadow">{t("settings.careEngineShadow")}</option>
+                <option value="active">{t("settings.careEngineActive")}</option>
+              </select>
               <small className="muted">{t("settings.careEngineHint")}</small>
             </dd>
           </div>

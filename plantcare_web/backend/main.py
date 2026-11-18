@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareEnginePreference, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
@@ -80,7 +80,7 @@ async def remote_error(request,error):
 @app.get('/health')
 def health(): return {'status':'ok','version':__version__}
 @app.get('/api/settings')
-def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':settings.options.get('care_engine_mode','shadow'),'adaptiveStatus':store.state('adaptive-status')}
+def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow'),'adaptiveStatus':store.state('adaptive-status')}
 
 def linked_product(plant, db=None):
     if not plant.get('fertilizerProductID'):
@@ -289,6 +289,12 @@ def save_preferences(body:LanguagePreference):
     return body
 @app.get('/api/preferences/location')
 def default_location(): return store.state('location')
+@app.get('/api/preferences/care-engine')
+def care_engine_mode(): return {'mode':store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow')}
+@app.put('/api/preferences/care-engine')
+def save_care_engine_mode(body:CareEnginePreference):
+    store.set_state('care-engine-mode',body.mode)
+    return {'mode':body.mode}
 @app.put('/api/preferences/location')
 def save_default_location(body:CareLocation):
     location=body.model_dump()

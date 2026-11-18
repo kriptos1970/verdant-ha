@@ -193,6 +193,9 @@ class ClimateInput(BaseModel):
     relativeHumidity: int = Field(ge=0,le=100)
     precipitationNextWeek: float = Field(ge=0,le=5000,allow_inf_nan=False)
 
+class CareEnginePreference(BaseModel):
+    mode: Literal['shadow','active']
+
 class PhotoCleanupRequest(BaseModel):
     names: list[str] = Field(default_factory=list, max_length=10000)
 

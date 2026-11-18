@@ -56,3 +56,11 @@ def test_dry_measurement_never_advances_the_due_date(client,monkeypatch):
     saved=client.get(f"/api/plants/{plant['id']}").json()
     assert not saved.get('nextWateringOverride')
     assert not saved.get('careEngineApplied')
+
+
+def test_care_engine_mode_can_be_set_from_the_app(client):
+    assert client.get('/api/preferences/care-engine').json()['mode']=='shadow'
+    assert client.put('/api/preferences/care-engine',json={'mode':'active'}).status_code==200
+    assert client.get('/api/preferences/care-engine').json()['mode']=='active'
+    assert client.get('/api/settings').json()['careEngineMode']=='active'
+    assert client.put('/api/preferences/care-engine',json={'mode':'invalid'}).status_code==422

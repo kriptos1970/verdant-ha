@@ -29,7 +29,7 @@ def evaluate_plant(store, settings, plant_id):
 
 
 def apply_safe_adjustment(store, settings, plant_id, at=None):
-    if settings.options.get('care_engine_mode', 'shadow') != 'active':
+    if (store.state('care-engine-mode') or settings.options.get('care_engine_mode', 'shadow')) != 'active':
         return None
     at = at or now()
     try:
