@@ -60,7 +60,8 @@
  .avatar{width:64px;height:68px;border-radius:14px}
  .pill{font-size:14px;padding:7px 10px}.round-action,.care-row .round-action{min-width:44px;width:44px;height:44px}
  .plant-grid,.has-detail .plant-grid,.native-split .plant-grid{grid-template-columns:1fr;gap:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:white}
- .plant-card{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:14px;padding:18px 14px;border:0;border-radius:0;border-bottom:1px solid var(--line);width:100%}
+ .plant-card{display:block;padding:0;border:0;border-radius:0;border-bottom:1px solid var(--line);width:100%}
+ .plant-card-main{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:14px;padding:18px 14px;border:0;background:transparent;width:100%;color:inherit;text-align:left}
  .card-image .placeholder{background:linear-gradient(130deg,#79a48a,#194b37);color:white}
  .plant-card:last-child{border-bottom:0}.plant-card:hover{transform:none;box-shadow:none}
  .card-image .plant-cover{width:76px;height:86px;border-radius:15px;object-fit:cover}.card-image .plant-cover svg{width:44px;height:44px}
