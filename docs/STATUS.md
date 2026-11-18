@@ -390,6 +390,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Collezione — azioni rapide sulle card (18 novembre 2026)
+
+- Ogni card della collezione ha un menu **⋯** con **Registra annaffiatura**, **Modifica** e **Sposta nel cestino**, equivalente al menu contestuale e alle azioni swipe del nativo.
+- “Registra annaffiatura” apre il modulo di cura già impostato; “Modifica” apre l’editor; il cestino chiede conferma e mantiene il ripristino entro 30 giorni.
+- La card resta interamente cliccabile per aprire la scheda; il menu non annida pulsanti dentro il pulsante principale ed è accessibile da tastiera.
+- Verifica su archivio sintetico a 686 px: tre voci presenti, modulo annaffiatura, editor e conferma cestino aperti correttamente; nessun overflow orizzontale. Build e **937 chiavi i18n**.
+
 ## Impaginazione della modifica pianta (18 novembre 2026)
 
 - Il form segue ora l’ordine delle sezioni native: **Foto, Identità, Posizione, Profilo fisico, Vaso e substrato, Modalità del piano, Attività aggiuntive, Altre informazioni**.

@@ -823,6 +823,24 @@ function App() {
                             key={p.id}
                             plant={p}
                             onClick={() => openPlant(p.id)}
+                            onWater={(plant) => setAction({ plant, kind: "Annaffia" })}
+                            onEdit={(plant) => setPlantEditor(plant)}
+                            onDelete={(plant) =>
+                              setConfirm({
+                                title: t("trash.moveConfirm", { name: plant.name }),
+                                run: async () => {
+                                  await run(
+                                    () =>
+                                      api(
+                                        `plants/${plant.id}?version=${plant._version}`,
+                                        { method: "DELETE" },
+                                      ),
+                                    t("trash.moved"),
+                                  );
+                                  if (selected === plant.id) openPlant(null);
+                                },
+                              })
+                            }
                           />
                         ))}
                       </div>
@@ -1482,38 +1500,94 @@ function App() {
     </div>
   );
 }
-function PlantCard({ plant, onClick }: { plant: Plant; onClick: () => void }) {
+function PlantCard({
+  plant,
+  onClick,
+  onWater,
+  onEdit,
+  onDelete,
+}: {
+  plant: Plant;
+  onClick: () => void;
+  onWater: (plant: Plant) => void;
+  onEdit: (plant: Plant) => void;
+  onDelete: (plant: Plant) => void;
+}) {
   const { t } = useI18n();
   const { actionLabel, dueLabel } = useCareLabels();
   const next = plant._actions[0];
+  const close = (target: EventTarget) =>
+    target instanceof Element
+      ? target.closest("details")?.removeAttribute("open")
+      : undefined;
   return (
-    <button className="plant-card" onClick={onClick}>
-      <div className="card-image">
-        <Avatar plant={plant} large />
-        <span className="room-tag">
-          <MapPin size={11} />
-          {plant.room}
-        </span>
-      </div>
-      <div className="plant-card-body">
-        <small>{plant.species || plant.category}</small>
-        <span className="ios-card-room">{plant.room}</span>
-        <h3>{plant.name}</h3>
-        <div className="card-next">
-          {next ? (
-            <>
-              <Droplets size={14} />
-              <span>{actionLabel(next)}</span>
-              <b className={next.daysUntil < 0 ? "danger" : ""}>
-                {dueLabel(next.daysUntil)}
-              </b>
-            </>
-          ) : (
-            <span>{t("care.noneScheduled")}</span>
-          )}
+    <div className="plant-card">
+      <button className="plant-card-main" onClick={onClick}>
+        <div className="card-image">
+          <Avatar plant={plant} large />
+          <span className="room-tag">
+            <MapPin size={11} />
+            {plant.room}
+          </span>
         </div>
-      </div>
-    </button>
+        <div className="plant-card-body">
+          <small>{plant.species || plant.category}</small>
+          <span className="ios-card-room">{plant.room}</span>
+          <h3>{plant.name}</h3>
+          <div className="card-next">
+            {next ? (
+              <>
+                <Droplets size={14} />
+                <span>{actionLabel(next)}</span>
+                <b className={next.daysUntil < 0 ? "danger" : ""}>
+                  {dueLabel(next.daysUntil)}
+                </b>
+              </>
+            ) : (
+              <span>{t("care.noneScheduled")}</span>
+            )}
+          </div>
+        </div>
+      </button>
+      <details className="plant-card-menu">
+        <summary aria-label={t("plants.actionsAria", { name: plant.name })}>
+          <Ellipsis size={18} />
+        </summary>
+        <div>
+          <button
+            type="button"
+            onClick={(e) => {
+              close(e.currentTarget);
+              onWater(plant);
+            }}
+          >
+            <Droplets size={15} />
+            {t("plants.actionWater")}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              close(e.currentTarget);
+              onEdit(plant);
+            }}
+          >
+            <Pencil size={15} />
+            {t("plants.actionEdit")}
+          </button>
+          <button
+            type="button"
+            className="danger"
+            onClick={(e) => {
+              close(e.currentTarget);
+              onDelete(plant);
+            }}
+          >
+            <Trash2 size={15} />
+            {t("plants.actionTrash")}
+          </button>
+        </div>
+      </details>
+    </div>
   );
 }
 function EmptyCollection({

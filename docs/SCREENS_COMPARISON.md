@@ -25,11 +25,11 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Piante / Ambienti | segmentato | presente |
 | Filtro sicurezza | menu | chip “Rischio animali” |
 | Ordine | per nome, sezioni | alfabetico su telefono, ordine archivio su desktop |
-| Azioni riga | menu contestuale e swipe: modifica, annaffia, elimina | apertura scheda; azioni dentro la scheda |
+| Azioni riga | menu contestuale e swipe: modifica, annaffia, elimina | menu per card: registra annaffiatura, modifica, sposta nel cestino |
 | Cestino | eliminazione con **ripristino entro 30 giorni** | eliminazione definitiva con conferma |
 | Paginazione | nessuna | 12 per pagina |
 
-**Allineato (C1, 18 novembre 2026)**: il web ha ora un **cestino con ripristino entro 30 giorni**. L’eliminazione sposta la pianta nel cestino (sparisce da collezione, calendario, analisi e storico), `GET /api/trash` elenca gli elementi con i giorni rimanenti, il ripristino la riporta nell’archivio e l’eliminazione definitiva (singola o svuotando il cestino) cancella dati collegati e misure. La pulizia automatica avviene all’avvio e a ogni apertura del cestino. Il backup esporta solo le piante attive. Restano le azioni rapide sulle righe (annaffia/modifica).
+**Allineato (C1, 18 novembre 2026)**: il web ha ora un **cestino con ripristino entro 30 giorni**. L’eliminazione sposta la pianta nel cestino (sparisce da collezione, calendario, analisi e storico), `GET /api/trash` elenca gli elementi con i giorni rimanenti, il ripristino la riporta nell’archivio e l’eliminazione definitiva (singola o svuotando il cestino) cancella dati collegati e misure. La pulizia automatica avviene all’avvio e a ogni apertura del cestino. Il backup esporta solo le piante attive. Le card hanno ora il menu **Registra annaffiatura / Modifica / Sposta nel cestino**, equivalente al menu contestuale nativo.
 
 ## 3. Cure e calendario — `CareCalendarView.swift`, `CareEventViews.swift`
 
@@ -87,7 +87,7 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 
 ## Piano C
 
-1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni (backend + UI), con pulizia automatica; restano le azioni rapide sulle righe.
+1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni e azioni rapide sulle card.
 2. **C2 Prodotti** — ✅ filtro categoria, “registra utilizzo” e date di acquisto/scadenza.
 3. **C3 Dettaglio** — ✅ “Sposta pianta”, aggiornamento sicurezza e affidabilità del profilo luce nei consigli.
 4. **C4 Impostazioni** — ✅ località predefinita con ricerca e stato meteo.

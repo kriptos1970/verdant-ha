@@ -4251,3 +4251,73 @@ dialog:has(.plant-editor-form) {
     border: 0;
   }
 }
+
+/* Collection: per-card quick actions */
+.plant-card {
+  position: relative;
+}
+.plant-card-main {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.plant-card-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+.plant-card-menu > summary {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #dfe5d8;
+  border-radius: 50%;
+  background: #fffffff2;
+  color: #3f5d49;
+  cursor: pointer;
+  list-style: none;
+}
+.plant-card-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.plant-card-menu[open] > summary {
+  background: #fff;
+}
+.plant-card-menu > div {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 40px #14240c22;
+}
+.plant-card-menu > div button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #253c31;
+  font-size: 13px;
+  text-align: left;
+}
+.plant-card-menu > div button:hover {
+  background: #f2f6ee;
+}
+.plant-card-menu > div button.danger {
+  color: #a33b32;
+}
