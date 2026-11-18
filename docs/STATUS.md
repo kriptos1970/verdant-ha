@@ -410,6 +410,7 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Sorgenti allineati a `f07c105` copiati nell’add-on: **103 file verificati SHA256**, ricostruzione riuscita, add-on `started` alla versione **0.11.1** (nessun cambio di versione).
 - Verifica in Ingress a 686 px sull’archivio reale: Impostazioni con **Località predefinita** e ricerca Open-Meteo “Lecce” (otto risultati, nessun salvataggio), **Sposta pianta** nella scheda, calendario con tre **Rinvia** e attività raggruppate, tabella Misure con `sensor.dracena_*` e “Affidabilità non disponibile”; nessun overflow orizzontale.
 - Aggiornamento successivo `4201ee8` (modalità Verdant nel form): **104 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress l’editor mostra le tre opzioni **Manuale / Verdant / AI**; nessun salvataggio sul dato reale, nessun overflow a 686 px.
+- Aggiornamento successivo `817e349` (impaginazione nativa): **104 file verificati SHA256**, rebuild riuscito e add-on avviato. In Ingress a 686 px l’editor mostra le otto sezioni nell’ordine nativo, i campi con controllo sopra ed etichetta sotto, le tre modalità e la scheda pianta con hero, “In sintesi” e card richiudibili; nessun salvataggio sui dati reali e nessun overflow. Struttura desktop verificata a 1280 px in locale.
 - Nessuna cura registrata, nessun rinvio confermato e nessun dato reale modificato durante le verifiche.
 
 ## Schermate — confronto con il nativo (17 novembre 2026)
