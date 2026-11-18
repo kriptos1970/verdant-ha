@@ -439,6 +439,8 @@ const it = {
   "detail.noNotes": "Nessuna nota, per ora.",
   "detail.deletePlant": "Elimina pianta",
   "detail.safetyMissing": "Profilo non disponibile. L’assenza di una scheda non significa che la pianta sia sicura.",
+  "detail.edit": "Modifica",
+  "detail.moreActions": "Altre azioni della pianta",
   "detail.move": "Sposta pianta",
   "detail.moveTitle": "Sposta pianta",
   "detail.moveIntro": "Aggiorna ambiente ed esposizione: lo spostamento viene registrato nel diario e il piano intelligente si ricalcola con il clima già salvato.",

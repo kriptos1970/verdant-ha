@@ -25,6 +25,7 @@ import {
   Upload,
   Download,
   Settings2,
+  SlidersHorizontal,
   Sparkles,
   Thermometer,
   Camera,
@@ -2937,6 +2938,7 @@ function PlantDetail({
     [healthOpen,setHealthOpen]=useState(false),
     [labelOpen,setLabelOpen]=useState(false),
     [moveOpen,setMoveOpen]=useState(false),
+    [moreOpen,setMoreOpen]=useState(false),
     [growthOpen, setGrowthOpen] = useState(false),
     [adaptiveOpen, setAdaptiveOpen] = useState(false),
     [phoneSection,setPhoneSection]=useState(""),
@@ -2957,6 +2959,16 @@ function PlantDetail({
       .catch(e=>{if(active)setError(e.message)});
     return ()=>{active=false};
   }, [plant.id, tab]);
+  const moreRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    if(!moreOpen)return;
+    const close=(event:MouseEvent|TouchEvent)=>{if(!moreRef.current?.contains(event.target as Node))setMoreOpen(false)};
+    const key=(event:KeyboardEvent)=>{if(event.key==='Escape')setMoreOpen(false)};
+    document.addEventListener('mousedown',close);
+    document.addEventListener('touchstart',close);
+    document.addEventListener('keydown',key);
+    return()=>{document.removeEventListener('mousedown',close);document.removeEventListener('touchstart',close);document.removeEventListener('keydown',key)};
+  },[moreOpen]);
   const history = plant.history
     .filter((e) => !e.deletedAt)
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -3401,7 +3413,13 @@ function PlantDetail({
           <Pencil size={18} />
         </button>
         <button className="ios-plan-button" aria-label={plant.carePlanMode==='AI'?'Imposta piano AI':plant.carePlanMode==='Intelligente'?'Configura piano intelligente':'Modifica piano manuale'} onClick={()=>{if(plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else if(plant.carePlanMode==='Intelligente'){setAdaptiveOpen(true)}else onEdit()}}>{plant.carePlanMode==='AI'?<IOSIcon name="brain" size={25}/>:plant.carePlanMode==='Intelligente'?<Sprout size={25}/>:<Pencil size={23}/>}</button>
-        <details className="ios-detail-more"><summary aria-label="Altre azioni della pianta"><Ellipsis size={23}/></summary><div><button className="button secondary" onClick={onEdit}><Pencil size={17}/>Modifica pianta</button><button className="button secondary" onClick={()=>setMoveOpen(true)}><ArrowLeftRight size={17}/>{t("detail.move")}</button><label>Registra una cura<select aria-label="Registra una cura" value="" onChange={e=>{if(e.target.value)onAction(e.target.value)}}><option value="">Scegli attività…</option>{kinds.map(k=><option key={k}>{k}</option>)}</select></label></div></details>
+        <div className="ios-detail-more" ref={moreRef}>
+          <button type="button" className="ios-more-trigger" aria-label={t("detail.moreActions")} aria-expanded={moreOpen} onClick={()=>setMoreOpen(v=>!v)}><Ellipsis size={23}/></button>
+          {moreOpen && <div className="ios-more-menu" role="menu">
+            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);onEdit()}}><SlidersHorizontal size={22}/><span>{t("detail.edit")}</span></button>
+            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);setMoveOpen(true)}}><ArrowLeftRight size={22}/><span>{t("detail.move")}</span></button>
+          </div>}
+        </div>
       </header>
       <div className="detail-scroll" ref={detailScrollRef}>
         <div className={phone ? "ios-plant-overview-host" : "ios-plant-overview-host desktop-ios-overview"}>

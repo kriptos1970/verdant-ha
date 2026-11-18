@@ -161,8 +161,8 @@
 }
 
 @media(max-width:760px){
- .desktop-detail-edit{display:none}.ios-detail-more{display:block}.ios-detail-more>summary{display:flex;align-items:center;justify-content:center;list-style:none;width:44px;height:44px;background:#f4f7f2;border-radius:50%;cursor:pointer}.ios-detail-more>summary::-webkit-details-marker{display:none}
- .ios-detail-more>div{position:absolute;right:12px;top:54px;z-index:10;width:min(300px,calc(100vw - 32px));padding:18px;background:white;border:1px solid var(--line);box-shadow:0 8px 30px #163b2c20;border-radius:18px}.ios-detail-more label{display:block;margin-top:16px}.ios-detail-more select{width:100%;display:block;margin-top:8px}
+ .desktop-detail-edit{display:none}.ios-detail-more{display:block;position:relative}.ios-more-trigger{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:#f4f7f2;border:0;border-radius:50%;cursor:pointer;color:#4b7055}
+ .ios-more-menu{position:absolute;right:4px;top:52px;z-index:20;display:grid;gap:2px;width:min(300px,calc(100vw - 48px));padding:10px;background:rgba(255,255,255,.92);border:1px solid #ffffffcc;border-radius:24px;box-shadow:0 18px 50px #12251b26;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}.ios-more-menu button{display:flex;align-items:center;gap:14px;width:100%;min-height:54px;padding:10px 14px;border:0;border-radius:16px;background:transparent;color:#17251d;font-size:19px;font-weight:500;text-align:left}.ios-more-menu button:active{background:#e9f0e7}.ios-more-menu svg{flex:0 0 24px;color:#4b7055}
  main:has(.ios-product-detail)>.topbar,main:has(.ios-product-detail)>.content{visibility:hidden}.ios-product-detail{visibility:visible}
 }
 
@@ -218,7 +218,7 @@
  .detail-top>.icon-button{background:#fafbf9;border:1px solid #dfe2dd}
  .detail-top>.icon-button svg{stroke-width:3}
  .ios-plan-button{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #dfe2dd;border-radius:50%;background:#fafbf9;color:#4b7055}
- .ios-detail-more>summary{background:#fafbf9;border:1px solid #dfe2dd;color:#4b7055}
+ .ios-more-trigger{background:#fafbf9;border:1px solid #dfe2dd;color:#4b7055}
  .ios-plant-overview{padding:14px}
  .ios-plant-hero{aspect-ratio:.98;min-height:340px;width:100%;min-width:0}
  .ios-plant-caption{background:linear-gradient(180deg,#10161055,#080e0bdb);padding:18px 18px 16px}

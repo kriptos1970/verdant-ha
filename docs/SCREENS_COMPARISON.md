@@ -13,7 +13,7 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Prodotto | scheda, formato, modalità, dose | prodotto collegato e dose |
 | Misure | profilo luce della specie, affidabilità, confronto | tabella misure, link sensori e affidabilità del profilo luce nei consigli |
 | Diario | eventi, crescita, salute | eventi, crescita, salute |
-| Azioni | modifica, sposta pianta, altre azioni | modifica, **sposta pianta**, azioni rapide, QR, trattamenti |
+| Azioni | menu Altre azioni con Modifica e Sposta pianta | menu **⋯** con Modifica e Sposta pianta, azioni rapide, QR, trattamenti |
 
 **Allineato (C3, 18 novembre 2026)**: “Sposta pianta” con ambiente, esposizione, data e nota; il backend aggiorna la stanza e ricalcola il piano intelligente con il clima già salvato (nessuna chiamata meteo), registrando un evento di spostamento con la rotta. La scheda Sicurezza mostra fonte, data e collegamento e può aggiornare il profilo Perenual. I consigli di cura mostrano l’affidabilità del profilo luce della specie. Resta da portare l’intervallo del profilo luce con le fasce lux complete nel dettaglio.
 

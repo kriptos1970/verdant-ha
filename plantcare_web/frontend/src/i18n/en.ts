@@ -440,6 +440,8 @@ const en: Record<MessageKey, string> = {
   "detail.noNotes": "No notes yet.",
   "detail.deletePlant": "Delete plant",
   "detail.safetyMissing": "Profile not available. A missing record does not mean the plant is safe.",
+  "detail.edit": "Edit",
+  "detail.moreActions": "More plant actions",
   "detail.move": "Move plant",
   "detail.moveTitle": "Move plant",
   "detail.moveIntro": "Update room and exposure: the move is recorded in the diary and the smart plan is recalculated with the saved climate.",

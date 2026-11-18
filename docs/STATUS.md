@@ -412,6 +412,12 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - La UI mostra numero e dimensione delle foto non utilizzate, i file recenti protetti e richiede una seconda conferma prima dell’eliminazione.
 - Verifica su archivio sintetico: due file orfani (uno vecchio, uno recente), report 1 eliminabile + 1 protetto, eliminazione del solo vecchio e rimozione della miniatura; riferimenti e file recenti intatti. **208 test backend** (3 nuovi), **948 chiavi i18n**, build ok.
 
+## Dettaglio pianta — menu azioni nativo (18 novembre 2026)
+
+- Su telefono il pulsante **⋯** apre un menu in stile nativo con **Modifica** e **Sposta pianta**, con icone, sfondo traslucido e angoli arrotondati; il vecchio selettore “Registra una cura” è stato rimosso dal menu, perché le azioni rapide sono già nell’hero.
+- Il menu si chiude toccando fuori o con Esc; “Modifica” apre l’editor, “Sposta pianta” apre il modulo di spostamento.
+- Verifica a 430 px: menu 300×132 px, due voci, ancorato in alto a destra, nessun overflow. Build e **956 chiavi i18n**.
+
 ## Collezione — azioni rapide sulle card (18 novembre 2026)
 
 - Ogni card della collezione ha un menu **⋯** con **Registra annaffiatura**, **Modifica** e **Sposta nel cestino**, equivalente al menu contestuale e alle azioni swipe del nativo.
