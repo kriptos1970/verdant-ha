@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Misure — sorgente e affidabilità (18 novembre 2026)
+
+- `/api/plants/{id}/measurements` restituisce anche le **misure native** conservate nello stato di importazione, con `source`, `entity_id` e `reliability` originali; le righe già migrate nella tabella SQL non vengono duplicate.
+- Le misure inserite a mano riportano sorgente “Inserita a mano” e affidabilità 100%; le righe importate senza metadati mostrano “Affidabilità non disponibile”.
+- La tabella Misure mostra sorgente, affidabilità e il promemoria che una lettura non è una diagnosi.
+- Verifica su archivio sintetico: misura manuale al 100% e misura nativa `sensor.monstera_moisture` all’87%, senza duplicati; layout 390 e 1280 px senza overflow. Build, **931 chiavi i18n**, **201 test backend** (4 nuovi sulle misure).
+
 ## Cure e calendario — rinvio e cronologia (18 novembre 2026)
 
 - Le attività del giorno selezionato sono **raggruppate per tipo** con intestazione, come nel calendario nativo.

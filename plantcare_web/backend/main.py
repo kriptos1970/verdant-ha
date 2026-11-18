@@ -631,7 +631,23 @@ def shadow_engine(plant_id:str):
 @app.get('/api/plants/{plant_id}/measurements')
 def measurements(plant_id:str):
     store.get('plants',plant_id)
-    with store.connection() as db: return [dict(r) for r in db.execute('SELECT * FROM measurements WHERE plant_id=? ORDER BY measured_at DESC LIMIT 500',(plant_id,))]
+    with store.connection() as db:
+        rows=[dict(r) for r in db.execute('SELECT * FROM measurements WHERE plant_id=? ORDER BY measured_at DESC LIMIT 10000',(plant_id,))]
+        native=[m for m in store.state('native-measurements',[],db) if m.get('plantID')==plant_id]
+    from .care_engine import normalized_measurements
+    normalized=normalized_measurements(native)
+    native_keys={(m['kind'],m['value'],m['unit'],iso(parse(m['date']))) for m in normalized}
+    result=[]
+    for m in normalized:
+        source='manual' if m['sourceIdentifier']=='manual' else 'smartphoneEstimated' if m['sourceIdentifier']=='smartphoneEstimated' else 'homeAssistant'
+        result.append({'id':m['id'],'kind':m['kind'],'value':m['value'],'unit':m['unit'],'measured_at':m['date'],'source_at':m['date'],'entity_id':m['sourceIdentifier'],'source':source,'reliability':round(m['reliability'],2)})
+    for row in rows:
+        item=normalized_measurements([row])
+        if item and (item[0]['kind'],item[0]['value'],item[0]['unit'],iso(parse(item[0]['date']))) in native_keys: continue
+        source='manual' if row.get('entity_id')=='manual' else 'homeAssistant'
+        result.append({**row,'source':source,'reliability':1.0 if source=='manual' else None})
+    result.sort(key=lambda m: m.get('measured_at') or '',reverse=True)
+    return result[:500]
 @app.post('/api/plants/{plant_id}/measurements',status_code=201)
 def add_measurement(plant_id:str,body:Measurement):
     store.get('plants',plant_id)

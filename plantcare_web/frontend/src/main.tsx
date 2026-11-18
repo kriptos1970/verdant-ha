@@ -3231,6 +3231,7 @@ function PlantDetail({
                   setMeasureRevision(v=>v+1);
                 }}
               />
+              <p className="muted small-text">{t("measures.sourceHint")}</p>
               {measurements.map((m) => (
                 <div className="measurement" key={m.id}>
                   <span>
@@ -3249,9 +3250,18 @@ function PlantDetail({
                       {new Date(m.measured_at).toLocaleString("it-IT")}
                     </small>
                     <small>
-                      {m.entity_id === "manual"
-                        ? "Inserita a mano"
-                        : m.entity_id}
+                      {m.source === "manual"
+                        ? t("measures.source.manual")
+                        : m.source === "smartphoneEstimated"
+                          ? t("measures.source.estimated")
+                          : m.entity_id}
+                    </small>
+                    <small className={m.reliability == null ? "muted" : ""}>
+                      {m.reliability != null
+                        ? t("measures.reliability", {
+                            percent: Math.round(m.reliability * 100),
+                          })
+                        : t("measures.reliabilityUnknown")}
                     </small>
                   </span>
                   <b>

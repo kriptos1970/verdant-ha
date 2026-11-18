@@ -234,6 +234,11 @@ const it = {
   "measure.value": "Valore",
   "measure.valueAria": "Valore misurato per {name}",
   "measure.save": "Salva misura",
+  "measures.sourceHint": "Sorgente e affidabilità aiutano a interpretare una lettura; non sono una diagnosi.",
+  "measures.source.manual": "Inserita a mano",
+  "measures.source.estimated": "Stima da smartphone",
+  "measures.reliability": "Affidabilità {percent}%",
+  "measures.reliabilityUnknown": "Affidabilità non disponibile",
 
   "detail.speciesUnknown": "Specie da identificare",
   "detail.photoCredit": "Foto: {credit}",

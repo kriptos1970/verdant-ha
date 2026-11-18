@@ -236,6 +236,11 @@ const en: Record<MessageKey, string> = {
   "measure.value": "Value",
   "measure.valueAria": "Measured value for {name}",
   "measure.save": "Save measurement",
+  "measures.sourceHint": "Source and reliability help interpret a reading; they are not a diagnosis.",
+  "measures.source.manual": "Entered by hand",
+  "measures.source.estimated": "Smartphone estimate",
+  "measures.reliability": "Reliability {percent}%",
+  "measures.reliabilityUnknown": "Reliability not available",
 
   "detail.speciesUnknown": "Species to identify",
   "detail.photoCredit": "Photo: {credit}",

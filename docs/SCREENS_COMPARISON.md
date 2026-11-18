@@ -64,10 +64,13 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Funzione | Nativo | Web |
 |---|---|---|
 | Elenco misure | sì | tabella misure |
+| Sorgente e affidabilità | sì | sì, per misura importata o inserita a mano |
 | Inserimento manuale | sì | sì |
 | Sensori HA e mapping | sì | strumento “Sensori Home Assistant” |
-| Classificazione luce e affidabilità | sì | motore lato server; UI sintetica |
+| Classificazione luce e affidabilità | sì | motore lato server; affidabilità del profilo nei consigli |
 | Luxmetro fotocamera | sperimentale | non presente (valutazione rimandata) |
+
+**Allineato (C6, 18 novembre 2026)**: `/api/plants/{id}/measurements` unisce le misure native (con sorgente e affidabilità originali, senza duplicare quelle già migrate) e quelle inserite a mano, che riportano affidabilità 100%. La tabella mostra sorgente, affidabilità in percentuale e “non disponibile” per le righe importate prive di metadati. Restano fuori il luxmetro dalla fotocamera e la verifica su sensori reali.
 
 ## 6. Impostazioni — `ContentView.swift`, `DefaultLocationSettingsView.swift`, `LocalAISettingsView.swift`
 
@@ -89,6 +92,6 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 3. **C3 Dettaglio** — ✅ “Sposta pianta”, aggiornamento sicurezza e affidabilità del profilo luce nei consigli.
 4. **C4 Impostazioni** — ✅ località predefinita con ricerca e stato meteo.
 5. **C5 Cure** — ✅ raggruppamento per tipo, rinvio dalla riga e cronologia per giorno con filtri azzerabili; resta il collaudo sul campo.
-6. **C6 Misure** — affidabilità e sorgente visibili nella tabella.
+6. **C6 Misure** — ✅ sorgente e affidabilità visibili nella tabella; restano luxmetro e sensori reali.
 
-C1–C5 sono implementate e verificate; resta C6.
+C1–C6 sono implementate e verificate; restano i collaudi sul campo (dispositivo fisico, sensori reali, ripristino isolato, archivio molto grande).

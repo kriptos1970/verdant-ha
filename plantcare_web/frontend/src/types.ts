@@ -223,6 +223,8 @@ export type Measure = {
   measured_at: string;
   source_at?: string;
   entity_id: string;
+  source?: string;
+  reliability?: number | null;
 };
 
 export type Treatment = {
