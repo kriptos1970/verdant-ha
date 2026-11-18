@@ -39,6 +39,7 @@ async def poll(store,settings):
     with store.connection() as db:
         mappings=store.state('sensor-mappings',[],db)
         plants=[p for p,_ in store.list('plants',db)]
+        changed=set()
         for reading in readings:
             matching=[m for m in mappings if m['entityID']==reading['entityID']]
             explicit={m.get('plantID') for m in matching if m.get('plantID')}
@@ -51,9 +52,13 @@ async def poll(store,settings):
                 # Store an observation once; repeated polls must not inflate confidence.
                 if db.execute('SELECT 1 FROM measurements WHERE plant_id=? AND entity_id=? AND source_at=? AND kind=? AND value=? AND unit=? LIMIT 1',(pid,reading['entityID'],reading['updatedAt'],reading['kind'],reading['value'],reading['unit'])).fetchone(): continue
                 db.execute('INSERT INTO measurements(plant_id,entity_id,kind,value,unit,measured_at,source_at) VALUES (?,?,?,?,?,?,?)',(pid,reading['entityID'],reading['kind'],reading['value'],reading['unit'],iso(now()),reading['updatedAt']))
+                changed.add(pid)
         cutoff=iso(now()-timedelta(days=int(settings.options.get('measurement_retention_days',365))))
         db.execute('DELETE FROM measurements WHERE measured_at < ?', (cutoff,))
         store.set_state('sensor-status',{'lastRun':iso(now()),'readings':len(readings),'error':None},db)
+    from .care_operational import apply_safe_adjustment
+    for pid in changed:
+        apply_safe_adjustment(store,settings,pid)
     return readings
 
 def message_language(store,settings):

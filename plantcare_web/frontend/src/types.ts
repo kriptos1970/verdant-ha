@@ -128,6 +128,16 @@ export type Plant = {
   potHasDrainage?: boolean;
   family?: string;
   adaptivePlan?: import("./adaptive").AdaptivePlan;
+  careEngineApplied?: {
+    fingerprint: string;
+    appliedAt: string;
+    previousDue: string;
+    newDue: string;
+    reason: string;
+    measurementID?: string | null;
+    moisturePercent?: number;
+    confidence?: number;
+  } | null;
   safetyProfile?: {
     poisonousToPets?: boolean;
     poisonousToHumans?: boolean;
@@ -201,6 +211,7 @@ export type Settings = {
   aiStatus?: { summary: string; lastRun: string; notificationError?:string };
   adaptiveStatus?: {lastRun:string;updated:number;errors:number};
   measurementRetentionDays: number;
+  careEngineMode?: "shadow" | "active";
 };
 export type Mapping = {
   entityID: string;

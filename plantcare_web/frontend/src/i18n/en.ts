@@ -651,6 +651,7 @@ const en: Record<MessageKey, string> = {
 
   "insights.title": "Care observations",
   "insights.text": "These indications do not change the calendar. Confidence and available data help interpret them.",
+  "insights.textActive": "The care engine may postpone watering when the substrate is still wet and the reading is reliable; it never advances care or records it.",
   "insights.evaluating": "Evaluating…",
   "insights.confidence": "{percent}% confidence",
   "insights.lightProfile": "Species light profile: {percent}% reliability.",
@@ -864,6 +865,10 @@ const en: Record<MessageKey, string> = {
   "settings.enabled": "On",
   "settings.disabled": "Off",
   "settings.retention": "Measurement retention",
+  "settings.careEngine": "Care engine",
+  "settings.careEngineActive": "Operational",
+  "settings.careEngineShadow": "Observation only (shadow)",
+  "settings.careEngineHint": "In operational mode it may postpone watering when the substrate is still wet and the reading is reliable. It never advances care. Configure it in the add-on options.",
   "settings.days.one": "{count} day",
   "settings.days.other": "{count} days",
   "settings.weather": "Weather recalculation",

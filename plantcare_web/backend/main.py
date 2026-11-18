@@ -80,7 +80,7 @@ async def remote_error(request,error):
 @app.get('/health')
 def health(): return {'status':'ok','version':__version__}
 @app.get('/api/settings')
-def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'adaptiveStatus':store.state('adaptive-status')}
+def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':settings.options.get('care_engine_mode','shadow'),'adaptiveStatus':store.state('adaptive-status')}
 
 def linked_product(plant, db=None):
     if not plant.get('fertilizerProductID'):
@@ -721,6 +721,8 @@ def add_measurement(plant_id:str,body:Measurement):
     store.get('plants',plant_id)
     with store.connection() as db:
         db.execute('INSERT INTO measurements(plant_id,entity_id,kind,value,unit,measured_at,source_at) VALUES (?,?,?,?,?,?,?)',(plant_id,'manual',body.kind,body.value,body.unit,body.date,body.date))
+    from .care_operational import apply_safe_adjustment
+    apply_safe_adjustment(store,settings,plant_id)
     return body
 
 @app.get('/api/proposals')

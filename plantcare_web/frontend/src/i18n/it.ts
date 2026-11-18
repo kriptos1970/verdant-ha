@@ -650,6 +650,7 @@ const it = {
 
   "insights.title": "Osservazioni per la sua cura",
   "insights.text": "Queste indicazioni non modificano il calendario. Confidenza e dati disponibili aiutano a interpretarle.",
+  "insights.textActive": "Il motore di cura può rinviare l’annaffiatura quando il terreno è ancora umido e la misura è affidabile; non anticipa mai la cura e non registra cure.",
   "insights.evaluating": "Valutazione in corso…",
   "insights.confidence": "{percent}% confidenza",
   "insights.lightProfile": "Profilo luce della specie: {percent}% di affidabilità.",
@@ -863,6 +864,10 @@ const it = {
   "settings.enabled": "Attiva",
   "settings.disabled": "Disattivata",
   "settings.retention": "Conservazione misure",
+  "settings.careEngine": "Motore di cura",
+  "settings.careEngineActive": "Operativo",
+  "settings.careEngineShadow": "Solo osservazione (shadow)",
+  "settings.careEngineHint": "In modalità operativa può rinviare l’annaffiatura quando il terreno è ancora umido e la misura è affidabile. Non anticipa mai la cura. Si configura nelle opzioni dell’add-on.",
   "settings.days.one": "{count} giorno",
   "settings.days.other": "{count} giorni",
   "settings.weather": "Ricalcolo meteo",

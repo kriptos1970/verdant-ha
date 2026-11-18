@@ -26,6 +26,7 @@ options:
   timezone: Europe/Rome
   exposed_entities: []
   poll_interval_minutes: 15
+  care_engine_mode: shadow
   ai_provider: none
   ai_model: ""
   openai_api_key: ""
@@ -45,6 +46,7 @@ schema:
   exposed_entities:
     - str
   poll_interval_minutes: int(1,1440)
+  care_engine_mode: list(shadow|active)
   ai_provider: list(none|gemini|openai)
   ai_model: str?
   openai_api_key: password?

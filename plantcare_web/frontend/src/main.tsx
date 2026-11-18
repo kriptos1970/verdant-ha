@@ -3133,7 +3133,7 @@ function PlantDetail({
                 </div>
               )}
               {plant.adaptivePlan?.climateRevisionHistory?.length ? <details className="detail-section ios-plan-content"><summary>{t("detail.climateHistory")}</summary>{[...plant.adaptivePlan.climateRevisionHistory].reverse().map(r=><p className="small-text" key={r.id}>{dateLabel(r.date)} · {t("detail.climateLine", { from: r.previousWateringDays, to: r.newWateringDays, feedFrom: r.previousFertilizingDays, feedTo: r.newFertilizingDays })}</p>)}</details> : null}
-              {!phone&&<CareInsights plant={plant} revision={measureRevision}/>}
+              {plant.careEngineApplied && <p className="muted small-text ios-plan-content">{plant.careEngineApplied.reason}</p>}
               <div className="detail-section safety-section">
                 <h3>{t("detail.safety")}</h3>
                 {plant.safetyProfile ? (
@@ -3405,7 +3405,7 @@ function PlantDetail({
       </header>
       <div className="detail-scroll" ref={detailScrollRef}>
         <div className={phone ? "ios-plant-overview-host" : "ios-plant-overview-host desktop-ios-overview"}>
-          <IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>
+          <IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision} active={settings?.careEngineMode==='active'}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>
         </div>
       </div>
       {healthOpen && <HealthPhotoEditor key={plant.id} plant={plant} onClose={()=>setHealthOpen(false)} onSaved={()=>run(async()=>{},"Controllo sanitario salvato")}/>}
@@ -4097,6 +4097,17 @@ function SettingsTool({
           <dt>{t("settings.retention")}</dt>
           <dd>{plural("settings.days", settings.measurementRetentionDays)}</dd>
         </div>
+        {settings.careEngineMode && (
+          <div>
+            <dt>{t("settings.careEngine")}</dt>
+            <dd>
+              {settings.careEngineMode === "active"
+                ? t("settings.careEngineActive")
+                : t("settings.careEngineShadow")}
+              <small className="muted">{t("settings.careEngineHint")}</small>
+            </dd>
+          </div>
+        )}
         {settings.adaptiveStatus && <div><dt>{t("settings.weather")}</dt><dd>{settings.adaptiveStatus.errors ? plural("settings.weatherErrors", settings.adaptiveStatus.errors) : t("settings.lastRun", { date: formatDate(settings.adaptiveStatus.lastRun, { dateStyle: "short", timeStyle: "short" }) })}</dd></div>}
         {storage && (
           <>
