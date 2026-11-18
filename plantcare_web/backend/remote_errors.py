@@ -27,6 +27,8 @@ def describe(error):
         detail=f'Le restrizioni della chiave impediscono l’accesso a {service} da Home Assistant. Verifica le autorizzazioni della chiave nel provider.'
     elif 'location is not supported' in message or 'not available in your country' in message:
         detail=f'{service} non è disponibile per la località della connessione Home Assistant.'
+        if service=='Gemini':
+            detail+=' Google classifica l’IP pubblico dell’istanza: se il problema compare solo da questa rete, prova a ottenere un nuovo IP dal router o segnalalo a Google.'
     elif code in (401,403):
         detail=f'{service} non autorizza questa chiave (HTTP {code}). Verifica chiave, progetto e autorizzazioni nel provider.'
     elif code==400:

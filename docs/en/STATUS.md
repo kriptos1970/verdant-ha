@@ -44,7 +44,7 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - **Live sensors and Open-Meteo** are covered by simulated transports, not by a long-running real installation.
 - **Large real archives** beyond the synthetic benchmark (100 plants / 50,000 events) still need validation.
 - The **Care Engine** is intentionally in shadow mode; measurements do not rewrite the schedule.
-- **AI automatic application** remains disabled by default. The daily analysis runs with the configured provider; a manual real-data trial on Home Assistant was rejected by Gemini because of the instance location, so no proposal was created. An OpenAI key or a reachable provider is needed to complete the trial.
+- **AI automatic application** remains disabled by default. The daily analysis runs with the configured provider; a manual real-data trial on Home Assistant was rejected by Gemini with `User location is not supported` (raw 400). The public IP is Italian (Telecom Italia, AS3269), no proxy/VPN is in use, IPv6 is unavailable and Cloudflare only fronts inbound `sicoli.ovh`; Google is misclassifying the public IP, as confirmed by the temporary fix after a router restart. An OpenAI key, a new/static IP or Google’s IP report is needed to complete the trial.
 - **Desktop layout** realignment with the macOS app is postponed; the phone layout was the priority.
 - **MariaDB** and any external database are postponed; SQLite remains the store.
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
