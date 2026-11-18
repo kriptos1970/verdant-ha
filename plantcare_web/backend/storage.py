@@ -5,6 +5,7 @@ import os
 import sqlite3
 import threading
 from contextlib import contextmanager
+from datetime import timedelta
 from pathlib import Path
 from uuid import uuid4
 from .domain import iso, now, parse
@@ -33,6 +34,9 @@ class Store:
             CREATE TABLE IF NOT EXISTS imports(checksum TEXT PRIMARY KEY, imported_at TEXT);
             PRAGMA user_version=1;
             ''')
+            columns={row[1] for row in db.execute('PRAGMA table_info(entities)')}
+            if 'deleted_at' not in columns:
+                db.execute('ALTER TABLE entities ADD COLUMN deleted_at TEXT')
 
     @contextmanager
     def connection(self):
@@ -48,17 +52,24 @@ class Store:
             finally:
                 db.close()
 
-    def list(self, collection, db=None):
+    def list(self, collection, db=None, include_deleted=False):
         if db is None:
             with self.connection() as conn:
-                return self.list(collection, conn)
-        return [(canonical_plant(json.loads(r['payload'])) if collection == 'plants' else json.loads(r['payload']), r['version']) for r in db.execute('SELECT payload,version FROM entities WHERE collection=? ORDER BY id', (collection,))]
+                return self.list(collection, conn, include_deleted)
+        query='SELECT payload,version FROM entities WHERE collection=?'
+        if collection == 'plants' and not include_deleted:
+            query+=' AND deleted_at IS NULL'
+        query+=' ORDER BY id'
+        return [(canonical_plant(json.loads(r['payload'])) if collection == 'plants' else json.loads(r['payload']), r['version']) for r in db.execute(query, (collection,))]
 
-    def get(self, collection, identifier, db=None):
+    def get(self, collection, identifier, db=None, include_deleted=False):
         if db is None:
             with self.connection() as conn:
-                return self.get(collection, identifier, conn)
-        row = db.execute('SELECT payload,version FROM entities WHERE collection=? AND id=?', (collection, identifier)).fetchone()
+                return self.get(collection, identifier, conn, include_deleted)
+        query='SELECT payload,version FROM entities WHERE collection=? AND id=?'
+        if collection == 'plants' and not include_deleted:
+            query+=' AND deleted_at IS NULL'
+        row = db.execute(query, (collection, identifier)).fetchone()
         if row is None:
             raise KeyError(identifier)
         payload = json.loads(row['payload'])
@@ -78,7 +89,7 @@ class Store:
             raise Conflict('Elemento non più disponibile.')
         version = row['version'] + 1 if row else 1
         clean = {k:v for k,v in payload.items() if not k.startswith('_')}
-        db.execute('INSERT INTO entities VALUES (?,?,?,?) ON CONFLICT(collection,id) DO UPDATE SET payload=excluded.payload,version=excluded.version', (collection,identifier,json.dumps(clean,ensure_ascii=False,allow_nan=False),version))
+        db.execute('INSERT INTO entities(collection,id,payload,version) VALUES (?,?,?,?) ON CONFLICT(collection,id) DO UPDATE SET payload=excluded.payload,version=excluded.version', (collection,identifier,json.dumps(clean,ensure_ascii=False,allow_nan=False),version))
         return clean, version
 
     def delete(self, collection, identifier, expected):
@@ -86,13 +97,79 @@ class Store:
             _, version = self.get(collection, identifier, db)
             if expected != version:
                 raise Conflict('La scheda è cambiata. Ricarica prima di eliminare.')
-            db.execute('DELETE FROM entities WHERE collection=? AND id=?', (collection,identifier))
-            if collection == 'plants':
-                db.execute('DELETE FROM state WHERE key IN (?,?)',('ai-advice-'+identifier,'adaptive-preview-'+identifier))
-                db.execute('DELETE FROM state WHERE key=?',('botanical-preview-'+identifier,))
-                mappings = self.state('sensor-mappings', [], db)
-                self.set_state('sensor-mappings', [m for m in mappings if m.get('plantID') != identifier], db)
-                db.execute('DELETE FROM measurements WHERE plant_id=?', (identifier,))
+            self._delete_row(db, collection, identifier)
+
+    def _delete_row(self, db, collection, identifier):
+        db.execute('DELETE FROM entities WHERE collection=? AND id=?', (collection,identifier))
+        if collection == 'plants':
+            db.execute('DELETE FROM state WHERE key IN (?,?)',('ai-advice-'+identifier,'adaptive-preview-'+identifier))
+            db.execute('DELETE FROM state WHERE key=?',('botanical-preview-'+identifier,))
+            mappings = self.state('sensor-mappings', [], db)
+            self.set_state('sensor-mappings', [m for m in mappings if m.get('plantID') != identifier], db)
+            db.execute('DELETE FROM measurements WHERE plant_id=?', (identifier,))
+
+    TRASH_DAYS = 30
+
+    def trash(self, identifier, expected, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.trash(identifier, expected, conn)
+        row = db.execute('SELECT version FROM entities WHERE collection=? AND id=? AND deleted_at IS NULL',('plants',identifier)).fetchone()
+        if row is None:
+            raise KeyError(identifier)
+        if expected != row['version']:
+            raise Conflict('La scheda è cambiata. Ricarica prima di eliminare.')
+        db.execute('UPDATE entities SET deleted_at=?, version=version+1 WHERE collection=? AND id=?',(iso(now()),'plants',identifier))
+        return row['version']+1
+
+    def restore(self, identifier, expected, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.restore(identifier, expected, conn)
+        row = db.execute('SELECT version FROM entities WHERE collection=? AND id=? AND deleted_at IS NOT NULL',('plants',identifier)).fetchone()
+        if row is None:
+            raise KeyError(identifier)
+        if expected != row['version']:
+            raise Conflict('La scheda è cambiata. Ricarica prima di ripristinare.')
+        db.execute('UPDATE entities SET deleted_at=NULL, version=version+1 WHERE collection=? AND id=?',('plants',identifier))
+        return row['version']+1
+
+    def trash_list(self, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.trash_list(conn)
+        rows = db.execute('SELECT payload,version,deleted_at FROM entities WHERE collection=? AND deleted_at IS NOT NULL ORDER BY deleted_at DESC',('plants',))
+        return [(canonical_plant(json.loads(r['payload'])), r['version'], r['deleted_at']) for r in rows]
+
+    def purge(self, identifier, expected, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.purge(identifier, expected, conn)
+        row = db.execute('SELECT version FROM entities WHERE collection=? AND id=? AND deleted_at IS NOT NULL',('plants',identifier)).fetchone()
+        if row is None:
+            raise KeyError(identifier)
+        if expected != row['version']:
+            raise Conflict('La scheda è cambiata. Ricarica prima di eliminare.')
+        self._delete_row(db, 'plants', identifier)
+
+    def purge_all(self, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.purge_all(conn)
+        identifiers=[r['id'] for r in db.execute('SELECT id FROM entities WHERE collection=? AND deleted_at IS NOT NULL',('plants',))]
+        for identifier in identifiers:
+            self._delete_row(db, 'plants', identifier)
+        return len(identifiers)
+
+    def purge_expired(self, days=None, db=None):
+        if db is None:
+            with self.connection() as conn:
+                return self.purge_expired(days, conn)
+        cutoff=iso(now()-timedelta(days=self.TRASH_DAYS if days is None else days))
+        identifiers=[r['id'] for r in db.execute('SELECT id FROM entities WHERE collection=? AND deleted_at IS NOT NULL AND deleted_at < ?',('plants',cutoff))]
+        for identifier in identifiers:
+            self._delete_row(db, 'plants', identifier)
+        return len(identifiers)
 
     def state(self, key, default=None, db=None):
         if db is None:

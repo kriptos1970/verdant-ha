@@ -3,6 +3,7 @@ import base64
 import binascii
 import io
 import json
+import math
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -31,6 +32,7 @@ store=Store(settings.directory,settings.photo_directory)
 
 @asynccontextmanager
 async def lifespan(app):
+    store.purge_expired()
     task=asyncio.create_task(services.scheduler(store,settings))
     try: yield
     finally:
@@ -145,7 +147,30 @@ def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
         p,v=store.put('plants',value,version,db)
     return render_plant(p,v)
 @app.delete('/api/plants/{plant_id}',status_code=204)
-def delete_plant(plant_id:str,version:int=Query(ge=1)): store.delete('plants',plant_id,version)
+def delete_plant(plant_id:str,version:int=Query(ge=1)): store.trash(plant_id,version)
+
+def trash_item(plant,version,deleted):
+    from datetime import timedelta
+    removed=parse(deleted)
+    expires=removed+timedelta(days=store.TRASH_DAYS)
+    return {'id':plant['id'],'name':plant.get('name',''),'species':plant.get('species',''),'room':plant.get('room',''),'photoPath':plant.get('photoPath'),'deletedAt':deleted,'expiresAt':iso(expires),'daysLeft':max(0,math.ceil((expires-now()).total_seconds()/86400)),'_version':version}
+
+@app.get('/api/trash')
+def trash(): 
+    store.purge_expired()
+    return {'retentionDays':store.TRASH_DAYS,'items':[trash_item(p,v,d) for p,v,d in store.trash_list()]}
+
+@app.post('/api/trash/{plant_id}/restore')
+def restore_plant(plant_id:str,version:int=Query(ge=1)):
+    v=store.restore(plant_id,version)
+    p,_=store.get('plants',plant_id)
+    return render_plant(p,v)
+
+@app.delete('/api/trash/{plant_id}',status_code=204)
+def purge_plant(plant_id:str,version:int=Query(ge=1)): store.purge(plant_id,version)
+
+@app.delete('/api/trash',status_code=204)
+def empty_trash(): store.purge_all()
 
 async def proposed_plan(plant, body, version=None):
     location = body.location.model_dump()

@@ -40,6 +40,7 @@ import {
   ImagePlus,
   CheckCircle2,
   CircleHelp,
+  RotateCcw,
 } from "lucide-react";
 import type {
   Plant,
@@ -53,6 +54,7 @@ import type {
   Growth,
   CareSelection,
   Treatment,
+  TrashItem,
   PlantSetup,
   PropertyLevel,
   DrainageQuality,
@@ -189,7 +191,10 @@ function App() {
     [room, setRoom] = useState("Tutte"),
     [filter, setFilter] = useState("Tutte"),
     [plantPage, setPlantPage] = useState(1),
-    [menu, setMenu] = useState(false);
+    [menu, setMenu] = useState(false),
+    [trashOpen, setTrashOpen] = useState(false),
+    [trashItems, setTrashItems] = useState<TrashItem[]>([]),
+    [trashBusy, setTrashBusy] = useState(false);
   const [plantEditor, setPlantEditor] = useState<Plant | "new" | null>(null),
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
     [action, setAction] = useState<CareSelection | null>(null),
@@ -269,6 +274,50 @@ function App() {
   const safeRun = (fn: () => Promise<unknown>, message?: string) => {
     void run(fn, message).catch(() => {});
   };
+  const loadTrash = async () => {
+    setTrashBusy(true);
+    try {
+      const data = await api<{ items: TrashItem[] }>("trash");
+      setTrashItems(data.items);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setTrashBusy(false);
+    }
+  };
+  const openTrash = () => {
+    setTrashOpen(true);
+    void loadTrash();
+  };
+  const restoreTrash = async (item: TrashItem) => {
+    try {
+      await run(
+        () =>
+          api(`trash/${item.id}/restore?version=${item._version}`, {
+            method: "POST",
+          }),
+        t("trash.restored"),
+      );
+      await loadTrash();
+    } catch {
+      // run already reported the error.
+    }
+  };
+  const purgeTrash = (item: TrashItem) =>
+    setConfirm({
+      title: t("trash.confirm", { name: item.name }),
+      run: async () => {
+        await run(
+          () =>
+            api(`trash/${item.id}?version=${item._version}`, {
+              method: "DELETE",
+            }),
+          t("trash.deleted"),
+        );
+        await loadTrash();
+        setConfirm(null);
+      },
+    });
   const rooms = [...new Set(plants.map((p) => p.room))].sort();
   const latestPlan = plants
     .map((p) => p.adaptivePlan)
@@ -714,7 +763,13 @@ function App() {
                         {t("plants.summary", { plants: plants.length, rooms: rooms.length })}
                       </p>
                     </div>
-                    <Leaf className="muted" size={30} />
+                    <div className="collection-heading-actions">
+                      <button className="text-button" onClick={openTrash}>
+                        <Trash2 size={16} />
+                        {t("trash.open")}
+                      </button>
+                      <Leaf className="muted" size={30} />
+                    </div>
                   </div>
                   <div className="collection-toolbar">
                     <label className="search">
@@ -1093,7 +1148,7 @@ function App() {
           }
           onDelete={() =>
             setConfirm({
-              title: `Eliminare ${selectedPlant.name}? Le sue cure verranno rimosse dall’archivio.`,
+              title: t("trash.moveConfirm", { name: selectedPlant.name }),
               run: async () => {
                 await run(
                   () =>
@@ -1101,7 +1156,7 @@ function App() {
                       `plants/${selectedPlant.id}?version=${selectedPlant._version}`,
                       { method: "DELETE" },
                     ),
-                  "Pianta eliminata",
+                  t("trash.moved"),
                 );
                 openPlant(null);
               },
@@ -1240,6 +1295,70 @@ function App() {
             setAction(null);
           }}
         />
+      )}
+      {trashOpen && (
+        <Modal title={t("trash.title")} onClose={() => setTrashOpen(false)}>
+          <p className="muted small-text">{t("trash.hint", { days: 30 })}</p>
+          {trashBusy ? (
+            <p role="status" className="loading">
+              <LoaderCircle className="spin" />
+              {t("app.loading")}
+            </p>
+          ) : trashItems.length ? (
+            <ul className="trash-list">
+              {trashItems.map((item) => (
+                <li key={item.id}>
+                  {item.photoPath ? (
+                    <img
+                      src={photoURL(item.photoPath, true)}
+                      alt=""
+                      className="trash-photo"
+                    />
+                  ) : (
+                    <span className="trash-photo placeholder" aria-hidden="true">
+                      <Leaf size={18} />
+                    </span>
+                  )}
+                  <div className="trash-info">
+                    <strong>{item.name}</strong>
+                    <small>
+                      {item.room} ·{" "}
+                      {item.daysLeft > 1
+                        ? t("trash.expires", { days: item.daysLeft })
+                        : item.daysLeft === 1
+                          ? t("trash.expiresOne")
+                          : t("trash.expiresToday")}
+                    </small>
+                  </div>
+                  <button
+                    className="button secondary"
+                    disabled={busy}
+                    onClick={() => void restoreTrash(item)}
+                  >
+                    <RotateCcw size={15} />
+                    {t("trash.restore")}
+                  </button>
+                  <button
+                    className="icon-button danger"
+                    aria-label={t("trash.deleteAria", { name: item.name })}
+                    disabled={busy}
+                    onClick={() => purgeTrash(item)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="gentle-empty">
+              <Trash2 size={26} />
+              <div>
+                <strong>{t("trash.empty")}</strong>
+                <p>{t("trash.emptyText")}</p>
+              </div>
+            </div>
+          )}
+        </Modal>
       )}
       {confirm && (
         <Modal title="Conferma eliminazione" onClose={() => setConfirm(null)}>

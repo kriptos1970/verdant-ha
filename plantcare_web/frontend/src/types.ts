@@ -14,6 +14,18 @@ export type Action = {
   includesFertilizing?: boolean;
   canIncludeFertilizing?: boolean;
 };
+export type TrashItem = {
+  id: string;
+  name: string;
+  species: string;
+  room: string;
+  photoPath?: string | null;
+  deletedAt: string;
+  expiresAt: string;
+  daysLeft: number;
+  _version: number;
+};
+
 export type PropertyLevel =
   | "veryLow"
   | "low"

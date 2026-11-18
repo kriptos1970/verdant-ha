@@ -101,7 +101,7 @@ def test_history_page_reads_legacy_payloads_written_before_the_migration(tmp_pat
     store = Store(tmp_path)
     plant = {'id': str(uuid4()).upper(), 'name': 'Ficus', 'room': 'Casa', 'acquiredOn': '2026-01-01T12:00:00Z', 'history': [event('Pota')]}
     with store.connection() as db:
-        db.execute("INSERT INTO entities VALUES ('plants',?,?,1)", (plant['id'], json.dumps(plant)))
+        db.execute("INSERT INTO entities(collection,id,payload,version) VALUES ('plants',?,?,1)", (plant['id'], json.dumps(plant)))
     for filter_value in ('Pota', 'prune'):
         page = history_page(store, 'Europe/Rome', kind=filter_value)
         assert page['total'] == 1

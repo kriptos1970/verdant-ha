@@ -29,7 +29,7 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Cestino | eliminazione con **ripristino entro 30 giorni** | eliminazione definitiva con conferma |
 | Paginazione | nessuna | 12 per pagina |
 
-**Lacuna principale**: il **cestino con ripristino a 30 giorni** non esiste nel web; l’eliminazione è definitiva. È la differenza funzionale più rilevante di questa schermata e richiede un cambio backend (soft delete, scadenza, ripristino, pulizia).
+**Allineato (C1, 18 novembre 2026)**: il web ha ora un **cestino con ripristino entro 30 giorni**. L’eliminazione sposta la pianta nel cestino (sparisce da collezione, calendario, analisi e storico), `GET /api/trash` elenca gli elementi con i giorni rimanenti, il ripristino la riporta nell’archivio e l’eliminazione definitiva (singola o svuotando il cestino) cancella dati collegati e misure. La pulizia automatica avviene all’avvio e a ogni apertura del cestino. Il backup esporta solo le piante attive. Restano le azioni rapide sulle righe (annaffia/modifica).
 
 ## 3. Cure e calendario — `CareCalendarView.swift`, `CareEventViews.swift`
 
@@ -81,7 +81,7 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 
 ## Piano C
 
-1. **C1 Collezione** — cestino con ripristino a 30 giorni (backend + UI), poi azioni rapide (annaffia/modifica) sulle righe.
+1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni (backend + UI), con pulizia automatica; restano le azioni rapide sulle righe.
 2. **C2 Prodotti** — filtro categoria e “registra utilizzo” dalla lista; verifica acquisto/scadenza nell’editor.
 3. **C3 Dettaglio** — azione “Sposta pianta”, aggiornamento sicurezza, profilo luce con affidabilità.
 4. **C4 Impostazioni** — località predefinita e stato meteo.

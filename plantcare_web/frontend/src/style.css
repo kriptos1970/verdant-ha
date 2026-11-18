@@ -3791,3 +3791,90 @@ progress::-webkit-progress-value {
     flex: none;
   }
 }
+
+/* Collection: trash */
+.collection-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.trash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.trash-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.trash-photo {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #eef3ec;
+}
+.trash-photo.placeholder {
+  display: grid;
+  place-items: center;
+  color: #6b7a6f;
+}
+.trash-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.trash-info strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trash-info small {
+  color: #5f6d62;
+  font-size: 12px;
+}
+.trash-list .button {
+  flex: none;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .trash-list li {
+    flex-wrap: wrap;
+  }
+  .trash-info {
+    flex: 1 1 120px;
+  }
+}
+
+/* Keep the plant editor inside its dialog: no horizontal scroll while scrolling vertically */
+dialog:has(.plant-editor-form) {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+.plant-editor-form,
+.plant-editor-form .form-grid,
+.plant-editor-form .editor-section,
+.plant-editor-form .activity-field {
+  min-width: 0;
+}
+.plant-editor-form {
+  overflow-x: clip;
+}
+.plant-editor-form label > input,
+.plant-editor-form label > select,
+.plant-editor-form label > textarea,
+.plant-editor-form input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+}

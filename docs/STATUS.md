@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Cestino con ripristino (18 novembre 2026)
+
+- **Backend**: soft delete sulla tabella `entities` (`deleted_at`), `GET /api/trash`, `POST /api/trash/{id}/restore`, `DELETE /api/trash/{id}` e `DELETE /api/trash`; pulizia automatica dopo 30 giorni all’avvio e all’apertura del cestino. Le piante nel cestino escono da collezione, calendario, analisi, storico e backup; al ripristino tornano con una nuova versione.
+- **Interfaccia**: pulsante **Cestino** nella collezione, elenco con foto, ambiente e giorni rimanenti, **Ripristina** ed **Elimina definitivamente** con conferma; l’eliminazione dalla scheda ora sposta nel cestino e lo dice.
+- **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
+- **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
+
 ## Schermate — confronto con il nativo (17 novembre 2026)
 
 - Confronto di dettaglio pianta, collezione, cure, prodotti, misure e impostazioni dai sorgenti Swift: [SCREENS_COMPARISON.md](SCREENS_COMPARISON.md).
