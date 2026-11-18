@@ -216,7 +216,7 @@ export type Sensor = {
   updatedAt: string;
 };
 export type Measure = {
-  id: number;
+  id: number | string;
   kind: string;
   value: number;
   unit: string;
