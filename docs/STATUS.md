@@ -390,6 +390,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Archivio — pulizia fotografie (18 novembre 2026)
+
+- Nuovo strumento in **Archivio e backup**: `GET /api/photos/orphans` elenca i file della cartella foto non più collegati a piante, prodotti, specie, raccomandazioni o proposte; `POST /api/photos/cleanup` elimina solo i nomi richiesti, ricontrollando i riferimenti.
+- Le foto caricate nell’ultima ora sono **protette**, così un caricamento in corso non viene cancellato; le piante nel cestino continuano a mantenere le loro foto finché non vengono eliminate definitivamente.
+- La UI mostra numero e dimensione delle foto non utilizzate, i file recenti protetti e richiede una seconda conferma prima dell’eliminazione.
+- Verifica su archivio sintetico: due file orfani (uno vecchio, uno recente), report 1 eliminabile + 1 protetto, eliminazione del solo vecchio e rimozione della miniatura; riferimenti e file recenti intatti. **208 test backend** (3 nuovi), **948 chiavi i18n**, build ok.
+
 ## Collezione — azioni rapide sulle card (18 novembre 2026)
 
 - Ogni card della collezione ha un menu **⋯** con **Registra annaffiatura**, **Modifica** e **Sposta nel cestino**, equivalente al menu contestuale e alle azioni swipe del nativo.

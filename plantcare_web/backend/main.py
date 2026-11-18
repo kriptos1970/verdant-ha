@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
@@ -460,6 +460,56 @@ def resume_treatment(plant_id:str,plan_id:str,version:int=Query(ge=1)):
         plan['cancelledAt']=None
         p,v=store.put('plants',plant,version,db)
         return render_plant(p,v,db)
+
+PHOTO_KEYS={'photoPath','photoPaths','path','localPath'}
+
+def referenced_photo_names():
+    names=set()
+    def scan(value,key=None):
+        if isinstance(value,dict):
+            for item_key,item in value.items(): scan(item,item_key)
+        elif isinstance(value,list):
+            for item in value: scan(item,key)
+        elif isinstance(value,str) and key in PHOTO_KEYS:
+            name=Path(value).name
+            if name: names.add(name)
+    with store.connection() as db:
+        for collection in ['plants','fertilizers','speciesBiologies','recommendations','proposals']:
+            for item,_ in store.list(collection,db,include_deleted=True): scan(item)
+    return names
+
+def photo_orphan_report():
+    import time
+    from datetime import datetime,timezone
+    referenced=referenced_photo_names()
+    now=time.time()
+    files=[]
+    for path in sorted(store.photos.glob('*.jpg')):
+        if path.name in referenced: continue
+        stat=path.stat()
+        files.append(dict(name=path.name,bytes=stat.st_size,modifiedAt=iso(datetime.fromtimestamp(stat.st_mtime,tz=timezone.utc)),recent=now-stat.st_mtime<3600))
+    return dict(files=files,count=len(files),bytes=sum(item['bytes'] for item in files),deletable=sum(1 for item in files if not item['recent']),recent=sum(1 for item in files if item['recent']))
+
+@app.get('/api/photos/orphans')
+def photo_orphans(): return photo_orphan_report()
+
+@app.post('/api/photos/cleanup')
+def cleanup_photos(body:PhotoCleanupRequest):
+    import time
+    referenced=referenced_photo_names()
+    now=time.time()
+    deleted=[]
+    for name in body.names:
+        if len(name)!=68 or not name.endswith('.jpg') or any(c not in '0123456789abcdef' for c in name[:-4]): continue
+        path=store.photos/name
+        if not path.is_file() or name in referenced: continue
+        stat=path.stat()
+        if now-stat.st_mtime<3600: continue
+        path.unlink()
+        thumbnail=store.thumbnails/name
+        if thumbnail.is_file(): thumbnail.unlink()
+        deleted.append(dict(name=name,bytes=stat.st_size))
+    return dict(deleted=deleted,count=len(deleted),bytes=sum(item['bytes'] for item in deleted))
 
 @app.post('/api/photos',status_code=201)
 async def upload_photo(file:UploadFile=File()):

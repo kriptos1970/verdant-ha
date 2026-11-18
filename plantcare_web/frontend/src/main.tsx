@@ -3601,6 +3601,7 @@ function BackupTool({
   plants: Plant[];
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
 }) {
+  const { t, plural, formatNumber } = useI18n();
   const [file, setFile] = useState<File>(),
     [preview, setPreview] = useState<{
       format: string;
@@ -3610,7 +3611,54 @@ function BackupTool({
       missingPhotos: string[];
     }>(),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [photoReport, setPhotoReport] = useState<{
+      files: { name: string; bytes: number; recent: boolean }[];
+      count: number;
+      bytes: number;
+      deletable: number;
+      recent: number;
+    }>(),
+    [photoBusy, setPhotoBusy] = useState(false),
+    [photoConfirm, setPhotoConfirm] = useState(false);
+  const photoSize = (bytes: number) =>
+    `${formatNumber(bytes / (1024 * 1024), { maximumFractionDigits: 1 })} MB`;
+  const scanPhotos = async () => {
+    setPhotoBusy(true);
+    setError("");
+    try {
+      setPhotoReport(await api("photos/orphans"));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+  const cleanupPhotos = async () => {
+    if (!photoReport) return;
+    setPhotoBusy(true);
+    setError("");
+    try {
+      await run(
+        () =>
+          api("photos/cleanup", {
+            method: "POST",
+            body: JSON.stringify({
+              names: photoReport.files
+                .filter((item) => !item.recent)
+                .map((item) => item.name),
+            }),
+          }),
+        t("backup.photoCleanupDone"),
+      );
+      setPhotoConfirm(false);
+      await scanPhotos();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
   const inspect = async (f?: File) => {
     setFile(f);
     setPreview(undefined);
@@ -3726,6 +3774,74 @@ function BackupTool({
         <Download size={17} />
         Scarica backup ZIP completo
       </a>
+      <hr />
+      <h3>{t("backup.photoCleanupTitle")}</h3>
+      <p className="muted">{t("backup.photoCleanupText")}</p>
+      <button
+        className="button secondary"
+        disabled={photoBusy}
+        onClick={() => void scanPhotos()}
+      >
+        {photoBusy ? <LoaderCircle size={17} className="spin" /> : <ImagePlus size={17} />}
+        {photoBusy ? t("backup.photoScanning") : t("backup.photoScan")}
+      </button>
+      {photoReport && (
+        <div className="import-preview">
+          {photoReport.count ? (
+            <>
+              <p>
+                <strong>
+                  {plural("backup.photoOrphans", photoReport.deletable, {
+                    size: photoSize(
+                      photoReport.files
+                        .filter((item) => !item.recent)
+                        .reduce((sum, item) => sum + item.bytes, 0),
+                    ),
+                  })}
+                </strong>
+              </p>
+              {photoReport.recent > 0 && (
+                <p className="muted small-text">
+                  {t("backup.photoRecent", { count: photoReport.recent })}
+                </p>
+              )}
+              {photoReport.deletable > 0 &&
+                (photoConfirm ? (
+                  <div className="button-row">
+                    <button
+                      type="button"
+                      className="button secondary"
+                      disabled={photoBusy}
+                      onClick={() => setPhotoConfirm(false)}
+                    >
+                      {t("common.cancel")}
+                    </button>
+                    <button
+                      type="button"
+                      className="button destructive"
+                      disabled={photoBusy}
+                      onClick={() => void cleanupPhotos()}
+                    >
+                      {t("backup.photoConfirm")}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="button destructive"
+                    disabled={photoBusy}
+                    onClick={() => setPhotoConfirm(true)}
+                  >
+                    <Trash2 size={17} />
+                    {t("backup.photoDelete", { count: photoReport.deletable })}
+                  </button>
+                ))}
+            </>
+          ) : (
+            <p className="muted">{t("backup.photoNone")}</p>
+          )}
+        </div>
+      )}
     </section>
   );
 }

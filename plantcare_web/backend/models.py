@@ -193,6 +193,9 @@ class ClimateInput(BaseModel):
     relativeHumidity: int = Field(ge=0,le=100)
     precipitationNextWeek: float = Field(ge=0,le=5000,allow_inf_nan=False)
 
+class PhotoCleanupRequest(BaseModel):
+    names: list[str] = Field(default_factory=list, max_length=10000)
+
 class MoveRequest(BaseModel):
     room: str = Field(min_length=1, max_length=200)
     placement: Literal['Balcone riparato','Pieno sole','Ombra','Mezza ombra · balcone','Patio','Pianerottolo','Interno luminoso','Interno poco luminoso']
