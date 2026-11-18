@@ -700,7 +700,9 @@ def shadow_engine(plant_id:str):
     from .care_engine import normalized_measurements
     native_keys={(m['kind'],m['value'],m['unit'],iso(parse(m['date']))) for m in normalized_measurements(native)}
     rows=[r for r in rows if not any((m['kind'],m['value'],m['unit'],iso(parse(m['date']))) in native_keys for m in normalized_measurements([r]))]
-    return evaluate(plant,rows+native,biology,settings.zone)
+    result=evaluate(plant,rows+native,biology,settings.zone)
+    result['mode']='active' if (store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow'))=='active' else 'shadow'
+    return result
 
 @app.get('/api/plants/{plant_id}/measurements')
 def measurements(plant_id:str):

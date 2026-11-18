@@ -82,6 +82,7 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Località predefinita e meteo | editor dedicato con ricerca | editor con ricerca Open-Meteo; il piano intelligente la propone |
 | Archivio e spazio | sì | statistiche, backup e **pulizia foto non utilizzate** |
 | Sensori esposti | app | opzioni add-on |
+| Motore di cura | shadow nel nativo | modalità **shadow/operativa** scelta in Impostazioni |
 
 **Allineato (C4, 18 novembre 2026)**: la pagina Impostazioni mostra la **località predefinita** con ricerca Open-Meteo, coordinate, salvataggio e rimozione; il pianificatore intelligente la propone automaticamente per nome, latitudine e longitudine. Lo stato del ricalcolo meteo resta visibile accanto, con gli eventuali piani da riprovare.
 

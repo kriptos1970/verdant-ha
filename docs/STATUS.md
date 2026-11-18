@@ -390,6 +390,20 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Motore di cura operativo (18 novembre 2026)
+
+- In **Impostazioni → Motore di cura** si sceglie **Solo osservazione (shadow)** o **Operativo**; la preferenza è salvata nello stato dell’app e prevale sull’opzione dell’add-on.
+- In modalità operativa, dopo una misura manuale o un campionamento dei sensori, il motore può **solo rinviare** l’annaffiatura quando il terreno è ancora umido e la misura è fresca e affidabile. Non anticipa mai una cura e non la registra.
+- Regole di sicurezza: misura con affidabilità ≥ 65%, gate non `restricted`, confidenza ≥ 35% per umidità ≥ 70% (≥ 55% negli altri casi), un solo rinvio per ciclo di annaffiatura, massimo 14 giorni. Il rinvio è scritto in `nextWateringOverride`, con nota nel diario (`Aggiornamento piano`) e riepilogo `careEngineApplied` visibile nel piano.
+- Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **212 test backend**.
+- Su Home Assistant il motore è stato portato in modalità **Operativa** dalle Impostazioni; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
+
+## Prova AI con provider reale (18 novembre 2026)
+
+- Provider **Gemini** configurato su Home Assistant (`gemini-3.5-flash-lite`), 18 piante in modalità AI, `auto_apply_ai` disattivato. L’analisi giornaliera precedente aveva già girato con successo senza proposte.
+- La prova manuale di oggi (`POST /api/ai/analyze`) è stata rifiutata da Gemini con **“non disponibile per la località della connessione Home Assistant”** (HTTP 422, codice `remote`). Non sono state create proposte né modificati piani; la chiave OpenAI non è configurata.
+- La pipeline AI resta verificata con trasporto simulato e la prova reale è bloccata dalla geografia del provider, non dal codice. Per completarla serve una chiave OpenAI (o un provider raggiungibile dalla posizione dell’istanza).
+
 ## Archivio — pulizia fotografie (18 novembre 2026)
 
 - Nuovo strumento in **Archivio e backup**: `GET /api/photos/orphans` elenca i file della cartella foto non più collegati a piante, prodotti, specie, raccomandazioni o proposte; `POST /api/photos/cleanup` elimina solo i nomi richiesti, ricontrollando i riferimenti.
