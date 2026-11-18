@@ -1600,6 +1600,9 @@ function PlantEditor({
           ...seed?.draft,
         },
   );
+  const [placement, setPlacement] = useState(
+    plant?.adaptivePlan?.placement || "Interno luminoso",
+  );
   const container = plant?.setup?.container;
   const substrate = plant?.setup?.substrate;
   const [drainageQuality, setDrainageQuality] = useState<DrainageQuality>(
@@ -1721,7 +1724,7 @@ function PlantEditor({
         className="plant-editor-form"
         onSubmit={async(e) => {
           e.preventDefault();setError("");setUploading(true);
-          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
+          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}if(value.carePlanMode==="Intelligente"){value={...value,adaptivePlan:{...(value.adaptivePlan||{}),placement}} as Plant}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
         }}
       >
         <p className="editor-subtitle">{t("plantEditor.subtitle")}</p>
@@ -1824,17 +1827,12 @@ function PlantEditor({
             </select>
           </label>
           <label>{t("plantEditor.family")}<input value={draft.family || ""} maxLength={300} onChange={e=>set("family",e.target.value)} placeholder={t("plantEditor.familyPlaceholder")}/></label>
-          {draft.adaptivePlan && (
+          {(draft.adaptivePlan || draft.carePlanMode === "Intelligente") && (
             <label>
               {t("plantEditor.placement")}
               <select
-                value={draft.adaptivePlan.placement || "Interno luminoso"}
-                onChange={(e) =>
-                  set("adaptivePlan", {
-                    ...draft.adaptivePlan,
-                    placement: e.target.value,
-                  })
-                }
+                value={placement}
+                onChange={(e) => setPlacement(e.target.value)}
               >
                 {placements.map((p) => (
                   <option key={p} value={p}>{placementLabel(p)}</option>
@@ -1875,10 +1873,8 @@ function PlantEditor({
               onChange={(e) => set("carePlanMode", e.target.value)}
             >
               <option value="Manuale">{t("detail.planMode.manual")}</option>
+              <option value="Intelligente">{t("detail.planMode.smart")}</option>
               <option value="AI">{t("detail.planMode.ai")}</option>
-              {draft.carePlanMode === "Intelligente" && (
-                <option value="Intelligente">{t("detail.planMode.smart")}</option>
-              )}
             </select>
           </label>
           <label>
@@ -2173,6 +2169,10 @@ function PlantEditor({
         {draft.carePlanMode === "Intelligente" ? (
           <p className="muted">
             {t("plantEditor.smartHint")}
+          </p>
+        ) : draft.carePlanMode === "AI" ? (
+          <p className="muted">
+            {t("plantEditor.aiHint")}
           </p>
         ) : (
           <p className="muted">

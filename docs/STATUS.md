@@ -390,6 +390,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Modalità di piano nel form — Verdant (18 novembre 2026)
+
+- L’editor espone ora le tre modalità native **Manuale / Verdant / AI**; prima “Verdant” (valore interno `Intelligente`) compariva solo sulle piante già in quella modalità.
+- Scegliendo Verdant, il salvataggio calcola il piano con la **località predefinita** e il meteo Open-Meteo, aggiorna gli intervalli e registra il piano; se manca la località o il servizio non risponde, la pianta resta invariata e l’editor mostra un errore. Manuale conserva gli intervalli; AI resta gestita dalle proposte giornaliere.
+- Il campo **Posizione reale** compare quando si sceglie Verdant e viene salvato nel piano.
+- Verifica su archivio sintetico: Ficus manuale passato a Verdant, piano con località Roma, meteo attivo, irrigazione ricalcolata a 9 giorni; tre opzioni visibili a 1280 e 390 px senza overflow. Build, **932 chiavi i18n**, **205 test backend** (4 nuovi su selezione e fallimenti del piano).
+
 ## Pubblicazione su Home Assistant — C1–C6 (18 novembre 2026)
 
 - Sorgenti allineati a `f07c105` copiati nell’add-on: **103 file verificati SHA256**, ricostruzione riuscita, add-on `started` alla versione **0.11.1** (nessun cambio di versione).
@@ -418,5 +425,5 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Il form include ora posizione reale (dal piano), metodo di coltivazione, altezza, ritmo delle cure con ridimensionamento degli intervalli, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori delle attività con valori predefiniti e valori iniziali per una nuova pianta (altezza 30, vaso 18 in terracotta, drenaggio attivo).
 - Nuova sezione “Vaso e substrato”: qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e proprietà (ritenzione, drenaggio, aerazione). I valori viaggiano in `setup.container` e `setup.substrate`; materiale, diametro e fori restano sincronizzati con i campi esistenti.
 - La scheda pianta mostra **Altezza** quando presente; la sintesi iOS mostrava già Posizione, Vaso e Altezza.
-- Restano: identificazione Pl@ntNet dentro il form (il web ha lo strumento separato) e la modalità “Intelligente” applicata dal pianificatore, non dal form.
+- Resta l’identificazione Pl@ntNet dentro il form (il web ha lo strumento separato).
 - Verifica: salvataggio e rilettura su archivio sintetico di `setup` (vaso con qualità, altezza, volume, cachepot, sottovaso; substrato con tre proprietà), ritmo “Diradata” con acqua 7→8 giorni, attività con intervallo, ultima fertilizzazione e tipo. Build, **843 chiavi i18n**, 180 test backend.

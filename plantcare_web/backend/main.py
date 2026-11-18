@@ -123,16 +123,31 @@ def get_plant(plant_id:str):
 def list_history(page:int=Query(default=1,ge=1,le=1000000),limit:int=Query(default=50,ge=1,le=100),plant_id:str='',room:str='',kind:str='',from_day:str='',to_day:str=''):
     from .archive_views import history_page
     return history_page(store,settings.zone,page,limit,plant_id,room,kind,from_day,to_day)
+async def smart_plan_value(value,previous=None):
+    location=store.state('location')
+    if not location:
+        raise HTTPException(422,'Imposta prima la località predefinita nelle Impostazioni, poi scegli Verdant.')
+    try:
+        climate=await adaptive.fetch_climate(location)
+    except httpx.HTTPError as error:
+        raise HTTPException(502,'Open-Meteo non ha risposto. Riprova o configura il piano dalla scheda della pianta.') from error
+    previous=previous or {}
+    placement=(value.get('adaptivePlan') or {}).get('placement') or previous.get('placement') or 'Interno luminoso'
+    plan=adaptive.make_plan(value.get('species',''),value.get('family') or '',placement,location,climate,zone=settings.zone,botanical=adaptive.saved_botanical(previous))
+    plan['weatherEnabled']=True
+    value['carePlanMode']='Intelligente'
+    adaptive.apply_plan(value,plan,settings.zone,previous or None)
+    return value
+
 @app.post('/api/plants',status_code=201)
-def create_plant(body:Plant):
+async def create_plant(body:Plant):
     value=body.model_dump()
-    if value.get('carePlanMode')=='Intelligente':
-        raise HTTPException(422,'Salva la pianta in Manuale, poi usa Configura piano intelligente dalla sua scheda.')
     if value['history'] or value.get('treatmentPlans'): raise HTTPException(422,'Usa il flusso di importazione per le cronologie esistenti.')
+    if value.get('carePlanMode')=='Intelligente': value=await smart_plan_value(value)
     p,v=store.put('plants',value)
     return render_plant(p,v)
 @app.put('/api/plants/{plant_id}')
-def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
+async def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
     if body.model_extra and body.model_extra.get('_summary'):raise HTTPException(422,'Apri la scheda completa prima di modificarla.')
     if body.id!=plant_id: raise HTTPException(422,'Identificativo non corrispondente.')
     with store.connection() as db:
@@ -140,10 +155,13 @@ def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
         value=body.model_dump()
         if value['history']!=old['history']: raise HTTPException(422,'Modifica le cure dal diario.')
         if value.get('treatmentPlans')!=old.get('treatmentPlans'): raise HTTPException(422,'Modifica i cicli dalla sezione Trattamenti.')
-        if value.get('carePlanMode')=='Intelligente' and old.get('carePlanMode')!='Intelligente': raise HTTPException(422,'Usa Configura piano intelligente dalla scheda della pianta.')
+        transitioning=value.get('carePlanMode')=='Intelligente' and old.get('carePlanMode')!='Intelligente'
+        previous=old.get('adaptivePlan') or {}
         if old.get('carePlanMode')=='Intelligente' and value.get('adaptivePlan'):
             if any(value.get(k)!=old.get(k) for k in ['wateringInterval','fertilizingInterval','inspectionInterval']):
                 value['adaptivePlan']={**value['adaptivePlan'],'revisionSource':'Modifica manuale','revisedAt':iso(now())}
+    if transitioning: value=await smart_plan_value(value,previous)
+    with store.connection() as db:
         p,v=store.put('plants',value,version,db)
     return render_plant(p,v)
 @app.delete('/api/plants/{plant_id}',status_code=204)

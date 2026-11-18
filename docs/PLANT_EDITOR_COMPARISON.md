@@ -67,7 +67,7 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 
 ## Differenze di comportamento
 
-- **Piano intelligente**: il nativo applica il ricalcolo quando si sceglie “Intelligente” nel form; il web lo vieta (`422`) e rimanda a “Configura piano intelligente” nella scheda pianta. Il 17 novembre 2026 quel pulsante è stato reso raggiungibile anche da telefono.
+- **Piano Verdant**: il nativo applica il ricalcolo quando si sceglie “Verdant” nel form; dal 18 novembre 2026 anche il web calcola il piano al salvataggio con la località predefinita e il meteo Open-Meteo, oppure restituisce un errore chiaro se la località manca o il servizio non risponde. Resta disponibile anche “Configura piano Verdant” nella scheda pianta.
 - **Nuova pianta**: il web precompila ora altezza 30 cm, vaso in terracotta da 18 cm, drenaggio attivo, metodo “In vaso” e ritmo “Normale”.
 - **Ritmo delle cure**: il nativo ridimensiona subito gli intervalli; il web non espone la preferenza.
 - **Identificazione**: resta solo nel nativo; il web usa lo strumento “Identifica” separato. È l’unico campo del confronto ancora assente.
@@ -83,6 +83,6 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 - **Impaginazione**: form a sezioni non richiudibili (Identità, Posizione, Profilo fisico, Modalità del piano di cura, Attività aggiuntive, Vaso e substrato, Altre informazioni), righe etichetta/controllo, sottotitolo e Annulla/Salva in testa e in fondo; interruttori a levetta. Verificato a 1280 px (righe flex, toggle 44 px) e con CSS dedicato al telefono.
 
 - **Fatto**: posizione reale, metodo di coltivazione, altezza (già), qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà, ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori e valori predefiniti delle attività, valori iniziali per una nuova pianta.
-- **Parziale**: la modalità a tre valori resta Manuale/AI nel form; “Intelligente” si applica dal pianificatore, con spiegazione nel form. La spiegazione per modalità è abbreviata.
+- **Allineato**: il form espone le tre modalità Manuale / Verdant / AI. Verdant calcola gli intervalli al salvataggio; Manuale li conserva; AI li affida alle proposte giornaliere. La spiegazione cambia con la modalità scelta.
 - **Assente**: identificazione e reidentificazione Pl@ntNet dentro il form; il web mantiene lo strumento separato con il proprio consenso.
 - **Persistenza**: i campi viaggiano in `setup` (container e substrato) e nei campi già previsti dall’archivio; verificati su archivio sintetico con salvataggio e rilettura.
