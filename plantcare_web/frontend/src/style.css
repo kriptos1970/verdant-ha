@@ -3892,3 +3892,35 @@ dialog:has(.plant-editor-form) {
 .product-category-filter select {
   min-width: 180px;
 }
+
+/* Settings: default location search */
+.location-options {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+}
+.location-options button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+}
+.location-options button span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.location-options button small {
+  overflow-wrap: anywhere;
+}
+.location-options button.selected {
+  border-color: var(--moss);
+  background: #eef5ea;
+}

@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Impostazioni — località predefinita (18 novembre 2026)
+
+- Nuova sezione **Località predefinita** in Impostazioni: ricerca con Open-Meteo (`GET /api/weather/locations`), elenco di risultati con area e paese, coordinate, salvataggio (`PUT /api/preferences/location`) e rimozione (`DELETE /api/preferences/location`). La scelta è conservata nello stato `location` e restituita anche da `/api/settings`.
+- Il pianificatore intelligente propone automaticamente la località predefinita quando la pianta non ha ancora un piano (nome, latitudine e longitudine precompilati); la località del piano esistente resta prioritaria.
+- Lo **stato del ricalcolo meteo** già presente in Impostazioni resta accanto alla località e segnala i piani da riprovare.
+- Verifica su archivio sintetico: ricerca “Roma” con otto risultati, salvataggio di Roma (41.8919, 12.5113) e precompilazione del pianificatore per una pianta manuale; layout 390 e 1280 px senza overflow. Build, **923 chiavi i18n**, **197 test backend** (4 nuovi su località e geocodifica).
+
 ## Dettaglio pianta — spostamento e sicurezza (18 novembre 2026)
 
 - **Sposta pianta** dalla scheda (pulsante nella sezione Ambiente e menu “Altre azioni” su telefono): ambiente con suggerimenti esistenti, esposizione, data e nota. L’endpoint `POST /api/plants/{id}/move` aggiorna la stanza, registra un evento “Spostamento” con la rotta (`Salotto → Studio · nota`) e, per il piano intelligente, ricalcola il piano con località e clima già salvati **senza chiamate meteo**; le revisioni manuali o AI restano preservate.

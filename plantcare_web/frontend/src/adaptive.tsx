@@ -17,14 +17,14 @@ export type AdaptivePlan = {
   climateRevisionHistory?: {id:string; date:string; previousWateringDays:number; newWateringDays:number; previousFertilizingDays:number; newFertilizingDays:number}[];
 };
 export const placements = ["Balcone riparato","Pieno sole","Ombra","Mezza ombra · balcone","Patio","Pianerottolo","Interno luminoso","Interno poco luminoso"];
-export function AdaptiveEditor({plant,onClose,onApplied}:{plant:Plant;onClose:()=>void;onApplied:()=>Promise<void>}) {
+export function AdaptiveEditor({plant,onClose,onApplied,defaultLocation}:{plant:Plant;onClose:()=>void;onApplied:()=>Promise<void>;defaultLocation?:{name:string;latitude:number;longitude:number}|null}) {
   const {t,formatDate}=useI18n();
   const {placementLabel}=useDomainLabels();
   const old=plant.adaptivePlan;
   const [placement,setPlacement]=useState(old?.placement || "Interno luminoso");
-  const [name,setName]=useState(old?.locationName || "");
-  const [latitude,setLatitude]=useState(old?.latitude?.toString() || "");
-  const [longitude,setLongitude]=useState(old?.longitude?.toString() || "");
+  const [name,setName]=useState(old?.locationName || defaultLocation?.name || "");
+  const [latitude,setLatitude]=useState(old?.latitude?.toString() ?? defaultLocation?.latitude?.toString() ?? "");
+  const [longitude,setLongitude]=useState(old?.longitude?.toString() ?? defaultLocation?.longitude?.toString() ?? "");
   const [weather,setWeather]=useState(old?.weatherEnabled || false);
   const [temperature,setTemperature]=useState(old?.averageTemperature ?? 22);
   const [humidity,setHumidity]=useState(old?.relativeHumidity ?? 55);

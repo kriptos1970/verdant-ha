@@ -48,6 +48,7 @@ import type {
   Product,
   Action,
   Settings,
+  LocationMatch,
   Proposal,
   Sensor,
   Mapping,
@@ -1046,7 +1047,7 @@ function App() {
                     <BackupTool plants={plants} run={run} />
                   )}
                   {tool === "settings" && settings && (
-                    <SettingsTool settings={settings} />
+                    <SettingsTool settings={settings} run={run} />
                   )}
                   {tool === "sensors" && (
                     <SensorsTool
@@ -3289,7 +3290,7 @@ function PlantDetail({
       {healthOpen && <HealthPhotoEditor key={plant.id} plant={plant} onClose={()=>setHealthOpen(false)} onSaved={()=>run(async()=>{},"Controllo sanitario salvato")}/>}
       {labelOpen && <PlantLabel plant={plant} settings={settings} onClose={()=>setLabelOpen(false)}/>}
       {moveOpen && <MovePlantModal plant={plant} rooms={rooms} busy={busy} onClose={()=>setMoveOpen(false)} onSave={async(data)=>{await run(()=>api(`plants/${plant.id}/move`,{method:"POST",body:JSON.stringify({...data,version:plant._version})}),t("detail.moved"));setMoveOpen(false)}}/>}
-      {adaptiveOpen && <AdaptiveEditor key={plant.id} plant={plant} onClose={()=>setAdaptiveOpen(false)} onApplied={()=>run(async()=>{}, "Piano intelligente applicato")}/>}
+      {adaptiveOpen && <AdaptiveEditor key={plant.id} plant={plant} defaultLocation={settings?.location} onClose={()=>setAdaptiveOpen(false)} onApplied={()=>run(async()=>{}, "Piano intelligente applicato")}/>}
       {growthOpen && (
         <GrowthEditor
           busy={busy}
@@ -3607,8 +3608,168 @@ function BackupTool({
     </section>
   );
 }
-function SettingsTool({ settings }: { settings: Settings }) {
+function DefaultLocationEditor({
+  location,
+  onClose,
+  onSave,
+  onClear,
+}: {
+  location?: LocationMatch | null;
+  onClose: () => void;
+  onSave: (location: LocationMatch) => Promise<void>;
+  onClear: () => Promise<void>;
+}) {
+  const { t } = useI18n();
+  const [query, setQuery] = useState(location?.name || "");
+  const [results, setResults] = useState<LocationMatch[]>([]);
+  const [selected, setSelected] = useState<LocationMatch | undefined>(
+    location || undefined,
+  );
+  const [touched, setTouched] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (!touched) return;
+    const value = query.trim();
+    if (value.length < 2) {
+      setResults([]);
+      return;
+    }
+    let active = true;
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      setError("");
+      try {
+        const found = await api<LocationMatch[]>(
+          `weather/locations?q=${encodeURIComponent(value)}`,
+        );
+        if (active) setResults(found);
+      } catch (e) {
+        if (active) setError((e as Error).message);
+      } finally {
+        if (active) setSearching(false);
+      }
+    }, 400);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [query, touched]);
+  return (
+    <Modal title={t("settings.locationTitle")} onClose={onClose}>
+      <p className="muted small-text">{t("settings.locationIntro")}</p>
+      <label>
+        {t("settings.locationSearch")}
+        <input
+          value={query}
+          maxLength={100}
+          onChange={(e) => {
+            setTouched(true);
+            setQuery(e.target.value);
+            setSelected(undefined);
+          }}
+          placeholder={t("settings.locationPlaceholder")}
+        />
+      </label>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+      {searching && (
+        <p className="muted small-text" role="status">
+          {t("settings.locationSearching")}
+        </p>
+      )}
+      {!searching && touched && query.trim().length >= 2 && !results.length && !error && (
+        <p className="muted small-text">{t("settings.locationNoMatch")}</p>
+      )}
+      <div className="location-options">
+        {results.map((item) => (
+          <button
+            type="button"
+            key={`${item.latitude},${item.longitude},${item.name}`}
+            className={selected?.latitude === item.latitude && selected?.longitude === item.longitude ? "selected" : ""}
+            onClick={() => {
+              setSelected(item);
+              setQuery(item.name);
+              setResults([]);
+            }}
+          >
+            <MapPin size={17} />
+            <span>
+              <strong>{item.name}</strong>
+              {item.detail && <small>{item.detail}</small>}
+            </span>
+            {selected?.latitude === item.latitude && selected?.longitude === item.longitude && (
+              <Check size={17} />
+            )}
+          </button>
+        ))}
+      </div>
+      {selected && (
+        <p className="guide-tip small-text">
+          {selected.name}
+          {selected.detail ? ` · ${selected.detail}` : ""} ·{" "}
+          {selected.latitude.toFixed(4)}, {selected.longitude.toFixed(4)}
+        </p>
+      )}
+      <div className="modal-actions">
+        <button type="button" className="button secondary" onClick={onClose}>
+          {t("common.cancel")}
+        </button>
+        {location && (
+          <button
+            type="button"
+            className="button secondary"
+            disabled={saving}
+            onClick={async () => {
+              setSaving(true);
+              setError("");
+              try {
+                await onClear();
+              } catch (e) {
+                setError((e as Error).message);
+                setSaving(false);
+              }
+            }}
+          >
+            {t("settings.locationClear")}
+          </button>
+        )}
+        <button
+          type="button"
+          className="button primary"
+          disabled={!selected || saving}
+          onClick={async () => {
+            if (!selected) return;
+            setSaving(true);
+            setError("");
+            try {
+              await onSave(selected);
+            } catch (e) {
+              setError((e as Error).message);
+              setSaving(false);
+            }
+          }}
+        >
+          {saving && <LoaderCircle size={16} className="spin" />}
+          {t("settings.locationSave")}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+function SettingsTool({
+  settings,
+  run,
+}: {
+  settings: Settings;
+  run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
+}) {
   const { t, plural, preference, setPreference, formatNumber, formatDate } = useI18n();
+  const [locationOpen, setLocationOpen] = useState(false);
   const [storage, setStorage] = useState<{
       photoDirectory: string;
       photos: number;
@@ -3643,6 +3804,36 @@ function SettingsTool({ settings }: { settings: Settings }) {
               <option value="en">{t("settings.languageEn")}</option>
             </select>
             <small className="muted">{t("settings.languageHint")}</small>
+          </dd>
+        </div>
+        <div>
+          <dt>{t("settings.location")}</dt>
+          <dd>
+            {settings.location ? (
+              <>
+                <strong>{settings.location.name}</strong>
+                {settings.location.detail && (
+                  <small className="muted">{settings.location.detail}</small>
+                )}
+                <small className="muted">
+                  {t("settings.locationCoords", {
+                    lat: settings.location.latitude.toFixed(4),
+                    lon: settings.location.longitude.toFixed(4),
+                  })}
+                </small>
+              </>
+            ) : (
+              <span className="muted">{t("settings.locationMissing")}</span>
+            )}
+            <button
+              className="button secondary"
+              onClick={() => setLocationOpen(true)}
+            >
+              <MapPin size={16} />
+              {settings.location
+                ? t("settings.locationEdit")
+                : t("settings.locationSet")}
+            </button>
           </dd>
         </div>
         <div>
@@ -3700,6 +3891,33 @@ function SettingsTool({ settings }: { settings: Settings }) {
         <p>{t("settings.sharedNote")}</p>
       </div>
       {error && <p className="form-error">{error}</p>}
+      {locationOpen && (
+        <DefaultLocationEditor
+          location={settings.location}
+          onClose={() => setLocationOpen(false)}
+          onSave={async (location) => {
+            await run(
+              () =>
+                api("preferences/location", {
+                  method: "PUT",
+                  body: JSON.stringify(location),
+                }),
+              t("settings.locationSaved"),
+            );
+            setLocationOpen(false);
+          }}
+          onClear={async () => {
+            await run(
+              () =>
+                api("preferences/location", {
+                  method: "DELETE",
+                }),
+              t("settings.locationCleared"),
+            );
+            setLocationOpen(false);
+          }}
+        />
+      )}
     </section>
   );
 }

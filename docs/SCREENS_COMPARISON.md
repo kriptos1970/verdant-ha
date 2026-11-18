@@ -73,19 +73,19 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 | Lingua | sì | sì |
 | Servizi e credenziali | sì | sì (config add-on) |
 | AI locale/provider | sì | provider e modelli |
-| Località predefinita e meteo | editor dedicato | nessun editor; il meteo usa la località del piano |
+| Località predefinita e meteo | editor dedicato con ricerca | editor con ricerca Open-Meteo; il piano intelligente la propone |
 | Archivio e spazio | sì | statistiche e backup |
 | Sensori esposti | app | opzioni add-on |
 
-**Lacuna**: manca una **località predefinita** modificabile dall’interfaccia; oggi la località arriva dal piano adattivo.
+**Allineato (C4, 18 novembre 2026)**: la pagina Impostazioni mostra la **località predefinita** con ricerca Open-Meteo, coordinate, salvataggio e rimozione; il pianificatore intelligente la propone automaticamente per nome, latitudine e longitudine. Lo stato del ricalcolo meteo resta visibile accanto, con gli eventuali piani da riprovare.
 
 ## Piano C
 
 1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni (backend + UI), con pulizia automatica; restano le azioni rapide sulle righe.
 2. **C2 Prodotti** — ✅ filtro categoria, “registra utilizzo” e date di acquisto/scadenza.
 3. **C3 Dettaglio** — ✅ “Sposta pianta”, aggiornamento sicurezza e affidabilità del profilo luce nei consigli.
-4. **C4 Impostazioni** — località predefinita e stato meteo.
+4. **C4 Impostazioni** — ✅ località predefinita con ricerca e stato meteo.
 5. **C5 Cure** — verifica puntuale di calendario, rinvii e storico sul campo.
 6. **C6 Misure** — affidabilità e sorgente visibili nella tabella.
 
-C1, C2 e C3 sono implementate e verificate; restano C4–C6.
+C1–C4 sono implementate e verificate; restano C5–C6.

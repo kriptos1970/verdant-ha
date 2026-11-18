@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
@@ -269,6 +269,30 @@ def preferences(): return store.state('preferences',{'language':settings.options
 def save_preferences(body:LanguagePreference):
     store.set_state('preferences',body.model_dump())
     return body
+@app.get('/api/preferences/location')
+def default_location(): return store.state('location')
+@app.put('/api/preferences/location')
+def save_default_location(body:CareLocation):
+    location=body.model_dump()
+    store.set_state('location',location)
+    return location
+@app.delete('/api/preferences/location',status_code=204)
+def clear_default_location(): store.set_state('location',None)
+
+async def geocode_locations(query,language):
+    async with httpx.AsyncClient(timeout=20) as client:
+        response=await client.get('https://geocoding-api.open-meteo.com/v1/search',params={'name':query,'count':8,'language':language,'format':'json'})
+        response.raise_for_status()
+    results=response.json().get('results') or []
+    return [{'name':item.get('name') or '','detail':', '.join(value for value in [item.get('admin1'),item.get('country')] if value),'latitude':item['latitude'],'longitude':item['longitude']} for item in results if item.get('name') and item.get('latitude') is not None and item.get('longitude') is not None]
+
+@app.get('/api/weather/locations')
+async def location_search(q:str=Query(min_length=2,max_length=100)):
+    from .services import message_language
+    try:
+        return await geocode_locations(q.strip(),'en' if message_language(store,settings)=='en' else 'it')
+    except (httpx.HTTPError,ValueError,KeyError,TypeError) as error:
+        raise HTTPException(502,'Open-Meteo non ha risposto. Riprova più tardi.') from error
 
 @app.get('/api/fertilizers')
 def products(): return [{**p,'_version':v} for p,v in store.list('fertilizers')]

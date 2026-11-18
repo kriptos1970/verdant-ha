@@ -177,11 +177,18 @@ export type Proposal = {
   provider: string;
   model: string;
 };
+export type LocationMatch = {
+  name: string;
+  detail?: string;
+  latitude: number;
+  longitude: number;
+};
 export type Settings = {
   version: string;
   ingress?:boolean;
   services?: {plantnet:boolean;perenual:boolean;openplantbook?:boolean};
   timezone: string;
+  location?: LocationMatch | null;
   aiProvider: string;
   aiModel: string;
   aiConfigured: boolean;
