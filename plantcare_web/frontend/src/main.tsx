@@ -2827,73 +2827,6 @@ function MovePlantModal({
   );
 }
 
-function DesktopPlantSummary({ plant }: { plant: Plant }) {
-  const { t, formatDate, formatNumber } = useI18n();
-  const { careValue } = useCareLabels();
-  const { lightLabel } = useDomainLabels();
-  const Water = eventIcon("Annaffia");
-  const Feed = eventIcon("Concima");
-  const Rotate = eventIcon("Ruota");
-  const Inspect = eventIcon("Controlla salute");
-  const Progress = eventIcon("Aggiorna progressi");
-  const Prune = eventIcon("Pota");
-  const Repot = eventIcon("Rinvasa");
-  const facts = [
-    { label: t("ios.fact.water"), value: careValue(plant, "Annaffia"), Icon: Water },
-    { label: t("ios.fact.feed"), value: careValue(plant, "Concima"), Icon: Feed },
-    { label: t("ios.fact.rotate"), value: careValue(plant, "Ruota"), Icon: Rotate },
-    ...(plant.inspectionInterval
-      ? [{ label: t("ios.fact.inspect"), value: careValue(plant, "Controlla salute"), Icon: Inspect }]
-      : []),
-    ...(plant.progressInterval
-      ? [{ label: t("ios.fact.progress"), value: careValue(plant, "Aggiorna progressi"), Icon: Progress }]
-      : []),
-    { label: t("ios.fact.prune"), value: careValue(plant, "Pota"), Icon: Prune },
-    { label: t("ios.fact.repot"), value: careValue(plant, "Rinvasa"), Icon: Repot },
-    { label: t("ios.fact.light"), value: lightLabel(plant.light), Icon: Sun },
-    { label: t("ios.fact.position"), value: plant.room, Icon: MapPin },
-    {
-      label: t("ios.fact.since"),
-      value: formatDate(plant.acquiredOn, { month: "short", year: "numeric" }),
-      Icon: CalendarDays,
-    },
-    {
-      label: t("ios.fact.height"),
-      value: plant.heightCM != null ? `${formatNumber(plant.heightCM)} cm` : t("ios.fact.toAdd"),
-      Icon: Ruler,
-    },
-    {
-      label: t("ios.fact.pot"),
-      value:
-        [plant.potMaterial, plant.potDiameterCM != null ? `${formatNumber(plant.potDiameterCM)} cm` : null]
-          .filter(Boolean)
-          .join(" · ") || t("ios.fact.toAdd"),
-      Icon: Flower2,
-    },
-  ];
-  return (
-    <section className="desktop-summary">
-      <h3>
-        <IOSIcon name="grid" size={20} />
-        {t("ios.summary")}
-      </h3>
-      <div className="desktop-summary-grid">
-        {facts.map(({ label, value, Icon }) => (
-          <div key={label}>
-            <span className="desktop-summary-icon">
-              <Icon size={18} />
-            </span>
-            <span>
-              <small>{label}</small>
-              <strong>{value}</strong>
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function PlantDetail({
   plant,
   products,
@@ -3004,7 +2937,6 @@ function PlantDetail({
                 ))}
             </select>
           </div>
-          {!phone && <DesktopPlantSummary plant={plant} />}
           <div className="detail-tabs">
             {detailTabs.map((tabItem) => (
               <button
@@ -3398,9 +3330,9 @@ function PlantDetail({
         <details className="ios-detail-more"><summary aria-label="Altre azioni della pianta"><Ellipsis size={23}/></summary><div><button className="button secondary" onClick={onEdit}><Pencil size={17}/>Modifica pianta</button><button className="button secondary" onClick={()=>setMoveOpen(true)}><ArrowLeftRight size={17}/>{t("detail.move")}</button><label>Registra una cura<select aria-label="Registra una cura" value="" onChange={e=>{if(e.target.value)onAction(e.target.value)}}><option value="">Scegli attività…</option>{kinds.map(k=><option key={k}>{k}</option>)}</select></label></div></details>
       </header>
       <div className="detail-scroll" ref={detailScrollRef}>
-        {phone&&<IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>}
-        {!phone&&<Avatar plant={plant} large full/>}
-        {!phone && detailBody}
+        <div className={phone ? "ios-plant-overview-host" : "ios-plant-overview-host desktop-ios-overview"}>
+          <IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>
+        </div>
       </div>
       {healthOpen && <HealthPhotoEditor key={plant.id} plant={plant} onClose={()=>setHealthOpen(false)} onSaved={()=>run(async()=>{},"Controllo sanitario salvato")}/>}
       {labelOpen && <PlantLabel plant={plant} settings={settings} onClose={()=>setLabelOpen(false)}/>}

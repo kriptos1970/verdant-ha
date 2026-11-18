@@ -90,9 +90,9 @@ Confronto diretto con `PlantEditorView.swift`:
 | Foto | miniatura + pulsante di scelta | area cliccabile con selettore file nascosto |
 | Piano | selettore segmentato Manuale/Verdant/AI e spiegazione sotto | selettore a tre voci e spiegazione che cambia con la modalità |
 | Testata | Annulla / Salva | Annulla / Salva in testa, ripetuti in fondo per i form lunghi |
-| Scheda pianta desktop | griglia “In sintesi” con 10–12 riquadri prima delle sezioni | aggiunta la stessa griglia a due colonne sopra le schede |
+| Scheda pianta desktop | hero, griglia “In sintesi”, pila di sezioni richiudibili | stessa struttura: hero, “In sintesi”, card richiudibili; rimosse le schede a tab |
 
-Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop), nessun overflow orizzontale, sezioni nell’ordine nativo, salvataggio riletto con versione incrementata.
+Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop), nessun overflow orizzontale, sezioni nell’ordine nativo, apertura delle sezioni e filtri Piano/Sicurezza, salvataggio riletto con versione incrementata.
 
 ## Stato dopo l’allineamento del 17 novembre 2026
 

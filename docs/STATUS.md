@@ -395,8 +395,8 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - Il form segue ora l’ordine delle sezioni native: **Foto, Identità, Posizione, Profilo fisico, Vaso e substrato, Modalità del piano, Attività aggiuntive, Altre informazioni**.
 - Ogni campo usa il modello nativo `EditorValueField`: **controllo in alto, etichetta caption sotto**, a tutta larghezza; le sezioni sono card con bordo e sfondo tenue. Il selettore file della foto è nascosto e l’intera area è cliccabile.
 - La spiegazione della modalità (Manuale/Verdant/AI) è accanto al selettore del piano, non in fondo al form.
-- Nella **scheda pianta desktop** è stata aggiunta la griglia **“In sintesi”** a due colonne (acqua, concime, rotazione, potatura, rinvaso, luce, posizione, dal, altezza, vaso, più controllo e diario quando attivi), come nel nativo.
-- Verifica: 686 e 1280 px senza overflow, sezioni nell’ordine nativo, salvataggio e rilettura della pianta con versione incrementata. Build, **933 chiavi i18n**, **205 test backend**.
+- La **scheda pianta desktop** usa ora la stessa struttura del telefono e del nativo: hero, griglia **“In sintesi”** a due colonne (acqua, concime, rotazione, potatura, rinvaso, luce, posizione, dal, altezza, vaso, più controllo e diario quando attivi) e pila di **card richiudibili**. Le schede a tab sono state rimosse; i filtri Piano/Sicurezza/Diario continuano a mostrare solo il contenuto pertinente.
+- Verifica: 686 e 1280 px senza overflow, sezioni nell’ordine nativo, apertura card e filtri Piano/Sicurezza, salvataggio e rilettura della pianta con versione incrementata. Build, **933 chiavi i18n**, **205 test backend**.
 
 ## Modalità di piano nel form — Verdant (18 novembre 2026)
 
