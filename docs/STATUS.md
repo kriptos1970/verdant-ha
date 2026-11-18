@@ -390,6 +390,12 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Pubblicazione su Home Assistant — C1–C6 (18 novembre 2026)
+
+- Sorgenti allineati a `f07c105` copiati nell’add-on: **103 file verificati SHA256**, ricostruzione riuscita, add-on `started` alla versione **0.11.1** (nessun cambio di versione).
+- Verifica in Ingress a 686 px sull’archivio reale: Impostazioni con **Località predefinita** e ricerca Open-Meteo “Lecce” (otto risultati, nessun salvataggio), **Sposta pianta** nella scheda, calendario con tre **Rinvia** e attività raggruppate, tabella Misure con `sensor.dracena_*` e “Affidabilità non disponibile”; nessun overflow orizzontale.
+- Nessuna cura registrata, nessun rinvio confermato e nessun dato reale modificato durante le verifiche.
+
 ## Schermate — confronto con il nativo (17 novembre 2026)
 
 - Confronto di dettaglio pianta, collezione, cure, prodotti, misure e impostazioni dai sorgenti Swift: [SCREENS_COMPARISON.md](SCREENS_COMPARISON.md).
