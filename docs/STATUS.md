@@ -348,6 +348,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 - L’editor usa ora sezioni non richiudibili con intestazioni, righe etichetta/controllo, sottotitolo e Annulla/Salva in testa, interruttori a levetta; su telefono le righe tornano in colonna. Verificato a 1280 px senza overflow, **856 chiavi i18n**, build ok.
 
+## Dettaglio pianta — spostamento e sicurezza (18 novembre 2026)
+
+- **Sposta pianta** dalla scheda (pulsante nella sezione Ambiente e menu “Altre azioni” su telefono): ambiente con suggerimenti esistenti, esposizione, data e nota. L’endpoint `POST /api/plants/{id}/move` aggiorna la stanza, registra un evento “Spostamento” con la rotta (`Salotto → Studio · nota`) e, per il piano intelligente, ricalcola il piano con località e clima già salvati **senza chiamate meteo**; le revisioni manuali o AI restano preservate.
+- La scheda **Sicurezza** mostra fonte, data, collegamento e il pulsante **Aggiorna** (o **Cerca dati di sicurezza**): `POST /api/plants/{id}/safety/refresh` interroga Perenual e salva `safetyProfile` con tossicità per persone e animali. Un dato assente non viene interpretato come assenza di rischio.
+- I **consigli di cura** mostrano l’affidabilità del profilo luce della specie (`components.profileQuality`).
+- Verifica su archivio sintetico: spostamento da Salotto a Studio con evento `Salotto → Studio · Prova spostamento`; piano intelligente aggiornato a “Pieno sole” con irrigazione da 8 a 6 giorni e nessuna rete; dialoghi senza overflow a 320, 390 e 1280 px. Build, **908 chiavi i18n**, **193 test backend** (8 nuovi su spostamento e sicurezza).
+
 ## Prodotti — registrazione utilizzo (18 novembre 2026)
 
 - Le schede prodotto (telefono e griglia desktop) hanno **Registra utilizzo**: si sceglie la pianta, data e ora, dose e note; il web registra una **concimazione** per i fertilizzanti e un **trattamento** per le altre categorie, con prodotto collegato e dettaglio leggibile nello storico.

@@ -12,6 +12,7 @@ import {
   Search,
   ArrowUpRight,
   ArrowLeft,
+  ArrowLeftRight,
   X,
   Droplets,
   Sun,
@@ -1179,6 +1180,7 @@ function App() {
           plant={selectedPlant}
           products={products}
           settings={settings}
+          rooms={rooms}
           onClose={() => openPlant(null)}
           onEdit={() => setPlantEditor(selectedPlant)}
           onAction={(kind, scheduled) =>
@@ -2667,10 +2669,131 @@ function EventEditor({
     </Modal>
   );
 }
+function MovePlantModal({
+  plant,
+  rooms,
+  busy,
+  onClose,
+  onSave,
+}: {
+  plant: Plant;
+  rooms: string[];
+  busy: boolean;
+  onClose: () => void;
+  onSave: (data: {
+    room: string;
+    placement: string;
+    date: string;
+    note: string;
+  }) => Promise<void>;
+}) {
+  const { t } = useI18n();
+  const { placementLabel } = useDomainLabels();
+  const localDate = (d: Date) =>
+    new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  const [room, setRoom] = useState(plant.room);
+  const [placement, setPlacement] = useState(
+    plant.adaptivePlan?.placement || "Interno luminoso",
+  );
+  const [date, setDate] = useState(() => localDate(new Date()));
+  const [note, setNote] = useState("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  return (
+    <Modal title={t("detail.moveTitle")} onClose={onClose}>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setError("");
+          setSaving(true);
+          try {
+            await onSave({
+              room: room.trim(),
+              placement,
+              date: new Date(date).toISOString(),
+              note: note.trim(),
+            });
+          } catch (e) {
+            setError((e as Error).message);
+            setSaving(false);
+          }
+        }}
+      >
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
+        <p className="muted small-text">{t("detail.moveIntro")}</p>
+        <label>
+          {t("detail.moveRoom")}
+          <input
+            required
+            list="move-plant-rooms"
+            maxLength={200}
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+          />
+          <datalist id="move-plant-rooms">
+            {rooms.map((r) => (
+              <option key={r} value={r} />
+            ))}
+          </datalist>
+        </label>
+        <label>
+          {t("detail.movePlacement")}
+          <select
+            value={placement}
+            onChange={(e) => setPlacement(e.target.value)}
+          >
+            {placements.map((p) => (
+              <option key={p} value={p}>
+                {placementLabel(p)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t("detail.moveDate")}
+          <input
+            required
+            type="datetime-local"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
+        <label>
+          {t("detail.moveNote")}
+          <textarea
+            rows={3}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </label>
+        <div className="modal-actions">
+          <button type="button" className="button secondary" onClick={onClose}>
+            {t("common.cancel")}
+          </button>
+          <button
+            className="button primary"
+            disabled={busy || saving || !room.trim()}
+          >
+            {saving && <LoaderCircle size={16} className="spin" />}
+            {t("detail.moveConfirm")}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 function PlantDetail({
   plant,
   products,
   settings,
+  rooms,
   onClose,
   onEdit,
   onAction,
@@ -2683,6 +2806,7 @@ function PlantDetail({
   plant: Plant;
   products: Product[];
   settings?: Settings;
+  rooms: string[];
   onClose: () => void;
   onEdit: () => void;
   onAction: (kind: string, scheduled?: Action) => void;
@@ -2700,9 +2824,12 @@ function PlantDetail({
     [measurements, setMeasurements] = useState<Measure[]>([]),
     [healthOpen,setHealthOpen]=useState(false),
     [labelOpen,setLabelOpen]=useState(false),
+    [moveOpen,setMoveOpen]=useState(false),
     [growthOpen, setGrowthOpen] = useState(false),
     [adaptiveOpen, setAdaptiveOpen] = useState(false),
     [phoneSection,setPhoneSection]=useState(""),
+    [safetyBusy,setSafetyBusy]=useState(false),
+    [safetyError,setSafetyError]=useState(""),
     [measureRevision, setMeasureRevision] = useState(0);
   useEffect(() => {
     setTab("Scheda");
@@ -2790,7 +2917,10 @@ function PlantDetail({
           )}
           {tab === "Scheda" && (
             <>
-              <button className="button secondary" onClick={()=>setLabelOpen(true)}>{t("detail.qr")}</button>
+              <div className="button-row">
+                <button className="button secondary" onClick={()=>setLabelOpen(true)}>{t("detail.qr")}</button>
+                <button className="button secondary" onClick={()=>setMoveOpen(true)}><ArrowLeftRight size={16}/>{t("detail.move")}</button>
+              </div>
               <div className="detail-section ios-plan-content">
                 <h3>{t("detail.rhythm")}</h3>
                 {plant._actions.map((a) => {
@@ -2830,6 +2960,7 @@ function PlantDetail({
                   <span>{t("detail.room")}</span>
                   <strong>{plant.room}</strong>
                 </div>
+                <button className="button secondary" onClick={()=>setMoveOpen(true)}><ArrowLeftRight size={16}/>{t("detail.move")}</button>
                 <div className="fact">
                   <Settings2 size={18} />
                   <span>{t("detail.plan")}</span>
@@ -2905,23 +3036,45 @@ function PlantDetail({
                       .
                     </p>
                     <p>
-                      Persone:{" "}
+                      {t("detail.people")}{" "}
                       {plant.safetyProfile.poisonousToHumans === true
-                        ? "rischio noto"
+                        ? t("detail.peopleRisk")
                         : plant.safetyProfile.poisonousToHumans === false
-                          ? "non tossica secondo la fonte"
-                          : "dato non disponibile"}
+                          ? t("detail.peopleSafe")
+                          : t("detail.peopleUnknown")}
                       .
                     </p>
                     <small className="muted">
-                      Fonte: {plant.safetyProfile.sourceName}
+                      {t("detail.safetySource", { source: plant.safetyProfile.sourceName })}
+                      {plant.safetyProfile.fetchedAt ? ` · ${dateLabel(plant.safetyProfile.fetchedAt)}` : ""}
                     </small>
+                    {plant.safetyProfile.sourceURL && (
+                      <a className="small-text" href={plant.safetyProfile.sourceURL} target="_blank" rel="noreferrer">{t("detail.openSource")}</a>
+                    )}
                   </>
                 ) : (
                   <p className="muted">
                     {t("detail.safetyMissing")}
                   </p>
                 )}
+                {safetyError && <p className="form-error" role="alert">{safetyError}</p>}
+                <button
+                  className="button secondary"
+                  disabled={busy || safetyBusy || !plant.species.trim()}
+                  onClick={() => {
+                    setSafetyBusy(true);
+                    setSafetyError("");
+                    void run(
+                      () => api(`plants/${plant.id}/safety/refresh`, { method: "POST" }),
+                      t("detail.safetyUpdated"),
+                    )
+                      .catch((e) => setSafetyError((e as Error).message))
+                      .finally(() => setSafetyBusy(false));
+                  }}
+                >
+                  {safetyBusy ? <LoaderCircle size={16} className="spin"/> : <ShieldCheck size={16}/>}
+                  {plant.safetyProfile ? t("detail.safetyRefresh") : t("detail.safetySearch")}
+                </button>
               </div>
               <div className="detail-section">
                 <h3>{t("detail.yourNotes")}</h3>
@@ -3126,7 +3279,7 @@ function PlantDetail({
           <Pencil size={18} />
         </button>
         <button className="ios-plan-button" aria-label={plant.carePlanMode==='AI'?'Imposta piano AI':plant.carePlanMode==='Intelligente'?'Configura piano intelligente':'Modifica piano manuale'} onClick={()=>{if(plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else if(plant.carePlanMode==='Intelligente'){setAdaptiveOpen(true)}else onEdit()}}>{plant.carePlanMode==='AI'?<IOSIcon name="brain" size={25}/>:plant.carePlanMode==='Intelligente'?<Sprout size={25}/>:<Pencil size={23}/>}</button>
-        <details className="ios-detail-more"><summary aria-label="Altre azioni della pianta"><Ellipsis size={23}/></summary><div><button className="button secondary" onClick={onEdit}><Pencil size={17}/>Modifica pianta</button><label>Registra una cura<select aria-label="Registra una cura" value="" onChange={e=>{if(e.target.value)onAction(e.target.value)}}><option value="">Scegli attività…</option>{kinds.map(k=><option key={k}>{k}</option>)}</select></label></div></details>
+        <details className="ios-detail-more"><summary aria-label="Altre azioni della pianta"><Ellipsis size={23}/></summary><div><button className="button secondary" onClick={onEdit}><Pencil size={17}/>Modifica pianta</button><button className="button secondary" onClick={()=>setMoveOpen(true)}><ArrowLeftRight size={17}/>{t("detail.move")}</button><label>Registra una cura<select aria-label="Registra una cura" value="" onChange={e=>{if(e.target.value)onAction(e.target.value)}}><option value="">Scegli attività…</option>{kinds.map(k=><option key={k}>{k}</option>)}</select></label></div></details>
       </header>
       <div className="detail-scroll" ref={detailScrollRef}>
         {phone&&<IOSPlantOverview plant={plant} products={products} openSection={phoneSection} sectionContent={phoneSection==='Consigli'?<CareInsights plant={plant} revision={measureRevision}/>:detailBody} onAction={onAction} onLabel={()=>setLabelOpen(true)} onSection={section=>{setPhoneSection(section);setTab(!section||['Piano','Sicurezza','Consigli','Prodotto','Note'].includes(section)?'Scheda':section==='Crescita'?'Diario':section)}}/>}
@@ -3135,6 +3288,7 @@ function PlantDetail({
       </div>
       {healthOpen && <HealthPhotoEditor key={plant.id} plant={plant} onClose={()=>setHealthOpen(false)} onSaved={()=>run(async()=>{},"Controllo sanitario salvato")}/>}
       {labelOpen && <PlantLabel plant={plant} settings={settings} onClose={()=>setLabelOpen(false)}/>}
+      {moveOpen && <MovePlantModal plant={plant} rooms={rooms} busy={busy} onClose={()=>setMoveOpen(false)} onSave={async(data)=>{await run(()=>api(`plants/${plant.id}/move`,{method:"POST",body:JSON.stringify({...data,version:plant._version})}),t("detail.moved"));setMoveOpen(false)}}/>}
       {adaptiveOpen && <AdaptiveEditor key={plant.id} plant={plant} onClose={()=>setAdaptiveOpen(false)} onApplied={()=>run(async()=>{}, "Piano intelligente applicato")}/>}
       {growthOpen && (
         <GrowthEditor

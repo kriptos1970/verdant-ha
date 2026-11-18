@@ -133,6 +133,7 @@ export type Plant = {
     poisonousToHumans?: boolean;
     sourceName: string;
     sourceURL: string;
+    fetchedAt?: string;
   };
   _summary?: boolean;
   _careCount?: number;

@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
@@ -148,6 +148,51 @@ def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
     return render_plant(p,v)
 @app.delete('/api/plants/{plant_id}',status_code=204)
 def delete_plant(plant_id:str,version:int=Query(ge=1)): store.trash(plant_id,version)
+
+@app.post('/api/plants/{plant_id}/move')
+def move_plant(plant_id:str,body:MoveRequest):
+    with store.connection() as db:
+        plant,current=store.get('plants',plant_id,db)
+        if current!=body.version: raise Conflict('La scheda è cambiata. Ricarica prima di spostare la pianta.')
+        previous_room=plant.get('room','')
+        plan=plant.get('adaptivePlan')
+        previous_placement=(plan or {}).get('placement')
+        plant['room']=body.room
+        if plan:
+            plan['placement']=body.placement
+            if plant.get('carePlanMode')=='Intelligente' and all(plan.get(k) is not None for k in ['locationName','latitude','longitude','averageTemperature','relativeHumidity','precipitationNextWeek']):
+                location=dict(name=plan['locationName'],detail='',latitude=plan['latitude'],longitude=plan['longitude'])
+                climate={k:plan[k] for k in ['averageTemperature','relativeHumidity','precipitationNextWeek']}
+                refreshed=adaptive.make_plan(plant['species'],plant.get('family') or '',body.placement,location,climate,parse(body.date),settings.zone,adaptive.saved_botanical(plan))
+                refreshed['weatherEnabled']=plan.get('weatherEnabled',False)
+                adaptive.apply_plan(plant,refreshed,settings.zone,plan,parse(body.date))
+        route=f"{previous_room} → {plant['room']}" if previous_room!=plant['room'] else f"{previous_placement or previous_room} → {body.placement}"
+        note=' · '.join(value for value in [route,body.note.strip()] if value)
+        plant.setdefault('history',[]).append({'id':str(uuid4()).upper(),'kind':'move','date':iso(parse(body.date)),'status':'completed','note':note,'origin':'user','schemaVersion':2})
+        p,v=store.put('plants',plant,current,db)
+    return render_plant(p,v)
+
+@app.post('/api/plants/{plant_id}/safety/refresh')
+async def refresh_safety(plant_id:str):
+    plant,version=store.get('plants',plant_id)
+    species=plant.get('species','').strip()
+    if not species: raise HTTPException(422,'Indica la specie prima di cercare i dati di sicurezza.')
+    from .knowledge import profile as perenual_profile
+    if not settings.options.get('perenual_api_key','').strip():
+        raise HTTPException(422,'Aggiungi la chiave Perenual nelle opzioni dell’add-on per scaricare i dati di sicurezza.')
+    try:
+        botanical=await perenual_profile(settings,species)
+    except (ValueError,httpx.HTTPError) as error:
+        raise HTTPException(502,'Perenual non ha risposto. Riprova più tardi.') from error
+    if not botanical or (botanical.get('poisonousToHumans') is None and botanical.get('poisonousToPets') is None):
+        raise HTTPException(404,'Perenual non riporta dati di sicurezza per questa specie.')
+    safety=dict(poisonousToHumans=botanical.get('poisonousToHumans'),poisonousToPets=botanical.get('poisonousToPets'),sourceName=botanical.get('source') or 'Perenual',sourceURL=botanical.get('sourceURL') or 'https://perenual.com',fetchedAt=botanical.get('fetchedAt') or iso(now()))
+    with store.connection() as db:
+        current,latest=store.get('plants',plant_id,db)
+        if latest!=version or current.get('species','').strip()!=species: raise Conflict('La pianta è cambiata durante la ricerca. Riprova.')
+        current['safetyProfile']=safety
+        p,v=store.put('plants',current,latest,db)
+    return {'safetyProfile':safety,'_version':v}
 
 def trash_item(plant,version,deleted):
     from datetime import timedelta

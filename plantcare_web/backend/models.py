@@ -193,6 +193,22 @@ class ClimateInput(BaseModel):
     relativeHumidity: int = Field(ge=0,le=100)
     precipitationNextWeek: float = Field(ge=0,le=5000,allow_inf_nan=False)
 
+class MoveRequest(BaseModel):
+    room: str = Field(min_length=1, max_length=200)
+    placement: Literal['Balcone riparato','Pieno sole','Ombra','Mezza ombra · balcone','Patio','Pianerottolo','Interno luminoso','Interno poco luminoso']
+    date: str = Field(default_factory=lambda:iso(now()))
+    note: str = Field(default='',max_length=2000)
+    version: int = Field(ge=1)
+    @field_validator('room')
+    @classmethod
+    def room_not_blank(cls,value):
+        if not value.strip():raise ValueError('Campo obbligatorio')
+        return value.strip()
+    @field_validator('date')
+    @classmethod
+    def date_valid(cls,value):
+        return iso(parse(value))
+
 class AdaptiveRequest(BaseModel):
     botanicalPreviewID: str | None = Field(default=None,max_length=100)
     confirmBotanicalMatch: bool = False

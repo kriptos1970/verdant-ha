@@ -9,13 +9,13 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Sintesi | griglia completa: acqua, concime, rotazione, controllo, diario, potatura, rinvaso, luce, posizione, dal, altezza, vaso | sintesi iOS completa; desktop con esposizione, ambiente, piano, vaso, altezza, prodotto |
 | Piano adattivo | stato, anteprima standard/adattivo, revisioni AI e manuali, storico clima | piano, apprendimento, revisione clima, pulsante pianificatore |
 | Fotografia | origine, licenza, credito | credito catalogo; foto pianta |
-| Sicurezza | scheda con fonte, aggiornamento, assenza dati esplicita | scheda con fonte e testi; nessun aggiornamento dalla scheda |
+| Sicurezza | scheda con fonte, aggiornamento, assenza dati esplicita | scheda con fonte, data, collegamento e **Aggiorna** dalla scheda |
 | Prodotto | scheda, formato, modalità, dose | prodotto collegato e dose |
-| Misure | profilo luce della specie, affidabilità, confronto | tabella misure e link sensori |
+| Misure | profilo luce della specie, affidabilità, confronto | tabella misure, link sensori e affidabilità del profilo luce nei consigli |
 | Diario | eventi, crescita, salute | eventi, crescita, salute |
-| Azioni | modifica, sposta pianta, altre azioni | modifica, azioni rapide, QR, trattamenti |
+| Azioni | modifica, sposta pianta, altre azioni | modifica, **sposta pianta**, azioni rapide, QR, trattamenti |
 
-**Lacune principali**: modifica della posizione (“Sposta pianta”) come azione dedicata; aggiornamento della scheda di sicurezza dalla scheda; profilo luce con affidabilità nel dettaglio.
+**Allineato (C3, 18 novembre 2026)**: “Sposta pianta” con ambiente, esposizione, data e nota; il backend aggiorna la stanza e ricalcola il piano intelligente con il clima già salvato (nessuna chiamata meteo), registrando un evento di spostamento con la rotta. La scheda Sicurezza mostra fonte, data e collegamento e può aggiornare il profilo Perenual. I consigli di cura mostrano l’affidabilità del profilo luce della specie. Resta da portare l’intervallo del profilo luce con le fasce lux complete nel dettaglio.
 
 ## 2. Collezione — `PlantListView.swift`
 
@@ -83,9 +83,9 @@ Confronto puntuale da completare sul campo; le funzioni principali risultano pre
 
 1. **C1 Collezione** — ✅ cestino con ripristino a 30 giorni (backend + UI), con pulizia automatica; restano le azioni rapide sulle righe.
 2. **C2 Prodotti** — ✅ filtro categoria, “registra utilizzo” e date di acquisto/scadenza.
-3. **C3 Dettaglio** — azione “Sposta pianta”, aggiornamento sicurezza, profilo luce con affidabilità.
+3. **C3 Dettaglio** — ✅ “Sposta pianta”, aggiornamento sicurezza e affidabilità del profilo luce nei consigli.
 4. **C4 Impostazioni** — località predefinita e stato meteo.
 5. **C5 Cure** — verifica puntuale di calendario, rinvii e storico sul campo.
 6. **C6 Misure** — affidabilità e sorgente visibili nella tabella.
 
-Nessuna di queste voci è ancora implementata.
+C1, C2 e C3 sono implementate e verificate; restano C4–C6.
