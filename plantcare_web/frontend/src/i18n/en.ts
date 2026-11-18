@@ -765,6 +765,7 @@ const en: Record<MessageKey, string> = {
   "plants.frequency.verySparse": "Very sparse",
   "plantEditor.editTitle": "Edit plant",
   "plantEditor.newTitle": "A new plant",
+  "plantEditor.photo": "Photo",
   "plantEditor.photoAlt": "Plant photo",
   "plantEditor.choosePhoto": "Choose a photo",
   "plantEditor.photoFormats": "JPEG, PNG or WebP · max 20 MB",

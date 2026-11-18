@@ -764,6 +764,7 @@ const it = {
   "plants.frequency.verySparse": "Molto diradata",
   "plantEditor.editTitle": "Modifica pianta",
   "plantEditor.newTitle": "Una nuova pianta",
+  "plantEditor.photo": "Foto",
   "plantEditor.photoAlt": "Foto della pianta",
   "plantEditor.choosePhoto": "Scegli una fotografia",
   "plantEditor.photoFormats": "JPEG, PNG o WebP · max 20 MB",

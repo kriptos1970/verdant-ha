@@ -78,6 +78,22 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 - Presenti nel form web: **34** intere, **2** parziali, **2** assenti (identificazione e reidentificazione nel form).
 - I dati mancanti sono in gran parte **già nell’archivio**: il backend conserva i campi extra (`extra='allow'`) e l’archivio reale contiene `plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `heightCM` e `setup.container` (materiale, diametro, drenaggio, cachepot, sottovaso, qualità). L’allineamento è quindi soprattutto interfaccia, senza migrazione.
 
+## Allineamento visivo e ordine delle sezioni (18 novembre 2026)
+
+Confronto diretto con `PlantEditorView.swift`:
+
+| Aspetto | Nativo | Web dopo l’intervento |
+|---|---|---|
+| Ordine sezioni | Foto, Identità, Posizione, Profilo fisico, Vaso e substrato, Modalità del piano, Attività aggiuntive, Altre informazioni | identico |
+| Campo | controllo in alto, etichetta caption sotto | identico, con etichette secondarie e controlli a tutta larghezza |
+| Sezioni | gruppi del `Form` | card con bordo, sfondo tenue e intestazione |
+| Foto | miniatura + pulsante di scelta | area cliccabile con selettore file nascosto |
+| Piano | selettore segmentato Manuale/Verdant/AI e spiegazione sotto | selettore a tre voci e spiegazione che cambia con la modalità |
+| Testata | Annulla / Salva | Annulla / Salva in testa, ripetuti in fondo per i form lunghi |
+| Scheda pianta desktop | griglia “In sintesi” con 10–12 riquadri prima delle sezioni | aggiunta la stessa griglia a due colonne sopra le schede |
+
+Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop), nessun overflow orizzontale, sezioni nell’ordine nativo, salvataggio riletto con versione incrementata.
+
 ## Stato dopo l’allineamento del 17 novembre 2026
 
 - **Impaginazione**: form a sezioni non richiudibili (Identità, Posizione, Profilo fisico, Modalità del piano di cura, Attività aggiuntive, Vaso e substrato, Altre informazioni), righe etichetta/controllo, sottotitolo e Annulla/Salva in testa e in fondo; interruttori a levetta. Verificato a 1280 px (righe flex, toggle 44 px) e con CSS dedicato al telefono.

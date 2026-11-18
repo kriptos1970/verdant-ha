@@ -390,6 +390,14 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Impaginazione della modifica pianta (18 novembre 2026)
+
+- Il form segue ora l’ordine delle sezioni native: **Foto, Identità, Posizione, Profilo fisico, Vaso e substrato, Modalità del piano, Attività aggiuntive, Altre informazioni**.
+- Ogni campo usa il modello nativo `EditorValueField`: **controllo in alto, etichetta caption sotto**, a tutta larghezza; le sezioni sono card con bordo e sfondo tenue. Il selettore file della foto è nascosto e l’intera area è cliccabile.
+- La spiegazione della modalità (Manuale/Verdant/AI) è accanto al selettore del piano, non in fondo al form.
+- Nella **scheda pianta desktop** è stata aggiunta la griglia **“In sintesi”** a due colonne (acqua, concime, rotazione, potatura, rinvaso, luce, posizione, dal, altezza, vaso, più controllo e diario quando attivi), come nel nativo.
+- Verifica: 686 e 1280 px senza overflow, sezioni nell’ordine nativo, salvataggio e rilettura della pianta con versione incrementata. Build, **933 chiavi i18n**, **205 test backend**.
+
 ## Modalità di piano nel form — Verdant (18 novembre 2026)
 
 - L’editor espone ora le tre modalità native **Manuale / Verdant / AI**; prima “Verdant” (valore interno `Intelligente`) compariva solo sulle piante già in quella modalità.

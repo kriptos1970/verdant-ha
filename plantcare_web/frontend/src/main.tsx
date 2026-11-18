@@ -1737,97 +1737,99 @@ function PlantEditor({
           <button type="button" className="button secondary" onClick={onClose}>
             {t("common.cancel")}
           </button>
-          <button className="button primary" type="submit" disabled={busy || uploading}>
+          <button className="button primary" type="submit" disabled={busy || uploading || !draft.name.trim()}>
             {busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
             {t("plantEditor.save")}
           </button>
         </div>
-        <label className="photo-upload">
-          {(photoURL(draft.photoPath) || seedPhoto) ? (
-            <img
-              src={photoURL(draft.photoPath, true) || seedPhoto}
-              alt={t("plantEditor.photoAlt")}
-            />
-          ) : (
-            <Camera size={28} />
-          )}
-          <span>
-            {uploading ? t("common.loading") : t("plantEditor.choosePhoto")}
-            <small>{t("plantEditor.photoFormats")}</small>
-          </span>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            disabled={uploading}
-            onChange={(e) => void upload(e.target.files?.[0])}
-          />
-        </label>
-        {seed && <p className="muted small-text">{t("plantEditor.seedHint")}</p>}
-        <div className="form-grid">
-          <h3 className="editor-section-title full">{t("plantEditor.identity")}</h3>
-          <label>
-            {t("plantEditor.name")}
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.photo")}</h3>
+          <label className="photo-upload">
+            {(photoURL(draft.photoPath) || seedPhoto) ? (
+              <img
+                src={photoURL(draft.photoPath, true) || seedPhoto}
+                alt={t("plantEditor.photoAlt")}
+              />
+            ) : (
+              <Camera size={28} />
+            )}
+            <span>
+              {uploading ? t("common.loading") : t("plantEditor.choosePhoto")}
+              <small>{t("plantEditor.photoFormats")}</small>
+            </span>
             <input
-              autoFocus
-              required
-              maxLength={200}
-              value={draft.name}
-              placeholder={t("plantEditor.namePlaceholder")}
-              onChange={(e) => set("name", e.target.value)}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading}
+              onChange={(e) => void upload(e.target.files?.[0])}
             />
           </label>
-          <label>
-            {t("plantEditor.species")}
-            <input
-              value={draft.species}
-              placeholder={t("plantEditor.speciesPlaceholder")}
-              onChange={(e) => set("species", e.target.value)}
-            />
-          </label>
-          <h3 className="editor-section-title full">{t("plantEditor.position")}</h3>
-          <label>
-            {t("plantEditor.room")}
-            <input
-              required
-              list="rooms"
-              value={draft.room}
-              onChange={(e) => set("room", e.target.value)}
-            />
-            <datalist id="rooms">
-              {rooms.map((r) => (
-                <option key={r} value={r} />
-              ))}
-            </datalist>
-          </label>
-          <label>
-            {t("plantEditor.category")}
-            <select
-              value={draft.category}
-              onChange={(e) => set("category", e.target.value)}
-            >
-              {categories.map((c) => (
-                <option key={c} value={c}>{categoryLabel(c)}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t("plantEditor.exposure")}
-            <select
-              value={draft.light}
-              onChange={(e) => set("light", e.target.value)}
-            >
-              {[
-                "Luce bassa",
-                "Luce indiretta",
-                "Luce intensa",
-                "Sole diretto",
-              ].map((l) => (
-                <option key={l} value={l}>{lightLabel(l)}</option>
-              ))}
-            </select>
-          </label>
-          <label>{t("plantEditor.family")}<input value={draft.family || ""} maxLength={300} onChange={e=>set("family",e.target.value)} placeholder={t("plantEditor.familyPlaceholder")}/></label>
-          {(draft.adaptivePlan || draft.carePlanMode === "Intelligente") && (
+          {seed && <p className="muted small-text">{t("plantEditor.seedHint")}</p>}
+        </section>
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.identity")}</h3>
+          <div className="form-grid">
+            <label>
+              {t("plantEditor.name")}
+              <input
+                autoFocus
+                required
+                maxLength={200}
+                value={draft.name}
+                placeholder={t("plantEditor.namePlaceholder")}
+                onChange={(e) => set("name", e.target.value)}
+              />
+            </label>
+            <label>
+              {t("plantEditor.species")}
+              <input
+                value={draft.species}
+                placeholder={t("plantEditor.speciesPlaceholder")}
+                onChange={(e) => set("species", e.target.value)}
+              />
+            </label>
+            <label>
+              {t("plantEditor.family")}
+              <input
+                value={draft.family || ""}
+                maxLength={300}
+                onChange={(e) => set("family", e.target.value)}
+                placeholder={t("plantEditor.familyPlaceholder")}
+              />
+            </label>
+            <label>
+              {t("plantEditor.category")}
+              <select
+                value={draft.category}
+                onChange={(e) => set("category", e.target.value)}
+              >
+                {categories.map((c) => (
+                  <option key={c} value={c}>{categoryLabel(c)}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.position")}</h3>
+          <div className="form-grid">
+            <label>
+              {t("plantEditor.room")}
+              <input
+                required
+                list="rooms"
+                value={draft.room}
+                onChange={(e) => set("room", e.target.value)}
+              />
+              <datalist id="rooms">
+                {rooms.map((r) => (
+                  <option key={r} value={r} />
+                ))}
+              </datalist>
+            </label>
             <label>
               {t("plantEditor.placement")}
               <select
@@ -1839,220 +1841,58 @@ function PlantEditor({
                 ))}
               </select>
             </label>
-          )}
-          <h3 className="editor-section-title full">{t("plantEditor.profile")}</h3>
-          <label>
-            {t("plantEditor.plantingMethod")}
-            <select
-              value={draft.plantingMethod || "In vaso"}
-              onChange={(e) => set("plantingMethod", e.target.value)}
-            >
-              <option value="In vaso">{t("plantEditor.method.pot")}</option>
-              <option value="In piena terra">{t("plantEditor.method.ground")}</option>
-              <option value="Idroponica">{t("plantEditor.method.hydroponic")}</option>
-            </select>
-          </label>
-          <label>
-            {t("plantEditor.height")}
-            <input
-              type="number"
-              min={0}
-              max={10000}
-              step={1}
-              value={draft.heightCM ?? ""}
-              onChange={(e) =>
-                set("heightCM", e.target.value ? Number(e.target.value) : null)
-              }
-            />
-          </label>
-          <h3 className="editor-section-title full">{t("plantEditor.planSection")}</h3>
-          <label>
-            {t("plantEditor.plan")}
-            <select
-              value={draft.carePlanMode || "Manuale"}
-              onChange={(e) => set("carePlanMode", e.target.value)}
-            >
-              <option value="Manuale">{t("detail.planMode.manual")}</option>
-              <option value="Intelligente">{t("detail.planMode.smart")}</option>
-              <option value="AI">{t("detail.planMode.ai")}</option>
-            </select>
-          </label>
-          <label>
-            {t("plantEditor.frequency")}
-            <select
-              value={draft.careFrequencyPreference || "Normale"}
-              onChange={(e) => changeFrequency(e.target.value)}
-            >
-              {frequencies.map((f) => (
-                <option key={f.value} value={f.value}>{t(f.key)}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t("plantEditor.watering")}
-            <input
-              type="number"
-              min={1}
-              max={120}
-              required
-              value={draft.wateringInterval}
-              onChange={(e) => set("wateringInterval", Number(e.target.value))}
-            />
-          </label>
-          <label>
-            {t("plantEditor.fertilizing")}
-            <input
-              type="number"
-              min={1}
-              max={365}
-              placeholder={t("plantEditor.notScheduled")}
-              value={draft.fertilizingInterval ?? ""}
-              onChange={(e) =>
-                set(
-                  "fertilizingInterval",
-                  e.target.value ? Number(e.target.value) : null,
-                )
-              }
-            />
-          </label>
-          <label>
-            {t("plantEditor.acquired")}
-            <input
-              type="date"
-              required
-              value={inputDate(draft.acquiredOn)}
-              onChange={(e) => {
-                if (e.target.value)
-                  set(
-                    "acquiredOn",
-                    new Date(e.target.value + "T12:00:00").toISOString(),
-                  );
-              }}
-            />
-          </label>
-          <label>
-            {t("plantEditor.lastWatered")}
-            <input
-              type="date"
-              required
-              value={inputDate(draft.lastWatered)}
-              onChange={(e) => {
-                if (e.target.value)
-                  set(
-                    "lastWatered",
-                    new Date(e.target.value + "T12:00:00").toISOString(),
-                  );
-              }}
-            />
-          </label>
-          <label>
-            {t("plantEditor.lastFertilized")}
-            <input
-              type="date"
-              value={draft.lastFertilized ? inputDate(draft.lastFertilized) : ""}
-              onChange={(e) =>
-                set(
-                  "lastFertilized",
-                  e.target.value
-                    ? new Date(e.target.value + "T12:00:00").toISOString()
-                    : null,
-                )
-              }
-            />
-          </label>
-          <label>
-            {t("plantEditor.fertilizerType")}
-            <input
-              value={draft.fertilizerType || ""}
-              onChange={(e) => set("fertilizerType", e.target.value)}
-              placeholder={t("plantEditor.fertilizerTypePlaceholder")}
-            />
-          </label>
-          <label className="full">
-            {t("plantEditor.fertilizer")}
-            <select
-              value={draft.fertilizerProductID || ""}
-              onChange={(e) =>
-                set("fertilizerProductID", e.target.value || null)
-              }
-            >
-              <option value="">{t("plantEditor.none")}</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {draft.fertilizerProductID && (
             <label>
-              {t("plantEditor.fertilizerDose")}
+              {t("plantEditor.exposure")}
               <select
-                value={draft.fertilizerDose || "Dose intera"}
-                onChange={(e) => set("fertilizerDose", e.target.value)}
+                value={draft.light}
+                onChange={(e) => set("light", e.target.value)}
               >
-                <option value="Dose intera">{t("plantEditor.dose.full")}</option>
-                <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
-                <option value="½ dose">{t("plantEditor.dose.half")}</option>
-                <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
-                <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
+                {[
+                  "Luce bassa",
+                  "Luce indiretta",
+                  "Luce intensa",
+                  "Sole diretto",
+                ].map((l) => (
+                  <option key={l} value={l}>{lightLabel(l)}</option>
+                ))}
               </select>
             </label>
-          )}
-        </div>
-        <section className="editor-section">
-          <h3>{t("plantEditor.activities")}</h3>
-          <div className="form-grid">
-            {[
-              ["rotationInterval", "Rotazione", 7],
-              ["inspectionInterval", "Controllo salute", 7],
-              ["progressInterval", "Diario di crescita", 30],
-              ["pruningInterval", "Potatura", 90],
-              ["repottingInterval", "Rinvaso", 365],
-            ].map(([key, label, fallback]) => {
-              const value = (draft as unknown as Record<string, number | null>)[key as string];
-              return (
-                <div key={key as string} className="activity-field">
-                  <label className="check-label">
-                    <input
-                      type="checkbox"
-                      checked={value != null}
-                      onChange={(e) => set(key as string, e.target.checked ? fallback : null)}
-                    />
-                    {kindLabel(label as string)}
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={3650}
-                    aria-label={`${kindLabel(label as string)} · ${t("plantEditor.everyDays")}`}
-                    disabled={value == null}
-                    value={value ?? ""}
-                    onChange={(e) =>
-                      set(key as string, e.target.value ? Number(e.target.value) : null)
-                    }
-                  />
-                </div>
-              );
-            })}
           </div>
-          <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
         </section>
+
         <section className="editor-section">
-          <h3>{t("plantEditor.potSubstrate")}</h3>
+          <h3>{t("plantEditor.profile")}</h3>
           <div className="form-grid">
             <label>
-              {t("plantEditor.potDiameter")}
+              {t("plantEditor.height")}
               <input
                 type="number"
-                min={1}
-                max={500}
-                value={draft.potDiameterCM ?? ""}
+                min={0}
+                max={10000}
+                step={1}
+                value={draft.heightCM ?? ""}
                 onChange={(e) =>
-                  set("potDiameterCM", e.target.value ? Number(e.target.value) : null)
+                  set("heightCM", e.target.value ? Number(e.target.value) : null)
                 }
               />
             </label>
+            <label>
+              {t("plantEditor.plantingMethod")}
+              <select
+                value={draft.plantingMethod || "In vaso"}
+                onChange={(e) => set("plantingMethod", e.target.value)}
+              >
+                <option value="In vaso">{t("plantEditor.method.pot")}</option>
+                <option value="In piena terra">{t("plantEditor.method.ground")}</option>
+                <option value="Idroponica">{t("plantEditor.method.hydroponic")}</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.potSubstrate")}</h3>
+          <div className="form-grid">
             <label>
               {t("plantEditor.potMaterial")}
               <select
@@ -2073,6 +1913,18 @@ function PlantEditor({
                   <option key={m} value={m}>{potLabel(m)}</option>
                 ))}
               </select>
+            </label>
+            <label>
+              {t("plantEditor.potDiameter")}
+              <input
+                type="number"
+                min={1}
+                max={500}
+                value={draft.potDiameterCM ?? ""}
+                onChange={(e) =>
+                  set("potDiameterCM", e.target.value ? Number(e.target.value) : null)
+                }
+              />
             </label>
             <label>
               {t("plantEditor.drainageQuality")}
@@ -2156,43 +2008,216 @@ function PlantEditor({
           </div>
           <p className="muted small-text">{t("plantEditor.substrateHint")}</p>
         </section>
-        <h3 className="editor-section-title full">{t("plantEditor.otherInfo")}</h3>
-        <label>
-          {t("event.note")}
-          <textarea
-            rows={3}
-            value={draft.notes}
-            onChange={(e) => set("notes", e.target.value)}
-            placeholder={t("plantEditor.notesPlaceholder")}
-          />
-        </label>
-        {draft.carePlanMode === "Intelligente" ? (
-          <p className="muted">
-            {t("plantEditor.smartHint")}
-          </p>
-        ) : draft.carePlanMode === "AI" ? (
-          <p className="muted">
-            {t("plantEditor.aiHint")}
-          </p>
-        ) : (
-          <p className="muted">
-            {t("plantEditor.smartUnavailable")}
-          </p>
-        )}
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.planSection")}</h3>
+          <div className="form-grid">
+            <label className="full">
+              {t("plantEditor.plan")}
+              <select
+                value={draft.carePlanMode || "Manuale"}
+                onChange={(e) => set("carePlanMode", e.target.value)}
+              >
+                <option value="Manuale">{t("detail.planMode.manual")}</option>
+                <option value="Intelligente">{t("detail.planMode.smart")}</option>
+                <option value="AI">{t("detail.planMode.ai")}</option>
+              </select>
+            </label>
+            <p className="muted small-text full">
+              {draft.carePlanMode === "Intelligente"
+                ? t("plantEditor.smartHint")
+                : draft.carePlanMode === "AI"
+                  ? t("plantEditor.aiHint")
+                  : t("plantEditor.smartUnavailable")}
+            </p>
+            <label>
+              {t("plantEditor.frequency")}
+              <select
+                value={draft.careFrequencyPreference || "Normale"}
+                onChange={(e) => changeFrequency(e.target.value)}
+              >
+                {frequencies.map((f) => (
+                  <option key={f.value} value={f.value}>{t(f.key)}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {t("plantEditor.watering")}
+              <input
+                type="number"
+                min={1}
+                max={120}
+                required
+                value={draft.wateringInterval}
+                onChange={(e) => set("wateringInterval", Number(e.target.value))}
+              />
+            </label>
+            <label>
+              {t("plantEditor.fertilizing")}
+              <input
+                type="number"
+                min={1}
+                max={365}
+                placeholder={t("plantEditor.notScheduled")}
+                value={draft.fertilizingInterval ?? ""}
+                onChange={(e) =>
+                  set(
+                    "fertilizingInterval",
+                    e.target.value ? Number(e.target.value) : null,
+                  )
+                }
+              />
+            </label>
+            <label>
+              {t("plantEditor.lastWatered")}
+              <input
+                type="date"
+                required
+                value={inputDate(draft.lastWatered)}
+                onChange={(e) => {
+                  if (e.target.value)
+                    set(
+                      "lastWatered",
+                      new Date(e.target.value + "T12:00:00").toISOString(),
+                    );
+                }}
+              />
+            </label>
+            <label>
+              {t("plantEditor.lastFertilized")}
+              <input
+                type="date"
+                value={draft.lastFertilized ? inputDate(draft.lastFertilized) : ""}
+                onChange={(e) =>
+                  set(
+                    "lastFertilized",
+                    e.target.value
+                      ? new Date(e.target.value + "T12:00:00").toISOString()
+                      : null,
+                  )
+                }
+              />
+            </label>
+            <label>
+              {t("plantEditor.fertilizerType")}
+              <input
+                value={draft.fertilizerType || ""}
+                onChange={(e) => set("fertilizerType", e.target.value)}
+                placeholder={t("plantEditor.fertilizerTypePlaceholder")}
+              />
+            </label>
+            <label>
+              {t("plantEditor.fertilizer")}
+              <select
+                value={draft.fertilizerProductID || ""}
+                onChange={(e) =>
+                  set("fertilizerProductID", e.target.value || null)
+                }
+              >
+                <option value="">{t("plantEditor.none")}</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {draft.fertilizerProductID && (
+              <label>
+                {t("plantEditor.fertilizerDose")}
+                <select
+                  value={draft.fertilizerDose || "Dose intera"}
+                  onChange={(e) => set("fertilizerDose", e.target.value)}
+                >
+                  <option value="Dose intera">{t("plantEditor.dose.full")}</option>
+                  <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
+                  <option value="½ dose">{t("plantEditor.dose.half")}</option>
+                  <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
+                  <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
+                </select>
+              </label>
+            )}
+          </div>
+        </section>
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.activities")}</h3>
+          <div className="form-grid">
+            {[
+              ["rotationInterval", "Rotazione", 7],
+              ["inspectionInterval", "Controllo salute", 7],
+              ["progressInterval", "Diario di crescita", 30],
+              ["pruningInterval", "Potatura", 90],
+              ["repottingInterval", "Rinvaso", 365],
+            ].map(([key, label, fallback]) => {
+              const value = (draft as unknown as Record<string, number | null>)[key as string];
+              return (
+                <div key={key as string} className="activity-field">
+                  <label className="check-label">
+                    <input
+                      type="checkbox"
+                      checked={value != null}
+                      onChange={(e) => set(key as string, e.target.checked ? fallback : null)}
+                    />
+                    {kindLabel(label as string)}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={3650}
+                    aria-label={`${kindLabel(label as string)} · ${t("plantEditor.everyDays")}`}
+                    disabled={value == null}
+                    value={value ?? ""}
+                    onChange={(e) =>
+                      set(key as string, e.target.value ? Number(e.target.value) : null)
+                    }
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
+        </section>
+
+        <section className="editor-section">
+          <h3>{t("plantEditor.otherInfo")}</h3>
+          <div className="form-grid">
+            <label>
+              {t("plantEditor.acquired")}
+              <input
+                type="date"
+                required
+                value={inputDate(draft.acquiredOn)}
+                onChange={(e) => {
+                  if (e.target.value)
+                    set(
+                      "acquiredOn",
+                      new Date(e.target.value + "T12:00:00").toISOString(),
+                    );
+                }}
+              />
+            </label>
+            <label className="full">
+              {t("event.note")}
+              <textarea
+                rows={3}
+                value={draft.notes}
+                onChange={(e) => set("notes", e.target.value)}
+                placeholder={t("plantEditor.notesPlaceholder")}
+              />
+            </label>
+          </div>
+        </section>
+
         <div className="modal-actions">
           <button type="button" className="button secondary" onClick={onClose}>
             {t("common.cancel")}
           </button>
-          <button className="button primary" disabled={busy || uploading}>
-            {busy ? (
-              <LoaderCircle className="spin" size={16} />
-            ) : (
-              <Check size={16} />
-            )}
+          <button className="button primary" type="submit" disabled={busy || uploading || !draft.name.trim()}>
+            {busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
             {t("plantEditor.save")}
           </button>
         </div>
-        {draft.species && <details><summary>Consulta la scheda botanica della specie</summary><BotanicalLookup scientificName={draft.species} configured={!!(settings?.services?.perenual||settings?.services?.openplantbook)}/></details>}
       </form>
     </Modal>
   );
@@ -2802,6 +2827,73 @@ function MovePlantModal({
   );
 }
 
+function DesktopPlantSummary({ plant }: { plant: Plant }) {
+  const { t, formatDate, formatNumber } = useI18n();
+  const { careValue } = useCareLabels();
+  const { lightLabel } = useDomainLabels();
+  const Water = eventIcon("Annaffia");
+  const Feed = eventIcon("Concima");
+  const Rotate = eventIcon("Ruota");
+  const Inspect = eventIcon("Controlla salute");
+  const Progress = eventIcon("Aggiorna progressi");
+  const Prune = eventIcon("Pota");
+  const Repot = eventIcon("Rinvasa");
+  const facts = [
+    { label: t("ios.fact.water"), value: careValue(plant, "Annaffia"), Icon: Water },
+    { label: t("ios.fact.feed"), value: careValue(plant, "Concima"), Icon: Feed },
+    { label: t("ios.fact.rotate"), value: careValue(plant, "Ruota"), Icon: Rotate },
+    ...(plant.inspectionInterval
+      ? [{ label: t("ios.fact.inspect"), value: careValue(plant, "Controlla salute"), Icon: Inspect }]
+      : []),
+    ...(plant.progressInterval
+      ? [{ label: t("ios.fact.progress"), value: careValue(plant, "Aggiorna progressi"), Icon: Progress }]
+      : []),
+    { label: t("ios.fact.prune"), value: careValue(plant, "Pota"), Icon: Prune },
+    { label: t("ios.fact.repot"), value: careValue(plant, "Rinvasa"), Icon: Repot },
+    { label: t("ios.fact.light"), value: lightLabel(plant.light), Icon: Sun },
+    { label: t("ios.fact.position"), value: plant.room, Icon: MapPin },
+    {
+      label: t("ios.fact.since"),
+      value: formatDate(plant.acquiredOn, { month: "short", year: "numeric" }),
+      Icon: CalendarDays,
+    },
+    {
+      label: t("ios.fact.height"),
+      value: plant.heightCM != null ? `${formatNumber(plant.heightCM)} cm` : t("ios.fact.toAdd"),
+      Icon: Ruler,
+    },
+    {
+      label: t("ios.fact.pot"),
+      value:
+        [plant.potMaterial, plant.potDiameterCM != null ? `${formatNumber(plant.potDiameterCM)} cm` : null]
+          .filter(Boolean)
+          .join(" · ") || t("ios.fact.toAdd"),
+      Icon: Flower2,
+    },
+  ];
+  return (
+    <section className="desktop-summary">
+      <h3>
+        <IOSIcon name="grid" size={20} />
+        {t("ios.summary")}
+      </h3>
+      <div className="desktop-summary-grid">
+        {facts.map(({ label, value, Icon }) => (
+          <div key={label}>
+            <span className="desktop-summary-icon">
+              <Icon size={18} />
+            </span>
+            <span>
+              <small>{label}</small>
+              <strong>{value}</strong>
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function PlantDetail({
   plant,
   products,
@@ -2912,6 +3004,7 @@ function PlantDetail({
                 ))}
             </select>
           </div>
+          {!phone && <DesktopPlantSummary plant={plant} />}
           <div className="detail-tabs">
             {detailTabs.map((tabItem) => (
               <button
