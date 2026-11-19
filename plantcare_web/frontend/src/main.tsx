@@ -1494,9 +1494,12 @@ function PlantCard({
           </span>
         </div>
         <div className="plant-card-body">
-          <small>{plant.species || plant.category}</small>
-          <span className="ios-card-room">{plant.room}</span>
           <h3>{plant.name}</h3>
+          <small>{plant.species || plant.category}</small>
+          <span className="ios-card-room">
+            <MapPin size={11} />
+            {plant.room}
+          </span>
           <div className="card-next">
             {next ? (
               <>
