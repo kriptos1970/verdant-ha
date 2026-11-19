@@ -3221,8 +3221,10 @@ function PlantDetail({
           )}
           {tab === "Diario" && (
             <>
-              <PlantTrend history={plant.history} zone={settings?.timezone || "Europe/Rome"} />
-              <PlantTimeline plantId={plant.id} />
+              <div className="ios-history-content">
+                <PlantTrend history={plant.history} zone={settings?.timezone || "Europe/Rome"} />
+                <PlantTimeline plantId={plant.id} />
+              </div>
               <div className="ios-growth-content">
               <div className="section-heading">
                 <h3>Storie di crescita</h3>
@@ -3314,10 +3316,10 @@ function PlantDetail({
                   <p>Le cure registrate racconteranno la sua storia.</p>
                 </div>
               )}
+              <ArchivePagination label="Cure della pianta" page={carePage} size={50} total={history.length} onPage={setCarePage}/>
               </div>
             </>
           )}
-          {tab === "Diario" && <div className="ios-history-content"><ArchivePagination label="Cure della pianta" page={carePage} size={50} total={history.length} onPage={setCarePage}/></div>}
           {tab === "Misure" && (
             <>
               <h3>Osservazioni e sensori</h3>

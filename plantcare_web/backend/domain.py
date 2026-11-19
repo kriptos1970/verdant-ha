@@ -169,6 +169,46 @@ def most_recent_occurrence(first, interval, tz, at):
     return result
 
 
+def action_reason(plant, kind, interval, product=None, language='it'):
+    english = language == 'en'
+    plan = plant.get('adaptivePlan') or {}
+    if plant.get('carePlanMode') == 'Manuale':
+        return (f"Manual interval chosen by you: every {interval} days." if english
+                else f"Intervallo manuale scelto da te: ogni {interval} giorni.")
+    if kind == 'water':
+        if plan:
+            learning = plan.get('careLearning') or {}
+            if learning.get('explanation'):
+                return f"{plan.get('seasonName','')} · {learning['explanation']}"
+            return (f"{plan.get('seasonName','')} · {plan.get('placement','')} · climate of {plan.get('locationName','')}." if english
+                    else f"{plan.get('seasonName','')} · {plan.get('placement','')} · clima di {plan.get('locationName','')}.")
+        return 'Frequency based on the plant profile.' if english else 'Frequenza basata sul profilo della pianta.'
+    if kind == 'fertilize':
+        if product:
+            dose = product.get('dosage') or plant.get('fertilizerDose') or ''
+            return (f"{product.get('name','')} · {dose} · every {interval} days." if english
+                    else f"{product.get('name','')} · {dose} · ogni {interval} giorni.")
+        return ('Species nutritional cycle, reduced during resting periods.' if english
+                else 'Ciclo nutrizionale della specie, ridotto nei periodi di riposo.')
+    return {
+        'rotate': ('Regular rotation encourages even growth towards the light.' if english
+                   else 'Una rotazione regolare favorisce una crescita uniforme verso la luce.'),
+        'repot': ('Check roots, drainage and stability before repotting.' if english
+                  else 'Controlla radici, drenaggio e stabilità prima di rinvasare.'),
+        'prune': ('Periodic check for dry leaves, weak branches and new growth.' if english
+                  else 'Controllo periodico di foglie secche, rami deboli e nuova crescita.'),
+        'inspect': ('Check leaves, pests, soil moisture and signs of stress.' if english
+                    else 'Verifica foglie, parassiti, umidità del terreno e segni di stress.'),
+        'progress': ('Add photos, height, new growth and health to the plant diary.' if english
+                     else 'Aggiungi foto, altezza, nuova crescita e salute al diario della pianta.'),
+        'move': ('Physical move recorded in the history.' if english
+                 else 'Spostamento fisico registrato nella cronologia.'),
+        'treatment': ('Treatment applied and recorded in the history.' if english
+                      else 'Trattamento applicato e registrato nella cronologia.'),
+        'planUpdate': ('Care plan change recorded in the history.' if english
+                       else 'Modifica del piano di cura registrata nella cronologia.'),
+    }.get(kind, '')
+
 def pending_actions(plant, zone='Europe/Rome', at=None, product=None, language='it'):
     tz = ZoneInfo(zone)
     at = at or now()
@@ -178,6 +218,7 @@ def pending_actions(plant, zone='Europe/Rome', at=None, product=None, language='
             due = most_recent_occurrence(parse(action['dueDate']), action['intervalDays'], tz, at)
             action = {**action, 'dueDate': iso(due), 'daysUntil': (due.astimezone(tz).date() - at.astimezone(tz).date()).days}
         action = {**action, 'id': action['id'] + ':' + action['dueDate'], 'includesFertilizing': False}
+        action['reason'] = action.get('reason') or action_reason(plant, action['kind'], action['intervalDays'], product, language)
         result.append(action)
     if uses_watering(product):
         raw_feed=next((a for a in schedule(plant,zone,at,language) if a['kind']=='fertilize'),None)

@@ -721,3 +721,7 @@
  .home-activity-bars{height:140px;gap:2px}
  .home-activity-axis{font-size:12px}
 }
+@media(max-width:760px){
+ .care-card-complete{min-height:42px;margin-top:4px;padding:8px 12px;font-size:15px;border-radius:12px}
+ .care-card-reason{margin:7px 0 2px;padding:8px 10px;font-size:13px;line-height:1.35}
+}
