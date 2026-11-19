@@ -1515,14 +1515,6 @@ function PlantCard({
           </div>
         </div>
       </button>
-      <button
-        type="button"
-        className="plant-card-water"
-        aria-label={`${t("plants.actionWater")}: ${plant.name}`}
-        onClick={() => onWater(plant)}
-      >
-        <IOSIcon name="water" size={23} />
-      </button>
       <details className="plant-card-menu">
         <summary aria-label={t("plants.actionsAria", { name: plant.name })}>
           <IOSIcon name="ellipsis" size={18} />
