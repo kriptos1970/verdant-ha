@@ -20,6 +20,7 @@
 - Una sola barra Annulla/Salva sticky in fondo, safe area inclusa; rimossa la doppia barra superiore.
 - Griglie a due colonne per i campi brevi, colonna singola sotto 360 px. Contenuto a 390 px: da ~4.038 px a ~1.392 px (2.975 px con tutte le sezioni aperte).
 - Validazione: i campi obbligatori restano visibili; un controllo non valido in una sezione chiusa la apre e riceve il focus.
+- Riquadri verde tenue (`--vc-mint-soft` / `--vc-mint-line`) per crescita, cronologia, linea del tempo, andamento, sezioni dell’editor e riconoscimento Pl@ntNet.
 - Verifica: 320/390/430 px senza overflow, 212 test backend, 999 chiavi i18n, build frontend.
 
 ## Rilascio 0.11.2 (19 novembre 2026)

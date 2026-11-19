@@ -16,6 +16,8 @@ Fonte unica: `plantcare_web/frontend/src/tokens.css`, importato dopo `style.css`
 | `--vc-line` | `#e5e9df` | bordi e separatori |
 | `--vc-surface` | `#ffffff` | superfici |
 | `--vc-mint` | `#e8f0e8` | sfondi tenui e icone |
+| `--vc-mint-soft` | `#f6faf3` | riquadri del diario e dell’editor |
+| `--vc-mint-line` | `#e2ecdc` | bordi dei riquadri verdi |
 
 ## Tipografia telefono
 
@@ -45,3 +47,4 @@ Fonte unica: `plantcare_web/frontend/src/tokens.css`, importato dopo `style.css`
 - I target di tocco restano almeno `--vc-tap` (44 px), anche se il controllo visivo è più piccolo.
 - Le card usano `--vc-radius-lg`/`--vc-radius-xl`; i controlli `--vc-radius-sm`/`--vc-radius-md`.
 - I testi secondari usano `--vc-text-secondary`; non usare grigi fuori token.
+- Diario (crescita, cronologia, linea del tempo) ed editor pianta usano riquadri `--vc-mint-soft` con bordo `--vc-mint-line`; i controlli restano bianchi.

@@ -13,6 +13,7 @@
 - Una sola barra **Annulla / Salva pianta** sticky in fondo al dialog, con rispetto della safe area; rimossa la doppia barra in testa.
 - Griglie a due colonne per i campi brevi e una colonna sotto 360 px; contenuto ridotto da circa 4.038 px a circa 1.392 px a 390 px.
 - I campi obbligatori restano nelle sezioni sempre visibili; un controllo non valido dentro una sezione chiusa la apre e riceve il focus.
+- Diario della pianta e editor pianta con riquadri verde tenue: crescita, cronologia, linea del tempo, sezioni e riconoscimento Pl@ntNet.
 - 212 test backend, 999 chiavi i18n.
 
 # 0.11.2 — parità funzionale, token visivi e riconoscimento

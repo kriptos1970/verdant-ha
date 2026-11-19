@@ -5040,3 +5040,118 @@ dialog:has(.plant-editor-form) {
   min-width: 0;
   max-width: 100%;
 }
+
+/* Plant diary: soft green panels around every element */
+.plant-trend {
+  padding: 16px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-lg);
+  background: var(--vc-mint-soft);
+  margin-bottom: 12px;
+}
+.plant-trend > h3 {
+  margin-bottom: 10px;
+}
+.growth-entry {
+  margin: 0 0 10px;
+  padding: 14px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-md);
+  background: var(--vc-mint-soft);
+}
+.growth-entry > small {
+  color: var(--vc-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+.growth-entry p {
+  margin: 6px 0 10px;
+  color: var(--vc-text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.growth-photos img {
+  width: 84px;
+  height: 84px;
+  border-radius: 12px;
+}
+.history-title {
+  margin: 18px 0 12px;
+}
+.history-event {
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-md);
+  background: var(--vc-mint-soft);
+}
+.history-event .timeline-icon {
+  background: var(--vc-surface);
+  box-shadow: inset 0 0 0 1px var(--vc-mint-line);
+}
+.history-event strong {
+  font-size: 14px;
+  line-height: 1.3;
+}
+.history-event small {
+  margin-top: 3px;
+  color: var(--vc-text-secondary);
+  font-size: 12px;
+}
+.history-event p {
+  margin-top: 6px;
+  color: var(--vc-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.history-actions {
+  gap: 16px;
+  margin-top: 2px;
+}
+.history-actions button {
+  min-height: 34px;
+  font-size: 12px;
+}
+.plant-timeline-section .plant-timeline {
+  margin-top: 4px;
+}
+.plant-timeline li {
+  padding: 0 0 10px 26px;
+}
+.plant-timeline-card {
+  padding: 10px 12px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-sm);
+  background: var(--vc-mint-soft);
+}
+.plant-timeline time {
+  font-size: 11px;
+}
+.plant-timeline strong {
+  font-size: 14px;
+}
+.plant-timeline p {
+  margin-top: 3px;
+  font-size: 12.5px;
+}
+
+/* Plant editor: the same soft green panels */
+.plant-editor-form .editor-section,
+.editor-disclosure {
+  border-color: var(--vc-mint-line);
+  background: var(--vc-mint-soft);
+}
+.plant-editor-form .editor-section .photo-upload,
+.editor-recognition {
+  border-color: var(--vc-mint-line);
+  background: var(--vc-surface);
+}
+.plant-editor-form .editor-essentials-care {
+  border-top-color: var(--vc-mint-line);
+}
+.editor-disclosure > summary:hover {
+  background: #eef5e9;
+}
+.editor-disclosure[open] > summary {
+  border-bottom-color: var(--vc-mint-line);
+}

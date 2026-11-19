@@ -58,6 +58,7 @@ Current release: **0.11.3**, published on [GitHub Releases](https://github.com/k
 - A single sticky Cancel/Save bar at the bottom, safe area included; the duplicate top bar is gone.
 - Two-column grids for short fields, one column below 360 px. Content at 390 px drops from about 4,038 px to about 1,392 px (2,975 px with every section open).
 - Validation: required fields stay visible; an invalid control inside a closed section opens it and receives focus.
+- Soft green panels (`--vc-mint-soft` / `--vc-mint-line`) for growth, care history, merged timeline, trend, editor sections and Pl@ntNet recognition.
 - Verified: 320/390/430 px without overflow, 212 backend tests, 999 i18n keys, frontend build.
 
 ## Release 0.11.2 (19 November 2026)
