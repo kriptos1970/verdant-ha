@@ -46,10 +46,13 @@ function HomeInsightsContent({
 
   if (data.plantCount === 0) return null;
 
-  const activity = data.dailyActivity.slice(-14);
+  const activity = data.dailyActivity;
   const totalCare = activity.reduce((sum, day) => sum + day.count, 0);
   const activeDays = activity.filter((day) => day.count > 0).length;
   const peak = Math.max(1, ...activity.map((day) => day.count));
+  const firstDay = activity[0]?.date;
+  const middleDay = activity[Math.floor(activity.length / 2)]?.date;
+  const lastDay = activity[activity.length - 1]?.date;
 
   return (
     <div className="home-insights">
@@ -104,32 +107,33 @@ function HomeInsightsContent({
         <header className="home-insight-head">
           <h3>{t("home.insights.activity")}</h3>
         </header>
-        <div
-          className="home-spark"
-          role="img"
-          aria-label={t("home.insights.activityAria", {
-            count: totalCare,
-            days: activeDays,
-          })}
-        >
-          {activity.map((day) => (
-            <span
-              key={day.date}
-              className={day.count ? "" : "zero"}
-              style={{
-                height: day.count
-                  ? `${Math.max(8, (day.count / peak) * 100)}%`
-                  : "3px",
-              }}
-              aria-hidden="true"
-            />
-          ))}
-        </div>
-        <div className="home-insight-meta">
-          <strong>{totalCare}</strong>
-          <span>{plural("home.insights.careCount", totalCare)}</span>
-          <span aria-hidden="true">·</span>
-          <span>{plural("home.insights.activeDays", activeDays)}</span>
+        <div className="home-activity-chart">
+          <div
+            className="home-activity-bars"
+            role="img"
+            aria-label={t("home.insights.activityAria", {
+              count: totalCare,
+              days: activeDays,
+            })}
+          >
+            {activity.map((day) => (
+              <span
+                key={day.date}
+                className={day.count ? "" : "zero"}
+                style={{
+                  height: day.count
+                    ? `${Math.max(8, (day.count / peak) * 100)}%`
+                    : "3px",
+                }}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+          <div className="home-activity-axis" aria-hidden="true">
+            {firstDay && <span>{formatDate(firstDay, { day: "numeric", month: "short" })}</span>}
+            {middleDay && <span>{formatDate(middleDay, { day: "numeric", month: "short" })}</span>}
+            {lastDay && <span>{formatDate(lastDay, { day: "numeric", month: "short" })}</span>}
+          </div>
         </div>
         <ChartDataTable
           caption={t("charts.table.activity")}

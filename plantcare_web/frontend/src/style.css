@@ -4782,3 +4782,38 @@ dialog:has(.plant-editor-form) {
   color: #737b74;
   font-size: 15px;
 }
+
+.home-activity-chart {
+  margin-top: 8px;
+}
+.home-activity-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 132px;
+  padding-top: 8px;
+  border-bottom: 1px solid #e5e9df;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 32px,
+    #f0f3ed 32px,
+    #f0f3ed 33px
+  );
+}
+.home-activity-bars > span {
+  flex: 1;
+  min-width: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--moss);
+}
+.home-activity-bars > span.zero {
+  background: #dfe8df;
+}
+.home-activity-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  color: #7a847c;
+  font-size: 11px;
+}
