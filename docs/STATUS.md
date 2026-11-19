@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.3
+# Stato dell’incremento 0.11.4
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,13 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e Care Engine avanzato in shadow. Attivazione operativa delle raccomandazioni esclusa da questo incremento. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.3 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.4 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.4 (19 novembre 2026)
+
+- Motore di cura con **una sola fonte di configurazione**: `care_engine_mode` nelle opzioni dell’add-on, default **Operativo**. Rimosso l’override salvato dalla web UI che causava la divergenza shadow/active.
+- In **Impostazioni → Motore di cura** compaiono la modalità effettiva, la spiegazione di shadow e operativo e l’indicazione di dove cambiarla; nessun selettore che possa divergere.
+- Verifica: 212 test backend, 1000 chiavi i18n, build frontend.
 
 ## Rilascio 0.11.3 (19 novembre 2026)
 
@@ -441,11 +447,11 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 ## Motore di cura operativo (18 novembre 2026)
 
-- In **Impostazioni → Motore di cura** si sceglie **Solo osservazione (shadow)** o **Operativo**; la preferenza è salvata nello stato dell’app e prevale sull’opzione dell’add-on.
+- La modalità si sceglie nella configurazione dell’add-on (`care_engine_mode`, default **Operativo**) e la web UI la mostra in sola lettura; non esiste più un override nel database.
 - In modalità operativa, dopo una misura manuale o un campionamento dei sensori, il motore può **solo rinviare** l’annaffiatura quando il terreno è ancora umido e la misura è fresca e affidabile. Non anticipa mai una cura e non la registra.
 - Regole di sicurezza: misura con affidabilità ≥ 65%, gate non `restricted`, confidenza ≥ 35% per umidità ≥ 70% (≥ 55% negli altri casi), un solo rinvio per ciclo di annaffiatura, massimo 14 giorni. Il rinvio è scritto in `nextWateringOverride`, con nota nel diario (`Aggiornamento piano`) e riepilogo `careEngineApplied` visibile nel piano.
 - Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **212 test backend**.
-- Su Home Assistant il motore è stato portato in modalità **Operativa** dalle Impostazioni; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
+- Su Home Assistant la modalità effettiva è quella dell’opzione dell’add-on; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
 
 ## Prova AI con provider reale (18 novembre 2026)
 

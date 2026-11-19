@@ -6,6 +6,13 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.4 — un solo interruttore per il motore di cura
+
+- La modalità del motore di cura ha ora **una sola fonte**: l’opzione `care_engine_mode` nella configurazione dell’add-on, con default **Operativo**.
+- Rimossa la preferenza salvata dal web che poteva divergere dalla configurazione: niente più doppio valore shadow/active.
+- In **Impostazioni → Motore di cura** la web UI mostra la modalità effettiva e spiega entrambe le modalità e dove cambiarle; l’endpoint di scrittura è stato rimosso.
+- 212 test backend, 1000 chiavi i18n.
+
 # 0.11.3 — editor pianta web-first
 
 - Editor **Nuova pianta / Modifica pianta** riorganizzato per il web, senza copiare il form nativo: foto e riconoscimento in alto, poi i dati essenziali sempre visibili (nome, specie, famiglia e categoria, ambiente ed esposizione, piano, annaffiatura e ultima annaffiatura).

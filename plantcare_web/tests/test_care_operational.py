@@ -41,8 +41,8 @@ def test_active_engine_postpones_watering_on_wet_reliable_soil(client,monkeypatc
     again=client.get(f"/api/plants/{plant['id']}").json()
     assert again['nextWateringOverride']==saved['nextWateringOverride']
 
-def test_shadow_mode_keeps_the_schedule(client):
-    main.settings.options['care_engine_mode']='shadow'
+def test_shadow_mode_keeps_the_schedule(client,monkeypatch):
+    monkeypatch.setitem(main.settings.options,'care_engine_mode','shadow')
     plant=create(client)
     assert measure(client,plant,82).status_code==201
     saved=client.get(f"/api/plants/{plant['id']}").json()
@@ -58,9 +58,12 @@ def test_dry_measurement_never_advances_the_due_date(client,monkeypatch):
     assert not saved.get('careEngineApplied')
 
 
-def test_care_engine_mode_can_be_set_from_the_app(client):
-    assert client.get('/api/preferences/care-engine').json()['mode']=='shadow'
-    assert client.put('/api/preferences/care-engine',json={'mode':'active'}).status_code==200
+def test_care_engine_mode_comes_from_the_addon_options(client,monkeypatch):
+    monkeypatch.setitem(main.settings.options,'care_engine_mode','active')
     assert client.get('/api/preferences/care-engine').json()['mode']=='active'
     assert client.get('/api/settings').json()['careEngineMode']=='active'
-    assert client.put('/api/preferences/care-engine',json={'mode':'invalid'}).status_code==422
+    monkeypatch.setitem(main.settings.options,'care_engine_mode','shadow')
+    assert client.get('/api/preferences/care-engine').json()['mode']=='shadow'
+    assert client.get('/api/settings').json()['careEngineMode']=='shadow'
+    # The web app no longer overrides the add-on configuration.
+    assert client.put('/api/preferences/care-engine',json={'mode':'active'}).status_code==405

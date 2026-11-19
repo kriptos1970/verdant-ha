@@ -1,5 +1,5 @@
 name: PlantCare Web
-version: "0.11.3"
+version: "0.11.4"
 slug: plantcare_web
 description: Plants, care rounds and botanical assistant with a local archive
 arch:
@@ -26,7 +26,7 @@ options:
   timezone: Europe/Rome
   exposed_entities: []
   poll_interval_minutes: 15
-  care_engine_mode: shadow
+  care_engine_mode: active
   ai_provider: none
   ai_model: ""
   openai_api_key: ""

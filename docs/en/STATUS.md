@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.4**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.3**, published on [GitHub Releases](https://github.com/k
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.4 (19 November 2026)
+
+- The care engine now has a **single source of truth**: the `care_engine_mode` add-on option, defaulting to **Operational**. The web override that could diverge from the configuration is gone.
+- **Settings → Care engine** shows the effective mode, explains shadow and operational, and says where to change it; there is no selector that can diverge.
+- Verified: 212 backend tests, 1,000 i18n keys, frontend build.
 
 ## Release 0.11.3 (19 November 2026)
 
