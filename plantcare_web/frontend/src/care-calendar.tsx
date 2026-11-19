@@ -13,6 +13,7 @@ import type { Action, Plant, CareEvent } from "./types";
 import { api } from "./api";
 import { Avatar, eventIcon } from "./ui";
 import { useI18n } from "./i18n";
+import { IOSIcon, careIconName } from "./ios-icons";
 import { useCareLabels } from "./care-labels";
 
 export function dayKey(value: string, zone: string) {
@@ -197,37 +198,54 @@ export function CareCalendar({
   const row = (a: Action) => {
     const plant = plants.find((p) => p.id === a.plantID);
     if (!plant) return null;
-    const Icon = eventIcon(a.kind);
     return (
-      <div className="care-row" key={a.id}>
-        <button className="row-identity" onClick={() => onOpenPlant(plant.id)}>
-          <Avatar plant={plant} />
-          <span>
-            <strong>{plant.name}</strong>
-            <small>
-              {plant.room} · {actionLabel(a)}
-            </small>
-            {a.reason && <small className="care-reason">{a.reason}</small>}
-          </span>
+      <article className={`care-card ${a.daysUntil < 0 ? "late" : ""}`} key={a.id}>
+        <div className="care-card-top">
+          <button className="care-card-identity" onClick={() => onOpenPlant(plant.id)}>
+            <Avatar plant={plant} />
+            <span>
+              <strong>{plant.name}</strong>
+              <small className="care-card-kind">{actionLabel(a)}</small>
+              <small>{plant.room}</small>
+              <em className={a.daysUntil < 0 ? "late" : ""}>
+                {dueLabel(a.daysUntil)}
+              </em>
+            </span>
+          </button>
+          <details className="care-card-more">
+            <summary aria-label={t("calendar.moreAria", { name: plant.name })}>
+              <IOSIcon name="ellipsis" size={20} />
+            </summary>
+            <div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.currentTarget.closest("details")?.removeAttribute("open");
+                  onPostpone(a);
+                }}
+              >
+                <IOSIcon name="rotate" size={16} />
+                {t("calendar.postpone")}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.currentTarget.closest("details")?.removeAttribute("open");
+                  onOpenPlant(plant.id);
+                }}
+              >
+                <IOSIcon name="leaf" size={16} />
+                {t("calendar.openPlant")}
+              </button>
+            </div>
+          </details>
+        </div>
+        {a.reason && <p className="care-card-reason">{a.reason}</p>}
+        <button className="care-card-complete" onClick={() => onAction(a)}>
+          <IOSIcon name="checkCircle" size={21} />
+          {t("calendar.complete")}
         </button>
-        <span className={`pill ${a.daysUntil < 0 ? "late" : ""}`}>
-          {dueLabel(a.daysUntil)}
-        </span>
-        <button
-          className="text-button postpone-action"
-          aria-label={t("calendar.postponeAria", { kind: actionLabel(a), name: plant.name })}
-          onClick={() => onPostpone(a)}
-        >
-          {t("calendar.postpone")}
-        </button>
-        <button
-          className="round-action"
-          aria-label={`${actionLabel(a)}: ${plant.name}`}
-          onClick={() => onAction(a)}
-        >
-          <Icon size={18} />
-        </button>
-      </div>
+      </article>
     );
   };
   return (
@@ -326,8 +344,10 @@ export function CareCalendar({
                   day: "numeric",
                   month: "long",
                 }, locale)}
-                <span>{selectedActions.length}</span>
               </h2>
+              <small className="care-day-count">
+                {plural("calendar.daySummary", selectedActions.length)}
+              </small>
             </div>
             {selectedActions.length ? (
               Object.entries(
@@ -340,7 +360,10 @@ export function CareCalendar({
                 ),
               ).map(([careKind, items]) => (
                 <div className="care-kind-group" key={careKind}>
-                  <h3>{kindLabel(careKind)}</h3>
+                  <h3 className="care-kind-title" data-kind={careKind}>
+                    <IOSIcon name={careIconName(careKind)} size={20} />
+                    {kindLabel(careKind)}
+                  </h3>
                   {items.map(row)}
                 </div>
               ))

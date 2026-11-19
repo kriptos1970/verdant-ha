@@ -27,12 +27,20 @@ const paths = {
  rotate: 'M12 3a9 9 0 1 1-9 9h3a6 6 0 1 0 6-6v4L5 4l7-4Z',
  box: 'm12 0 12 6v12l-12 6-12-6V6Zm0 3L4 7l8 4 8-4ZM3 9v7l7.5 3.8v-7ZM13.5 13v6.8L21 16V9Z',
  pin: 'M12 0a8 8 0 0 0-8 8c0 6 8 16 8 16s8-10 8-16a8 8 0 0 0-8-8Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z',
+ checkCircle: 'M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm-2 17-5-5 2-2 3 3 7-7 2 2Z',
+ clock: 'M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm1 5v6l4 2-1 2-5-3V6Z',
+ warning: 'M12 1 24 22H0Zm-1 7v7h2v-7Zm0 9v2h2v-2Z',
+ ellipsis: 'M5 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm7 0a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm7 0a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
+ swap: 'M7 3 2 8l5 5V9h6V7H7Zm10 18 5-5-5-5v4h-6v2h6Z',
 } as const;
 export type IOSIconName = keyof typeof paths;
 export function IOSIcon({name,size=24,className=''}:{name:IOSIconName;size?:number;className?:string}){
  return <svg aria-hidden="true" focusable="false" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={`ios-symbol ${className}`}><path d={paths[name]} fillRule="evenodd"/></svg>;
 }
 export const iosNavigation:Record<string,IOSIconName>={today:'home',plants:'leaf',care:'calendar',products:'flask',more:'more'};
+export function careIconName(kind:string):IOSIconName{
+ return ({Annaffia:'water',Concima:'sparkles',Ruota:'rotate',Pota:'scissors',Rinvasa:'box','Controlla salute':'health','Aggiorna progressi':'chart','Spostamento':'pin',Trattamento:'flask','Aggiornamento piano':'sliders'} as Record<string,IOSIconName>)[kind] ?? 'leaf'
+}
 export const iosTools:Record<string,IOSIconName>={ai:'brain',labels:'qr',guides:'book',diagnosis:'shield',identify:'camera',catalog:'leaf',species:'book',sensors:'thermometer',backup:'box',settings:'sliders'};
 export function adaptiveIcon(name:IOSIconName,Fallback:ComponentType<{size?:number;className?:string}>){
  return function AdaptiveIcon({size=24,className=''}:{size?:number;className?:string}){return <><Fallback size={size} className={`desktop-symbol ${className}`}/><IOSIcon name={name} size={size} className={`mobile-symbol ${className}`}/></>};

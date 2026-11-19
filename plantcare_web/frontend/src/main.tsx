@@ -1,5 +1,5 @@
 import {healthSymptoms,healthAreas,healthCheckNote} from "./care-notes";
-import {IOSIcon,iosNavigation,iosTools} from "./ios-icons";
+import {IOSIcon,iosNavigation,iosTools,careIconName} from "./ios-icons";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -7,12 +7,13 @@ import {
   House,
   CalendarDays,
   FlaskConical,
-  Ellipsis,
   Plus,
   Search,
   ArrowUpRight,
   ArrowLeft,
+  Ellipsis,
   ArrowLeftRight,
+  ArrowRight,
   X,
   Droplets,
   Sun,
@@ -25,7 +26,6 @@ import {
   Upload,
   Download,
   Settings2,
-  SlidersHorizontal,
   Sparkles,
   Thermometer,
   Camera,
@@ -337,8 +337,16 @@ function App() {
   const allActions = plants
     .flatMap((p) => p._actions)
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
-  const due = allActions.filter((a) => a.daysUntil === 0),
+  const due = allActions.filter((a) => a.daysUntil <= 0),
     week = allActions.filter((a) => a.daysUntil >= 0 && a.daysUntil <= 7);
+  const homeDue = [...due]
+    .sort((a, b) => a.daysUntil - b.daysUntil)
+    .filter((action, index, list) => list.findIndex((item) => item.plantID === action.plantID) === index)
+    .slice(0, 5)
+    .flatMap((action) => {
+      const plant = plants.find((item) => item.id === action.plantID);
+      return plant ? [{ action, plant }] : [];
+    });
   const filtered = plants.filter(
     (p) =>
       (room === "Tutte" || p.room === room) &&
@@ -401,35 +409,6 @@ function App() {
     setMenu(false);
     setSearch("");
     setRoom("Tutte");
-  };
-  const row = (a: Action) => {
-    const plant = plants.find((p) => p.id === a.plantID)!;
-    const Icon = eventIcon(a.kind);
-    return (
-      <div className="care-row" key={a.id}>
-        <button className="row-identity" onClick={() => openPlant(plant.id)}>
-          <Avatar plant={plant} />
-          <span>
-            <strong>{plant.name}</strong>
-            <small>
-              {plant.room} · {actionLabel(a)}
-              {a.reason && <span className="care-reason">{a.reason}</span>}
-            </small>
-          </span>
-        </button>
-        <span className={`pill ${a.daysUntil < 0 ? "late" : ""}`}>
-          {dueLabel(a.daysUntil)}
-        </span>
-        <button
-          className="round-action"
-          disabled={busy}
-          onClick={() => setAction({ plant, kind: a.kind, scheduled: a })}
-          aria-label={`${a.kind}: ${plant.name}`}
-        >
-          <Icon size={18} />
-        </button>
-      </div>
-    );
   };
   const activeTool = tool ? toolDefinitions.find((item) => item.id === tool) : undefined;
   const pageTitle = page === "plants"
@@ -591,7 +570,7 @@ function App() {
             <>
               {page === "today" && (
                 <>
-                  <div className="page-heading">
+                  <div className="page-heading home-heading">
                     <div>
                       <div className="eyebrow">
                         {formatDate(new Date(), { weekday: "long", day: "numeric", month: "long" })}
@@ -630,26 +609,45 @@ function App() {
                       </span>
                     </div>
                   </div>
+                  {homeDue.length > 0 && (
+                    <section className="home-care-list" aria-label={t("home.attention")}>
+                      {homeDue.slice(0, 2).map(({ action, plant }) => (
+                        <HomeCareRow
+                          key={action.id}
+                          action={action}
+                          plant={plant}
+                          onOpen={() => openPlant(plant.id)}
+                          onAction={() =>
+                            setAction({ plant, kind: action.kind, scheduled: action })
+                          }
+                        />
+                      ))}
+                    </section>
+                  )}
+                  <HomeInsights
+                    onOpenAnalytics={() => setPage("analytics")}
+                    onOpenPlant={openPlant}
+                  />
                   <WeekStrip
                     actions={allActions}
                     zone={settings?.timezone || "Europe/Rome"}
                     onOpen={() => setPage("care")}
                   />
-                  <section className="hero">
+                  <section className="hero home-hero">
                     <div>
                       <span className="eyebrow">{t("home.heroEyebrow")}</span>
                       <h2>
                         {plants.length === 0
                           ? t("home.heroEmptyTitle")
                           : due.length > 0
-                            ? t("home.heroDueTitle")
+                            ? plural("home.heroDueTitle", due.length)
                             : t("home.heroOkTitle")}
                       </h2>
                       <p>
                         {plants.length === 0
                           ? t("home.heroEmptyText")
                           : due.length > 0
-                            ? plural("home.heroDueText", due.length)
+                            ? t("home.heroDueText")
                             : t("home.heroOkText")}
                       </p>
                       <button
@@ -667,54 +665,40 @@ function App() {
                             ? t("home.openRound")
                             : t("home.viewCalendar")
                           : t("home.addPlant")}
-                        <ArrowUpRight size={17} />
+                        <ArrowRight size={17} />
                       </button>
                     </div>
                     <Botanical />
                   </section>
-                  <div className="stats">
+                  <div className="stats home-stats">
                     <div>
-                      <span>
-                        <Leaf size={18} />
-                        {t("home.stats.collection")}
+                      <span className="home-stat-icon">
+                        <IOSIcon name="leaf" size={22} />
                       </span>
-                      <strong>
-                        {plants.length}
-                        <small>
-                          {plural("home.plantWord", plants.length)}
-                        </small>
-                      </strong>
+                      <strong>{plants.length}</strong>
+                      <small>{t("home.stats.collection")}</small>
                     </div>
                     <div>
-                      <span>
-                        <Droplets size={18} />
-                        {t("home.stats.today")}
+                      <span className="home-stat-icon water">
+                        <IOSIcon name="water" size={22} />
                       </span>
-                      <strong>
-                        {due.length}
-                        <small>{plural("home.careWord", due.length)}</small>
-                      </strong>
+                      <strong>{due.length}</strong>
+                      <small>{t("home.stats.today")}</small>
                     </div>
                     <div>
-                      <span>
-                        <MapPin size={18} />
-                        {t("home.stats.rooms")}
+                      <span className="home-stat-icon earth">
+                        <IOSIcon name="home" size={22} />
                       </span>
-                      <strong>
-                        {rooms.length}
-                        <small>{plural("home.roomWord", rooms.length)}</small>
-                      </strong>
+                      <strong>{rooms.length}</strong>
+                      <small>{t("home.stats.rooms")}</small>
                     </div>
                   </div>
-                  <HomeInsights
-                    onOpenAnalytics={() => setPage("analytics")}
-                    onOpenPlant={openPlant}
-                  />
-                  <section className="panel">
+                  <section className="panel home-attention">
                     <div className="section-heading">
-                      <h2>
-                        {t("home.attention")} <span>{due.length}</span>
-                      </h2>
+                      <div>
+                        <h2>{t("home.attention")}</h2>
+                        <p>{t("home.attentionSubtitle")}</p>
+                      </div>
                       <button
                         className="text-button"
                         onClick={() => setPage("care")}
@@ -722,8 +706,18 @@ function App() {
                         {t("home.allCare")} <ChevronRight size={16} />
                       </button>
                     </div>
-                    {due.length ? (
-                      due.slice(0, 5).map(row)
+                    {homeDue.length ? (
+                      homeDue.slice(0, 5).map(({ action, plant }) => (
+                        <HomeCareRow
+                          key={action.id}
+                          action={action}
+                          plant={plant}
+                          onOpen={() => openPlant(plant.id)}
+                          onAction={() =>
+                            setAction({ plant, kind: action.kind, scheduled: action })
+                          }
+                        />
+                      ))
                     ) : (
                       <div className="gentle-empty">
                         <CheckCircle2 size={28} />
@@ -1552,7 +1546,7 @@ function PlantCard({
       </button>
       <details className="plant-card-menu">
         <summary aria-label={t("plants.actionsAria", { name: plant.name })}>
-          <Ellipsis size={18} />
+          <IOSIcon name="ellipsis" size={18} />
         </summary>
         <div>
           <button
@@ -1591,6 +1585,39 @@ function PlantCard({
     </div>
   );
 }
+function HomeCareRow({
+  action,
+  plant,
+  onOpen,
+  onAction,
+}: {
+  action: Action;
+  plant: Plant;
+  onOpen: () => void;
+  onAction: () => void;
+}) {
+  const { t } = useI18n();
+  const iconName = careIconName(action.kind);
+  return (
+    <article className="home-care-row">
+      <button className="home-care-identity" onClick={onOpen}>
+        <Avatar plant={plant} />
+        <span>
+          <strong>{plant.name}</strong>
+          <small>{plant.species || plant.category}</small>
+        </span>
+      </button>
+      <button
+        className={`home-care-action ${action.kind === "Annaffia" ? "water" : ""}`}
+        aria-label={`${action.kind}: ${plant.name}`}
+        onClick={onAction}
+      >
+        <IOSIcon name={iconName} size={22} />
+      </button>
+    </article>
+  );
+}
+
 function EmptyCollection({
   onAdd,
   onImport,
@@ -3414,10 +3441,10 @@ function PlantDetail({
         </button>
         <button className="ios-plan-button" aria-label={plant.carePlanMode==='AI'?'Imposta piano AI':plant.carePlanMode==='Intelligente'?'Configura piano intelligente':'Modifica piano manuale'} onClick={()=>{if(plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else if(plant.carePlanMode==='Intelligente'){setAdaptiveOpen(true)}else onEdit()}}>{plant.carePlanMode==='AI'?<IOSIcon name="brain" size={25}/>:plant.carePlanMode==='Intelligente'?<Sprout size={25}/>:<Pencil size={23}/>}</button>
         <div className="ios-detail-more" ref={moreRef}>
-          <button type="button" className="ios-more-trigger" aria-label={t("detail.moreActions")} aria-expanded={moreOpen} onClick={()=>setMoreOpen(v=>!v)}><Ellipsis size={23}/></button>
+          <button type="button" className="ios-more-trigger" aria-label={t("detail.moreActions")} aria-expanded={moreOpen} onClick={()=>setMoreOpen(v=>!v)}><IOSIcon name="ellipsis" size={23}/></button>
           {moreOpen && <div className="ios-more-menu" role="menu">
-            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);onEdit()}}><SlidersHorizontal size={22}/><span>{t("detail.edit")}</span></button>
-            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);setMoveOpen(true)}}><ArrowLeftRight size={22}/><span>{t("detail.move")}</span></button>
+            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);onEdit()}}><IOSIcon name="sliders" size={22}/><span>{t("detail.edit")}</span></button>
+            <button type="button" role="menuitem" onClick={()=>{setMoreOpen(false);setMoveOpen(true)}}><IOSIcon name="swap" size={22}/><span>{t("detail.move")}</span></button>
           </div>}
         </div>
       </header>

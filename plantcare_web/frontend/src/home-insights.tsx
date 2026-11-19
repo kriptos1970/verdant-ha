@@ -1,24 +1,13 @@
 import React from "react";
-import {
-  ArrowUpRight,
-  ChevronRight,
-  RefreshCw,
-  ShieldCheck,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowUpRight, RefreshCw } from "lucide-react";
 import {
   ChartDataTable,
   ChartSkeleton,
   DeferredSection,
-  HEALTH_COLORS,
 } from "./chart-kit";
-import {
-  HEALTH_LABEL_KEYS,
-  HealthRing,
-  healthyShare,
-} from "./health-ring";
-import { useAnalytics, type PlantAtRisk } from "./analytics";
+import { useAnalytics } from "./analytics";
 import { useI18n } from "./i18n";
+import { IOSIcon } from "./ios-icons";
 
 type HomeInsightsProps = {
   onOpenAnalytics: () => void;
@@ -40,15 +29,8 @@ function HomeInsightsSkeleton() {
   );
 }
 
-function healthRisks(plants: PlantAtRisk[]) {
-  return plants
-    .filter((plant) => plant.reason.code === "health")
-    .slice(0, 3);
-}
-
 function HomeInsightsContent({
   onOpenAnalytics,
-  onOpenPlant,
 }: HomeInsightsProps) {
   const { t, plural, formatDate, formatNumber } = useI18n();
   const { data, loading, error, reload } = useAnalytics(30);
@@ -70,197 +52,104 @@ function HomeInsightsContent({
 
   if (data.plantCount === 0) return null;
 
-  const share = healthyShare(data.health);
-  const healthy = data.health.excellent + data.health.good;
-  const watch = data.health.struggling + data.health.sick;
   const activity = data.dailyActivity.slice(-14);
   const totalCare = activity.reduce((sum, day) => sum + day.count, 0);
   const activeDays = activity.filter((day) => day.count > 0).length;
   const peak = Math.max(1, ...activity.map((day) => day.count));
-  const risks = healthRisks(data.plantsAtRisk);
 
   return (
     <div className="home-insights">
       <div className="section-heading home-insights-heading">
-        <h2>{t("home.insights.title")}</h2>
+        <div>
+          <h2>{t("home.insights.title")}</h2>
+          <p>{t("home.insights.subtitle")}</p>
+        </div>
         <button className="text-button" onClick={onOpenAnalytics}>
           {t("home.insights.openAnalytics")} <ArrowUpRight size={16} />
         </button>
       </div>
 
       <div className="home-metrics">
-        <div>
+        <div className="home-metric">
+          <span className="home-metric-icon metric-care">
+            <IOSIcon name="checkCircle" size={24} />
+          </span>
           <strong>{formatNumber(data.completedEvents)}</strong>
-          <span>{t("home.metrics.care")}</span>
-          <small>{t("home.metrics.last30")}</small>
+          <small>{t("home.metrics.care")}</small>
         </div>
-        <div>
+        <div className="home-metric">
+          <span className="home-metric-icon metric-days">
+            <IOSIcon name="calendar" size={24} />
+            <span className="metric-check" aria-hidden="true">✓</span>
+          </span>
           <strong>{formatNumber(data.activeDays)}</strong>
-          <span>{t("home.metrics.activeDays")}</span>
+          <small>{t("home.metrics.activeDays")}</small>
         </div>
-        <div>
+        <div className="home-metric">
+          <span className="home-metric-icon metric-regularity">
+            <IOSIcon name="clock" size={24} />
+            <span className="metric-check" aria-hidden="true">✓</span>
+          </span>
           <strong>
             {data.timelinessPercent === null
               ? "—"
               : `${formatNumber(data.timelinessPercent)}%`}
           </strong>
-          <span>{t("home.metrics.timeliness")}</span>
+          <small>{t("home.metrics.timeliness")}</small>
         </div>
-        <div>
+        <div className="home-metric">
+          <span className="home-metric-icon metric-watch">
+            <IOSIcon name="warning" size={24} />
+          </span>
           <strong>{formatNumber(data.plantsAtRisk.length)}</strong>
-          <span>{t("home.metrics.watch")}</span>
+          <small>{t("home.metrics.watch")}</small>
         </div>
       </div>
 
-      <div className="home-insight-grid">
-        <section className="panel home-insight">
-          <header className="home-insight-head">
-            <span className="home-insight-icon" aria-hidden="true">
-              <ShieldCheck size={17} />
-            </span>
-            <h3>{t("home.insights.health")}</h3>
-          </header>
-          {share.rated ? (
-            <div className="home-insight-health">
-              <HealthRing
-                value={share.percent}
-                bucket={share.bucket}
-                size={104}
-                label={t("home.insights.healthAria", {
-                  percent: share.percent,
-                })}
-                caption={plural("charts.health.ratedCount", share.rated)}
-              />
-              <ul className="health-legend">
-                <li>
-                  <span
-                    className="chart-swatch"
-                    style={{ background: HEALTH_COLORS.good }}
-                    aria-hidden="true"
-                  />
-                  <span>{t("home.insights.healthy")}</span>
-                  <b>{healthy}</b>
-                </li>
-                <li>
-                  <span
-                    className="chart-swatch"
-                    style={{ background: HEALTH_COLORS.struggling }}
-                    aria-hidden="true"
-                  />
-                  <span>{t("home.insights.watch")}</span>
-                  <b>{watch}</b>
-                </li>
-                <li>
-                  <span
-                    className="chart-swatch"
-                    style={{ background: HEALTH_COLORS.unrated }}
-                    aria-hidden="true"
-                  />
-                  <span>{t("home.insights.unrated")}</span>
-                  <b>{data.health.unrated}</b>
-                </li>
-              </ul>
-            </div>
-          ) : (
-            <div className="home-insight-empty">
-              <ShieldCheck size={22} aria-hidden="true" />
-              <p>{t("home.insights.healthEmpty")}</p>
-            </div>
-          )}
-        </section>
-
-        <section className="panel home-insight">
-          <header className="home-insight-head">
-            <span className="home-insight-icon" aria-hidden="true">
-              <TrendingUp size={17} />
-            </span>
-            <h3>{t("home.insights.activity")}</h3>
-          </header>
-          <div
-            className="home-spark"
-            role="img"
-            aria-label={t("home.insights.activityAria", {
-              count: totalCare,
-              days: activeDays,
-            })}
-          >
-            {activity.map((day) => (
-              <span
-                key={day.date}
-                className={day.count ? "" : "zero"}
-                style={{
-                  height: day.count
-                    ? `${Math.max(8, (day.count / peak) * 100)}%`
-                    : "3px",
-                }}
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-          <div className="home-insight-meta">
-            <strong>{totalCare}</strong>
-            <span>{plural("home.insights.careCount", totalCare)}</span>
-            <span aria-hidden="true">·</span>
-            <span>{plural("home.insights.activeDays", activeDays)}</span>
-          </div>
-          <ChartDataTable
-            caption={t("charts.table.activity")}
-            columns={[
-              { key: "day", label: t("charts.column.date") },
-              { key: "count", label: t("charts.column.count"), numeric: true },
-            ]}
-            rows={activity.map((day) => ({
-              id: day.date,
-              day: formatDate(day.date, { day: "numeric", month: "short" }),
-              count: day.count,
-            }))}
-          />
-        </section>
-      </div>
-
-      {risks.length > 0 ? (
-        <section className="panel home-risk">
-          <div className="section-heading">
-            <h2>
-              {t("home.insights.risk")} <span>{risks.length}</span>
-            </h2>
-          </div>
-          {risks.map((plant) => {
-            const reason =
-              plant.reason.code === "health" ? plant.reason.health : null;
-            return (
-              <button
-                key={plant.id}
-                className="home-risk-row"
-                onClick={() => onOpenPlant(plant.id)}
-                aria-label={t("home.insights.riskAria", {
-                  name: plant.name,
-                })}
-              >
-                <span
-                  className="home-risk-dot"
-                  style={{
-                    background: HEALTH_COLORS[reason ?? "unrated"],
-                  }}
-                  aria-hidden="true"
-                />
-                <span className="home-risk-name">
-                  <strong>{plant.name}</strong>
-                  <small>
-                    {plant.room || t("charts.roomUnassigned")}
-                  </small>
-                </span>
-                <span className="home-risk-state">
-                  {reason
-                    ? t(HEALTH_LABEL_KEYS[reason])
-                    : t("health.state.unrated")}
-                </span>
-                <ChevronRight size={16} aria-hidden="true" />
-              </button>
-            );
+      <section className="panel home-insight home-activity">
+        <header className="home-insight-head">
+          <h3>{t("home.insights.activity")}</h3>
+        </header>
+        <div
+          className="home-spark"
+          role="img"
+          aria-label={t("home.insights.activityAria", {
+            count: totalCare,
+            days: activeDays,
           })}
-        </section>
-      ) : null}
+        >
+          {activity.map((day) => (
+            <span
+              key={day.date}
+              className={day.count ? "" : "zero"}
+              style={{
+                height: day.count
+                  ? `${Math.max(8, (day.count / peak) * 100)}%`
+                  : "3px",
+              }}
+              aria-hidden="true"
+            />
+          ))}
+        </div>
+        <div className="home-insight-meta">
+          <strong>{totalCare}</strong>
+          <span>{plural("home.insights.careCount", totalCare)}</span>
+          <span aria-hidden="true">·</span>
+          <span>{plural("home.insights.activeDays", activeDays)}</span>
+        </div>
+        <ChartDataTable
+          caption={t("charts.table.activity")}
+          columns={[
+            { key: "day", label: t("charts.column.date") },
+            { key: "count", label: t("charts.column.count"), numeric: true },
+          ]}
+          rows={activity.map((day) => ({
+            id: day.date,
+            day: formatDate(day.date, { day: "numeric", month: "short" }),
+            count: day.count,
+          }))}
+        />
+      </section>
     </div>
   );
 }

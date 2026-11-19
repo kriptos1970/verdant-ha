@@ -4321,3 +4321,368 @@ dialog:has(.plant-editor-form) {
 .plant-card-menu > div button.danger {
   color: #a33b32;
 }
+
+/* Care calendar: native action cards */
+.care-kind-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  color: var(--moss);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.care-kind-title[data-kind="Annaffia"] { color: #2f84dc; }
+.care-kind-title[data-kind="Concima"] { color: #c47c2f; }
+.care-kind-title[data-kind="Aggiorna progressi"] { color: #b33ed0; }
+.care-kind-title[data-kind="Pota"] { color: #4b8b5d; }
+.care-kind-title[data-kind="Rinvasa"] { color: #9a6c4e; }
+.care-kind-title[data-kind="Ruota"] { color: #5c7f52; }
+.care-kind-title[data-kind="Controlla salute"] { color: #3c7d62; }
+.care-card {
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+.care-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.care-card-identity {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.care-card-identity .avatar {
+  width: 72px;
+  height: 82px;
+  flex: 0 0 72px;
+  border-radius: 14px;
+}
+.care-card-identity > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.care-card-identity strong {
+  font-size: 18px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.care-card-identity small {
+  color: #737b74;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.care-card-identity .care-card-kind {
+  color: #44504a;
+  font-size: 14px;
+  font-weight: 600;
+}
+.care-card-identity em {
+  color: var(--moss);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 650;
+  margin-top: 3px;
+}
+.care-card-identity em.late {
+  color: #b06a4a;
+}
+.care-card-more {
+  position: relative;
+  flex: none;
+}
+.care-card-more > summary {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--moss);
+  cursor: pointer;
+  list-style: none;
+}
+.care-card-more > summary::-webkit-details-marker {
+  display: none;
+}
+.care-card-more > div {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  z-index: 5;
+  display: grid;
+  gap: 2px;
+  min-width: 170px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 14px 36px #14240c22;
+}
+.care-card-more button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #253c31;
+  font-size: 14px;
+  text-align: left;
+}
+.care-card-more button:hover {
+  background: #f2f6ee;
+}
+.care-card-reason {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f4f6f3;
+  color: #68736b;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.care-card-complete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 14px;
+  background: #2d5b3f;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+}
+.care-card-complete:hover {
+  background: #244a33;
+}
+
+/* Home: native overview blocks */
+.home-care-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+.home-care-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+.home-care-identity {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.home-care-row .avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  border-radius: 14px;
+}
+.home-care-row strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.home-care-row small {
+  display: block;
+  margin-top: 2px;
+  color: #7a847c;
+  font-size: 14px;
+  font-style: italic;
+}
+.home-care-action {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: #e7f0e7;
+  color: #4b7055;
+}
+.home-care-action.water {
+  background: #2f84dc;
+  color: #fff;
+}
+.home-care-action:hover {
+  filter: brightness(0.96);
+}
+.home-insights-heading h2 {
+  color: var(--forest);
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.7px;
+}
+.home-insights-heading p {
+  margin: 6px 0 0;
+  color: #737b74;
+  font-size: 16px;
+  line-height: 1.35;
+}
+.home-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.home-metric-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
+  border-radius: 14px;
+  background: #e9f5ec;
+  color: #3f8a4f;
+}
+.home-metric-icon.metric-days {
+  background: #e3f0ff;
+  color: #2f84dc;
+}
+.home-metric-icon.metric-regularity {
+  background: #e0f4f4;
+  color: #2a9d9d;
+}
+.home-metric-icon.metric-watch {
+  background: #fdf0e3;
+  color: #e08a2e;
+}
+.home-metric strong {
+  color: #111;
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1;
+}
+.home-metric small {
+  margin: 0;
+  color: #737b74;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.home-activity {
+  margin-top: 16px;
+}
+.home-attention .section-heading p {
+  margin: 4px 0 0;
+  color: #737b74;
+  font-size: 15px;
+}
+.home-stats > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 16px 14px;
+  border-radius: 18px;
+}
+.home-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: #eef3e9;
+  color: #406e4d;
+}
+.home-stat-icon.water {
+  background: #e3f0ff;
+  color: #2f84dc;
+}
+.home-stat-icon.earth {
+  background: #f3ece6;
+  color: #a78468;
+}
+.home-stats strong {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 650;
+  color: #111;
+}
+.home-stats small {
+  margin: 0;
+  color: #737b74;
+  font-size: 14px;
+}
+
+.home-metric-icon {
+  position: relative;
+}
+.metric-check {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #2f84dc;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+.home-metric-icon.metric-regularity .metric-check {
+  background: #2a9d9d;
+}
+.home-activity .home-insight-head h3 {
+  color: var(--forest);
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.4px;
+}
+
+.home-stats > div > span.home-stat-icon > svg {
+  display: block;
+}
+
+.care-day-count {
+  display: block;
+  margin-top: 2px;
+  color: #737b74;
+  font-size: 15px;
+  font-weight: 600;
+}
+@media (max-width: 760px) {
+  .care-card {
+    border-color: #f0f1ee;
+    background: #f8f9f7;
+  }
+  .care-day-count {
+    font-size: 16px;
+  }
+}

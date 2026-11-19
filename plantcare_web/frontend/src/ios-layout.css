@@ -281,3 +281,53 @@
  .ios-section-card[data-section] .ios-disclosure-icon{width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:var(--section-color);color:white}
  .ios-section-content{border-top:1px solid #eeeeec;margin:0 14px;padding:14px 0 18px}
 }
+
+@media(max-width:760px){
+ .home-care-list{gap:12px;margin-bottom:26px}
+ .home-care-row{padding:14px;border-radius:20px}
+ .home-care-row .avatar{width:62px;height:62px;flex-basis:62px}
+ .home-care-row strong{font-size:19px}
+ .home-care-row small{font-size:15px}
+ .home-care-action{width:52px;height:52px}
+ .home-insights-heading h2{font-size:30px;line-height:1.15}
+ .home-insights-heading p{font-size:17px}
+ .home-metrics{gap:12px}
+ .home-metric{padding:16px;border-radius:22px}
+ .home-metric-icon{width:48px;height:48px;border-radius:15px}
+ .home-metric strong{font-size:36px}
+ .home-metric small{font-size:15px}
+ .home-activity{padding:18px 16px;border-radius:22px}
+ .home-attention .section-heading p{font-size:16px}
+ .home-stats>div{padding:16px 12px;border-radius:20px}
+ .home-stat-icon{width:44px;height:44px;border-radius:14px}
+ .home-stats strong{font-size:32px}
+ .home-stats small{font-size:15px}
+}
+
+@media(max-width:760px){
+ main[data-page=today] .home-heading{display:none}
+ .home-insights-heading .text-button{display:none}
+ .calendar-week{display:flex;overflow-x:auto;gap:8px;padding:0 0 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
+ .calendar-week::-webkit-scrollbar{display:none}
+ .calendar-week .calendar-day{flex:0 0 68px;min-height:82px;scroll-snap-align:center}
+}
+
+@media(max-width:760px){
+ .native-week .section-heading{display:none}
+ .native-week{padding:14px 12px;border-radius:22px}
+ .hero .botanical{display:block;position:absolute;right:-34px;bottom:-18px;width:190px;height:190px;opacity:.16;transform:rotate(-8deg);pointer-events:none}
+ main[data-page=care] .calendar-panel .section-heading{display:none}
+ main[data-page=care] .calendar-navigation{display:none}
+ main[data-page=care] .chips{display:none}
+ .care-kind-title{font-size:21px;margin:20px 0 12px}
+ .care-card{padding:16px;border-radius:20px}
+ .care-card-identity .avatar{width:96px;height:108px;flex-basis:96px;border-radius:16px}
+ .care-card-identity strong{font-size:21px}
+ .care-card-identity .care-card-kind{font-size:16px}
+ .care-card-identity small{font-size:15px}
+ .care-card-identity em{font-size:15px}
+ .care-card-more>summary{width:40px;height:40px}
+ .care-card-reason{font-size:15px}
+ .care-card-complete{min-height:52px;font-size:18px}
+ .calendar-panel{padding:14px 12px;border-radius:22px}
+}
