@@ -115,10 +115,10 @@ async def analyze(store,settings):
         if proposals:
             from .services import notify
             try:
-                message=(f"{len(proposals)} plan changes proposed. {applied} applied automatically. Open PlantCare → More → AI plan to review them." if language=='en' else f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri PlantCare → Altro → Piano AI per esaminarle.")
+                message=(f"{len(proposals)} plan changes proposed. {applied} applied automatically. Open Verdant → More → AI plan to review them." if language=='en' else f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri Verdant → Altro → Piano AI per esaminarle.")
                 await notify(settings,message)
                 status['notificationError']=None
-            except httpx.HTTPError:status['notificationError']='Notifica non inviata. Le proposte restano disponibili in PlantCare.'
+            except httpx.HTTPError:status['notificationError']='Notifica non inviata. Le proposte restano disponibili in Verdant.'
         store.set_state('ai-status',status)
         from zoneinfo import ZoneInfo
         store.set_state('last-ai-day',now().astimezone(ZoneInfo(settings.zone)).date().isoformat())

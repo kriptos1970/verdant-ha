@@ -31,5 +31,5 @@ def import_shared_database(data_directory, source_directory=None):
             raise RuntimeError("Il database di migrazione non è un file SQLite valido.")
     os.replace(temporary, target)
     request.unlink()
-    LOG.info("Imported the shared PlantCare database into %s", target)
+    LOG.info("Imported the shared Verdant database into %s", target)
     return target

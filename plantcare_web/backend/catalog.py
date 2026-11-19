@@ -40,7 +40,7 @@ async def search(query,focus,page):
     query=query.strip()
     if focus not in FOCUS:raise ValueError('Categoria del catalogo non valida.')
     warning=None
-    async with httpx.AsyncClient(timeout=10,headers={'User-Agent':'PlantCareWeb/0.8.0 (botanical catalog)'}) as client:
+    async with httpx.AsyncClient(timeout=10,headers={'User-Agent':'Verdant/0.8.0 (botanical catalog)'}) as client:
         if query:
             try:
                 data=await fetch(client,query,page,20);total=data['total'];more=(type(total) is int and page*20<total) if total is not None else len(data['results'])==20

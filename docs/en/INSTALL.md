@@ -12,7 +12,7 @@
 
 1. In Home Assistant open **Settings → Add-ons → Add-on store**.
 2. Open the **⋮** menu → **Repositories** and add `https://github.com/kriptos1970/verdant-ha`.
-3. Refresh the store, open **PlantCare Web** and install it.
+3. Refresh the store, open **Verdant** and install it.
 4. Start it and open **Web UI**. The add-on uses Ingress; no port is exposed and no port forwarding is needed.
 5. Configure the options, then restart only when Home Assistant asks for it.
 
@@ -22,7 +22,7 @@ Home Assistant reads `plantcare_web/config.yaml`; a higher `version` in the repo
 
 1. Download the latest `plantcare-web-<version>.zip` from [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases) and extract it.
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on the Home Assistant host (Samba or Terminal & SSH). Do not copy `.venv`, `node_modules`, local databases or personal archives.
-3. In the Home Assistant App store, refresh the local add-ons, install **PlantCare Web** and start it.
+3. In the Home Assistant App store, refresh the local add-ons, install **Verdant** and start it.
 
 > A repository install is registered with a repository-prefixed slug (for example `309d34f7_plantcare_web`); a local install uses `local_plantcare_web`. Their data volumes are separate. To move a local install to the repository add-on, export the ZIP backup, install the repository add-on, re-enter its options and import the ZIP on the empty archive.
 

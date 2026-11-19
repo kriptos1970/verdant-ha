@@ -68,7 +68,7 @@ def message_language(store,settings):
 async def notify(settings,message):
     if not settings.token: return
     async with httpx.AsyncClient(timeout=15) as client:
-        result=await client.post(settings.ha_url+'/services/persistent_notification/create',headers={'Authorization':'Bearer '+settings.token},json={'title':'PlantCare','message':message,'notification_id':'plantcare-ai'})
+        result=await client.post(settings.ha_url+'/services/persistent_notification/create',headers={'Authorization':'Bearer '+settings.token},json={'title':'Verdant','message':message,'notification_id':'plantcare-ai'})
         result.raise_for_status()
 
 async def scheduler(store,settings):

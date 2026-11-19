@@ -6,6 +6,12 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.9 — nome Verdant
+
+- Add-on, pannello laterale, web app, titolo della pagina, notifiche e messaggi visibili ora usano il nome **Verdant**.
+- Slug dell’add-on, cartella `/data`, database, percorsi delle foto, formato dei backup e identificatori interni restano invariati: aggiornamento e dati sono preservati.
+- 215 test backend, build frontend.
+
 # 0.11.8 — risposte AI in Markdown
 
 - Le risposte dell’assistente AI nel riquadro verde vengono renderizzate come Markdown: titoli, paragrafi, grassetto e corsivo, elenchi puntati e numerati, citazioni, codice e tabelle GFM.

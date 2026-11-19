@@ -1,6 +1,6 @@
-# PlantCare Web
+# Verdant
 
-Open the web interface from Home Assistant. Start with a plant or import a native PlantCare backup from **More → Archive and backup**.
+Open the web interface from Home Assistant. Start with a plant or import a native Verdant backup from **More → Archive and backup**.
 
 The full documentation is in the repository: [English index](https://github.com/kriptos1970/verdant-ha/blob/main/docs/en/README.md) and [Italian documentation](https://github.com/kriptos1970/verdant-ha/blob/main/docs/README.md). The Italian add-on README is at [README.it.md](https://github.com/kriptos1970/verdant-ha/blob/main/README.it.md).
 

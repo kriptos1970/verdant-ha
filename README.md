@@ -6,7 +6,7 @@
 [![Release](https://img.shields.io/github/v/release/kriptos1970/verdant-ha?label=release)](https://github.com/kriptos1970/verdant-ha/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Verdant HA** (internally *PlantCare Web*) is a self-hosted **Home Assistant add-on** for looking after a houseplant collection: care scheduling, guided care rounds, history, treatments, sensors and optional AI advice.
+**Verdant** is a self-hosted **Home Assistant add-on** for looking after a houseplant collection: care scheduling, guided care rounds, history, treatments, sensors and optional AI advice.
 
 Everything runs on your own Home Assistant instance, with SQLite and photos stored locally. There is no cloud account and no synchronization with the native Apple apps.
 
@@ -35,7 +35,7 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 
 ## Status
 
-Current version: **0.11.8**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
+Current version: **0.11.9**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
 
 Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). The high-level plan is in [ROADMAP.md](ROADMAP.md).
 
@@ -45,7 +45,7 @@ Known limits and the remaining roadmap are tracked in the Italian documentation,
 
 1. In Home Assistant open **Settings → Add-ons → Add-on store**.
 2. Open the **⋮** menu → **Repositories** and add `https://github.com/kriptos1970/verdant-ha`.
-3. Refresh the store, open **PlantCare Web** and install it.
+3. Refresh the store, open **Verdant** and install it.
 4. Start the add-on and open **Web UI**: it uses Ingress and does not expose a port.
 5. Configure timezone, exposed sensor entities, photo directory and optional AI/Pl@ntNet keys in the add-on options.
 6. To migrate from the native app, use **Altro → Archivio e backup** and import the exported backup.
@@ -56,7 +56,7 @@ Home Assistant checks `plantcare_web/config.yaml` in the repository, so a new ve
 
 1. Download the latest `plantcare-web-<version>.zip` from [Releases](https://github.com/kriptos1970/verdant-ha/releases) and extract it.
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on your Home Assistant host.
-3. Refresh the local add-ons in the Home Assistant App store, install **PlantCare Web** and start it.
+3. Refresh the local add-ons in the Home Assistant App store, install **Verdant** and start it.
 
 > A repository install creates a repository-prefixed add-on (for example `309d34f7_plantcare_web`), while a local install is registered as `local_plantcare_web`. They have separate data volumes. To move an existing local installation to the repository add-on, export the ZIP backup first, install the repository add-on, re-enter the options and import the ZIP on the empty archive.
 

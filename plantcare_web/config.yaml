@@ -1,7 +1,7 @@
-name: PlantCare Web
-version: "0.11.8"
+name: Verdant
+version: "0.11.9"
 slug: plantcare_web
-description: Plants, care rounds and botanical assistant with a local archive
+description: Verdant — plants, care rounds and botanical assistant with a local archive
 url: https://github.com/kriptos1970/verdant-ha
 arch:
   - aarch64
@@ -14,7 +14,7 @@ ingress: true
 ingress_port: 8099
 ingress_stream: true
 panel_icon: mdi:flower
-panel_title: PlantCare
+panel_title: Verdant
 panel_admin: true
 map:
   - type: share

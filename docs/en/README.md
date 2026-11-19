@@ -13,4 +13,4 @@ The detailed verification notes remain in Italian in [`docs/STATUS.md`](../STATU
 
 ## Project summary
 
-Verdant HA (internally **PlantCare Web**) is a self-hosted Home Assistant add-on for a houseplant collection: care scheduling, guided care rounds, calendar and history, treatments, sensors and optional AI advice. Data stays in SQLite and on the local filesystem; there is no synchronization with the native Apple apps.
+**Verdant** is a self-hosted Home Assistant add-on for a houseplant collection: care scheduling, guided care rounds, calendar and history, treatments, sensors and optional AI advice. Data stays in SQLite and on the local filesystem; there is no synchronization with the native Apple apps.

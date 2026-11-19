@@ -434,7 +434,7 @@ function App() {
             <Leaf size={24} />
           </div>
           <span>
-            PlantCare<small>{t("app.brandTagline")}</small>
+            Verdant<small>{t("app.brandTagline")}</small>
           </span>
         </a>
         <div className="sidebar-label">{t("app.collection")}</div>
@@ -4010,12 +4010,12 @@ function BackupTool({
     <section className="panel">
       <h2>Le tue piante, al sicuro.</h2>
       <p className="muted">
-        Importa una volta il backup PlantCare nativo o ripristina un backup web
+        Importa una volta il backup Verdant nativo o ripristina un backup web
         su un archivio vuoto.
       </p>
       <label className="import-drop">
         <Upload size={27} />
-        <strong>{file?.name || "Scegli un backup PlantCare"}</strong>
+        <strong>{file?.name || "Scegli un backup Verdant"}</strong>
         <small>JSON nativo fino a 150 MB o ZIP web fino a 2 GB</small>
         <input
           type="file"
