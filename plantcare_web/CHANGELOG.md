@@ -6,6 +6,15 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.3 — editor pianta web-first
+
+- Editor **Nuova pianta / Modifica pianta** riorganizzato per il web, senza copiare il form nativo: foto e riconoscimento in alto, poi i dati essenziali sempre visibili (nome, specie, famiglia e categoria, ambiente ed esposizione, piano, annaffiatura e ultima annaffiatura).
+- Le informazioni secondarie passano a cinque sezioni richiudibili con riepilogo: Posizione e profilo, Vaso e substrato, Frequenze e concimazione, Attività aggiuntive, Altre informazioni.
+- Una sola barra **Annulla / Salva pianta** sticky in fondo al dialog, con rispetto della safe area; rimossa la doppia barra in testa.
+- Griglie a due colonne per i campi brevi e una colonna sotto 360 px; contenuto ridotto da circa 4.038 px a circa 1.392 px a 390 px.
+- I campi obbligatori restano nelle sezioni sempre visibili; un controllo non valido dentro una sezione chiusa la apre e riceve il focus.
+- 212 test backend, 999 chiavi i18n.
+
 # 0.11.2 — parità funzionale, token visivi e riconoscimento
 
 - Collezione: cestino con ripristino a 30 giorni, azioni rapide sulle card, paginazione e layout telefono compatto.

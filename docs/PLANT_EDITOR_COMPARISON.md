@@ -78,6 +78,26 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 - Presenti nel form web: **34** intere, **2** parziali, **2** assenti (identificazione e reidentificazione nel form).
 - I dati mancanti sono in gran parte **già nell’archivio**: il backend conserva i campi extra (`extra='allow'`) e l’archivio reale contiene `plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `heightCM` e `setup.container` (materiale, diametro, drenaggio, cachepot, sottovaso, qualità). L’allineamento è quindi soprattutto interfaccia, senza migrazione.
 
+## Layout web-first dell’editor (19 novembre 2026)
+
+Scelta deliberata: **non copiare** l’impostazione nativa a otto sezioni sempre aperte. Il web usa la divulgazione progressiva.
+
+| Blocco | Contenuto | Comportamento |
+|---|---|---|
+| Foto e riconoscimento | foto, cambio foto, Pl@ntNet con risultati inline | sempre visibile |
+| Dati essenziali | nome, specie, famiglia e categoria, ambiente ed esposizione, piano, annaffiatura, ultima annaffiatura | sempre visibili, griglia a due colonne |
+| Posizione e profilo | posizione reale, altezza, metodo di coltivazione | richiudibile, riepilogo |
+| Vaso e substrato | materiale, diametro, altezza, volume, drenaggio, cachepot, sottovaso, substrato e proprietà | richiudibile, riepilogo |
+| Frequenze e concimazione | ritmo, concimazione, ultima fertilizzazione, tipo/prodotto/dose | richiudibile, riepilogo |
+| Attività aggiuntive | rotazione, controllo, diario, potatura, rinvaso | richiudibile, conteggio attività |
+| Altre informazioni | data di acquisizione, note | richiudibile, data o nota |
+
+- Una sola barra **Annulla / Salva** sticky a fine form, con `env(safe-area-inset-bottom)`.
+- Riepiloghi sempre leggibili: titolo su una riga e valore secondario sotto, senza troncamenti aggressivi.
+- Campi brevi in due colonne; sotto 360 px tornano a una colonna.
+- I campi obbligatori restano fuori dalle sezioni chiuse; se un controllo non valido finisce comunque in una sezione chiusa, il submit la apre e porta il focus sul campo.
+- Misure: contenuto del dialog a 390 px da ~4.038 px a ~1.392 px; 2.975 px con tutte le sezioni aperte; nessun overflow a 320/390/430 px.
+
 ## Allineamento visivo e ordine delle sezioni (18 novembre 2026)
 
 Confronto diretto con `PlantEditorView.swift`:

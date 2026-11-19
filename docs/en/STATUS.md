@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -51,6 +51,15 @@ Current release: **0.11.2**, published on [GitHub Releases](https://github.com/k
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
 
+## Release 0.11.3 (19 November 2026)
+
+- **Web-first plant editor** with progressive disclosure: photo and Pl@ntNet recognition, identity, room, care plan, watering and last watering always visible.
+- Five collapsible optional sections with a summary line (Position and profile, Pot and substrate, Schedule and feeding, Additional activities, Other information).
+- A single sticky Cancel/Save bar at the bottom, safe area included; the duplicate top bar is gone.
+- Two-column grids for short fields, one column below 360 px. Content at 390 px drops from about 4,038 px to about 1,392 px (2,975 px with every section open).
+- Validation: required fields stay visible; an invalid control inside a closed section opens it and receives focus.
+- Verified: 320/390/430 px without overflow, 212 backend tests, 999 i18n keys, frontend build.
+
 ## Release 0.11.2 (19 November 2026)
 
 - Functional and structural parity with Verdant across collection, products, plant detail, settings, care, measurements and growth diary.
@@ -59,7 +68,7 @@ Current release: **0.11.2**, published on [GitHub Releases](https://github.com/k
 - Operational care engine and unreferenced photo cleanup.
 - 212 backend tests, 988 i18n keys, frontend build.
 
-## Next release (0.11.3)
+## Next release (0.11.4)
 
 - Phone camera light meter.
 - Web “Active” notification bell, if requested.
