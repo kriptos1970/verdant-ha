@@ -57,6 +57,7 @@ Current release: **0.11.5**, published on [GitHub Releases](https://github.com/k
 - The free-text “Fertilizer type” field is gone; the type is derived from the selected product on the backend too.
 - Only fertilizer products (Fertilizzante, Biostimolante, Ammendante, Radicante) plus the already linked product are listed; the dose appears only with a product.
 - Verified: 213 backend tests, 1,001 i18n keys, frontend build, no overflow at 320/390 px.
+- GitHub add-on repository: `repository.yaml` added; the Supervisor lists **Verdant HA Add-ons** and the `309d34f7_plantcare_web` 0.11.5 add-on. The local `local_plantcare_web` installation stays separate; migration uses the ZIP and regenerated QR labels.
 
 ## Release 0.11.4 (19 November 2026)
 

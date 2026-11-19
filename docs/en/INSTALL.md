@@ -24,7 +24,7 @@ Home Assistant reads `plantcare_web/config.yaml`; a higher `version` in the repo
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on the Home Assistant host (Samba or Terminal & SSH). Do not copy `.venv`, `node_modules`, local databases or personal archives.
 3. In the Home Assistant App store, refresh the local add-ons, install **PlantCare Web** and start it.
 
-> A repository install is registered with slug `plantcare_web`; a local install uses `local_plantcare_web`. Their data volumes are separate. To move a local install to the repository add-on, export the ZIP backup, install the repository add-on, re-enter its options and import the ZIP on the empty archive.
+> A repository install is registered with a repository-prefixed slug (for example `309d34f7_plantcare_web`); a local install uses `local_plantcare_web`. Their data volumes are separate. To move a local install to the repository add-on, export the ZIP backup, install the repository add-on, re-enter its options and import the ZIP on the empty archive.
 
 ## Options
 
@@ -70,7 +70,7 @@ Copy the new `plantcare_web` folder over the old one, refresh the add-on in the 
 
 ### Moving from the local add-on to the repository add-on
 
-The slug changes from `local_plantcare_web` to `plantcare_web`, so the data volume and the Ingress/panel URL change. Export the ZIP from **Altro → Archivio e backup**, install the repository add-on, copy the options, then import the ZIP on the empty archive. QR/NFC labels that used the old panel URL must be regenerated.
+The slug changes from `local_plantcare_web` to a repository-prefixed slug (for example `309d34f7_plantcare_web`), so the data volume and the Ingress/panel URL change. Export the ZIP from **Altro → Archivio e backup**, install the repository add-on, copy the options, then import the ZIP on the empty archive. QR/NFC labels that used the old panel URL must be regenerated.
 
 ## Security notes
 

@@ -2,7 +2,7 @@
 
 **Italiano** | [English](README.md)
 
-Versione incrementale **0.11.1**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
+Versione incrementale **0.11.5**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
 
 Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. L’interfaccia è disponibile in italiano e inglese, comprese cure, prodotti, trattamenti, dettaglio iOS, guide e diagnosi. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
 
@@ -26,7 +26,7 @@ Home Assistant controlla `plantcare_web/config.yaml` nel repository: una nuova v
 1. Copiare **la cartella `plantcare_web` completa** in `/addons/plantcare_web` tramite Samba o Terminal & SSH. Non copiare `.venv`, `node_modules` o archivi personali.
 2. Nell’App store di Home Assistant aggiornare l’elenco degli add-on locali e installare **PlantCare Web**.
 
-> L’installazione da repository crea l’add-on `plantcare_web`, quella locale è registrata come `local_plantcare_web`: hanno cartelle dati separate. Per passare un’installazione locale al repository, esportare prima il backup ZIP, installare l’add-on da repository, reinserire le opzioni e importare lo ZIP sull’archivio vuoto.
+> L’installazione da repository crea un add-on con slug prefissato dal repository (ad esempio `309d34f7_plantcare_web`), quella locale è registrata come `local_plantcare_web`: hanno cartelle dati separate. Per passare un’installazione locale al repository, esportare prima il backup ZIP, installare l’add-on da repository, reinserire le opzioni e importare lo ZIP sull’archivio vuoto.
 
 Il container viene costruito localmente durante l’installazione. Sono state verificate le build Docker ARM64 e AMD64. La 0.2.0 è stata installata su Home Assistant il 15 novembre 2026, verificando avvio e dashboard tramite Ingress; la 0.4.2 contiene ora la collezione reale importata e verificata nelle viste principali.
 

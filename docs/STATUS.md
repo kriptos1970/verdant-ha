@@ -19,6 +19,7 @@
 - Rimosso il campo libero “Tipo di fertilizzante”; il tipo è derivato dal prodotto scelto anche lato backend.
 - Filtro ai prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante) con l’eventuale prodotto già associato; dose visibile solo con un prodotto.
 - Verifica: 213 test backend, 1001 chiavi i18n, build frontend, nessun overflow a 320/390 px.
+- Repository add-on GitHub: aggiunto `repository.yaml`, il Supervisor vede **Verdant HA Add-ons** e l’add-on `309d34f7_plantcare_web` 0.11.5. L’installazione locale `local_plantcare_web` resta separata; migrazione tramite ZIP e nuove etichette QR.
 
 ## Rilascio 0.11.4 (19 novembre 2026)
 

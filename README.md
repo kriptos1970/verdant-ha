@@ -31,11 +31,11 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 - Backend: Python 3.13, FastAPI, Pydantic, SQLite.
 - Frontend: React 19, TypeScript, Vite.
 - Packaging: Home Assistant add-on built from a local Dockerfile (aarch64 and amd64).
-- Tests: 151 pytest tests; frontend type-check and build in CI.
+- Tests: 213 pytest tests; frontend type-check and build in CI.
 
 ## Status
 
-Current version: **0.11.1**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
+Current version: **0.11.5**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
 
 Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). The high-level plan is in [ROADMAP.md](ROADMAP.md).
 
@@ -58,7 +58,7 @@ Home Assistant checks `plantcare_web/config.yaml` in the repository, so a new ve
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on your Home Assistant host.
 3. Refresh the local add-ons in the Home Assistant App store, install **PlantCare Web** and start it.
 
-> A repository install creates the add-on `plantcare_web`, while a local install is registered as `local_plantcare_web`. They have separate data volumes. To move an existing local installation to the repository add-on, export the ZIP backup first, install the repository add-on, re-enter the options and import the ZIP on the empty archive.
+> A repository install creates a repository-prefixed add-on (for example `309d34f7_plantcare_web`), while a local install is registered as `local_plantcare_web`. They have separate data volumes. To move an existing local installation to the repository add-on, export the ZIP backup first, install the repository add-on, re-enter the options and import the ZIP on the empty archive.
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the detailed procedure and [docs/IMPORT.md](docs/IMPORT.md) for the import notes.
 
