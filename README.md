@@ -41,12 +41,24 @@ Known limits and the remaining roadmap are tracked in the Italian documentation,
 
 ## Installation
 
+### Home Assistant add-on repository (recommended)
+
+1. In Home Assistant open **Settings → Add-ons → Add-on store**.
+2. Open the **⋮** menu → **Repositories** and add `https://github.com/kriptos1970/verdant-ha`.
+3. Refresh the store, open **PlantCare Web** and install it.
+4. Start the add-on and open **Web UI**: it uses Ingress and does not expose a port.
+5. Configure timezone, exposed sensor entities, photo directory and optional AI/Pl@ntNet keys in the add-on options.
+6. To migrate from the native app, use **Altro → Archivio e backup** and import the exported backup.
+
+Home Assistant checks `plantcare_web/config.yaml` in the repository, so a new version is offered directly in the add-on store after a release.
+
+### Local add-on (offline or development)
+
 1. Download the latest `plantcare-web-<version>.zip` from [Releases](https://github.com/kriptos1970/verdant-ha/releases) and extract it.
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on your Home Assistant host.
 3. Refresh the local add-ons in the Home Assistant App store, install **PlantCare Web** and start it.
-4. Open **Web UI**: the add-on uses Ingress and does not expose a port.
-5. Optionally configure timezone, exposed sensor entities, photo directory and AI provider in the add-on options.
-6. To migrate from the native app, use **Altro → Archivio e backup** and import the exported backup.
+
+> A repository install creates the add-on `plantcare_web`, while a local install is registered as `local_plantcare_web`. They have separate data volumes. To move an existing local installation to the repository add-on, export the ZIP backup first, install the repository add-on, re-enter the options and import the ZIP on the empty archive.
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the detailed procedure and [docs/IMPORT.md](docs/IMPORT.md) for the import notes.
 
