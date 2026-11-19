@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.1**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,21 @@ Current release: **0.11.1**, published on [GitHub Releases](https://github.com/k
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.2 (19 November 2026)
+
+- Functional and structural parity with Verdant across collection, products, plant detail, settings, care, measurements and growth diary.
+- Visual tokens in `frontend/src/tokens.css`; filled icons, proportionate phone type, Home/Care/History realigned.
+- Pl@ntNet recognition inside the plant editor: the button turns green after the photo, waits for the result and fills the fields without confirmation prompts.
+- Operational care engine and unreferenced photo cleanup.
+- 212 backend tests, 988 i18n keys, frontend build.
+
+## Next release (0.11.3)
+
+- Phone camera light meter.
+- Web “Active” notification bell, if requested.
+- Live Pl@ntNet editor trial and real Gemini AI trial.
+- Deferred field checks: physical iPhone/Companion, real QR/NFC, isolated HA restore, real sensors/weather, very large archive.
 
 ## Remaining roadmap
 

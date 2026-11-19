@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.1
+# Stato dell’incremento 0.11.2
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,22 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e Care Engine avanzato in shadow. Attivazione operativa delle raccomandazioni esclusa da questo incremento. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.1 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.2 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.2 (19 novembre 2026)
+
+- Parità funzionale e strutturale con Verdant su collezione, prodotti, dettaglio, impostazioni, cure, misure e diario.
+- Token visivi in `frontend/src/tokens.css`; icone piene, tipografia telefono proporzionata, Home/Cure/Cronologia riallineate.
+- Riconoscimento Pl@ntNet dentro l’editor nuova pianta, senza conferme: il pulsante diventa verde dopo la foto, attende il risultato e compila i campi.
+- Motore di cura operativo e pulizia foto non utilizzate.
+- 212 test backend, 988 chiavi i18n, build frontend.
+
+## Prossima versione (0.11.3)
+
+- Luxmetro dalla fotocamera del telefono.
+- Campanella notifiche “Attive” e notifiche web, se richieste.
+- Prova reale Pl@ntNet nell’editor e prova AI con Gemini, ora raggiungibile.
+- Collaudi rinviati: iPhone fisico/Companion, QR/NFC reale, ripristino su HA isolata, sensori e meteo reali, archivio molto grande.
 
 ## Grafici — fase 1 (17 novembre 2026)
 

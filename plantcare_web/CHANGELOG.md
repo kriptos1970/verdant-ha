@@ -6,6 +6,20 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.2 — parità funzionale, token visivi e riconoscimento
+
+- Collezione: cestino con ripristino a 30 giorni, azioni rapide sulle card, paginazione e layout telefono compatto.
+- Prodotti: filtro per categoria, “Registra utilizzo”, date di acquisto/scadenza.
+- Dettaglio pianta: spostamento con ricalcolo del piano, sicurezza aggiornabile, grafico attività, cronologia separata dal diario di crescita.
+- Impostazioni: località predefinita con ricerca Open-Meteo e stato del ricalcolo meteo.
+- Cure: attività raggruppate, rinvio dalla riga, cronologia con filtri richiudibili e motivazioni della cura.
+- Misure: sorgente e affidabilità nella tabella, misure native senza duplicati.
+- Motore di cura operativo: può solo rinviare l’annaffiatura quando il terreno è umido e la misura è affidabile.
+- Editor pianta riordinato come il nativo, con riconoscimento Pl@ntNet nel form e compilazione automatica di nome, specie, famiglia e categoria.
+- Icone piene, token visivi in `tokens.css`, layout Home/Cure/Cronologia allineato a Verdant.
+- Pulizia foto non utilizzate, con protezione dei caricamenti recenti.
+- 212 test backend, 988 chiavi i18n.
+
 # 0.11.1 — caricamento fotografie
 
 - La lista piante usa miniature da 480 px invece degli originali: il trasferimento iniziale scende da decine di MB a poche centinaia di KB.
