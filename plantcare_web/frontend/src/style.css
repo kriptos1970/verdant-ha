@@ -1460,13 +1460,137 @@ hr {
   margin: 10px 0 16px;
 }
 .ai-answer {
-  font-size: 12px;
-  line-height: 1.8;
-  background: #f4f7ed;
-  padding: 18px;
-  border-radius: 10px;
-  margin: 24px 0;
-  color: #5e7550;
+  margin: 18px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-md);
+  background: var(--vc-mint-soft);
+  color: var(--vc-text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.ai-answer > :first-child {
+  margin-top: 0;
+}
+.ai-answer > :last-child {
+  margin-bottom: 0;
+}
+.ai-answer p {
+  margin: 8px 0;
+}
+.detail .ai-answer h1,
+.detail .ai-answer h2,
+.detail .ai-answer h3,
+.detail .ai-answer h4,
+.detail .ai-answer h5,
+.detail .ai-answer h6 {
+  margin: 14px 0 6px;
+  color: var(--vc-forest);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.detail .ai-answer h1 {
+  font-size: 20px;
+}
+.detail .ai-answer h2 {
+  font-size: 18px;
+}
+.detail .ai-answer h3 {
+  font-size: 16px;
+}
+.detail .ai-answer h4,
+.detail .ai-answer h5,
+.detail .ai-answer h6 {
+  font-size: 14px;
+}
+.ai-answer ul,
+.ai-answer ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+.ai-answer li {
+  margin: 4px 0;
+}
+.ai-answer li > p {
+  margin: 2px 0;
+}
+.ai-answer strong {
+  color: var(--vc-forest);
+}
+.ai-answer code {
+  padding: 1px 4px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: 6px;
+  background: var(--vc-surface);
+  font-size: 0.9em;
+}
+.ai-answer pre {
+  margin: 10px 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-sm);
+  background: var(--vc-surface);
+}
+.ai-answer pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.ai-answer a {
+  color: var(--vc-blue);
+  text-decoration: underline;
+}
+.ai-answer blockquote {
+  margin: 10px 0;
+  padding: 4px 0 4px 12px;
+  border-left: 3px solid var(--vc-moss);
+  color: var(--vc-text-secondary);
+}
+.ai-answer table {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ai-answer th,
+.ai-answer td {
+  padding: 6px 8px;
+  border: 1px solid var(--vc-mint-line);
+  text-align: left;
+}
+.ai-answer th {
+  background: var(--vc-surface);
+  color: var(--vc-forest);
+}
+.ai-answer hr {
+  margin: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--vc-mint-line);
+}
+.ai-answer img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--vc-radius-sm);
+}
+@media (max-width: 760px) {
+  .ai-answer {
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .detail .ai-answer h1 {
+    font-size: 21px;
+  }
+  .detail .ai-answer h2 {
+    font-size: 19px;
+  }
+  .detail .ai-answer h3 {
+    font-size: 17px;
+  }
 }
 dialog {
   width: 570px;

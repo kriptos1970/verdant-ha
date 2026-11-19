@@ -6,6 +6,13 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.8 — risposte AI in Markdown
+
+- Le risposte dell’assistente AI nel riquadro verde vengono renderizzate come Markdown: titoli, paragrafi, grassetto e corsivo, elenchi puntati e numerati, citazioni, codice e tabelle GFM.
+- Il renderer viene caricato solo quando serve ed è separato dal bundle principale; non interpreta HTML grezzo.
+- Stesso comportamento per Gemini e OpenAI, che restituiscono lo stesso campo `summaryMarkdown`.
+- 215 test backend, build frontend.
+
 # 0.11.7 — etichette QR con lo slug dell’add-on
 
 - Le etichette QR/NFC usano lo slug dell’add-on corrente (`local_plantcare_web` per l’installazione locale, `309d34f7_plantcare_web` per quella da repository) invece del valore fisso `local_plantcare_web`.

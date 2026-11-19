@@ -58,7 +58,7 @@ For the entities allowed in the options, map each sensor to a plant or room in *
 
 Configure `ai_provider` and the matching key in the add-on options. From **More → AI plan → Assistant model** you can load the models available to your account and select one. The web choice applies to the current provider and is overridden when `ai_model` changes in the add-on options.
 
-Open **AI** on the plant card, write a question and choose **Ask for advice**. The question and text context are sent to the configured provider, possibly consuming API credit. Photos are not sent. An identical request with the same context, provider and model reuses the result.
+Open **AI** on the plant card, write a question and choose **Ask for advice**. Markdown answers are formatted in the green box (headings, lists, emphasis, quotes and tables). The question and text context are sent to the configured provider, possibly consuming API credit. Photos are not sent. An identical request with the same context, provider and model reuses the result.
 
 Select the activities to apply and review **The plan after applying**. Text indications are added to the notes. If the plant changes after the analysis, a new advice is required. Repeating the same confirmation does not create a second event.
 

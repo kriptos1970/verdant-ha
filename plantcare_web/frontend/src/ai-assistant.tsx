@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Check, LoaderCircle, Sparkles, RotateCw } from "lucide-react";
 import { api } from "./api";
 import type { Plant, Settings } from "./types";
+
+const Markdown = lazy(() => import("./markdown"));
 
 type Advice = {contextVersion?:number;climateContext?:{generatedAt:string|null;currentWeather:false}|null;id:string;expectedVersion:number;provider:string;model:string;createdAt:string;summaryMarkdown:string;careNotes:string;wateringDays:number;fertilizingDays:number;inspectionDays:number;pruningDays:number;repottingDays:number;applied?:boolean;stale?:boolean};
 const choices = [
@@ -32,7 +34,11 @@ export function PlantAssistant({plant,settings,run}:{plant:Plant;settings?:Setti
     </form>
     {!settings?.aiConfigured && <p className="muted small-text">Configura provider e chiave nelle opzioni dell’add-on Home Assistant.</p>}
     {error && <p role="alert" className="form-error">{error}</p>}
-    {advice && <div className="advice-proposal"><p className="muted small-text">{advice.provider} · {advice.model} · {new Date(advice.createdAt).toLocaleString("it-IT")}</p>{advice.climateContext && <p className="muted small-text">Clima del piano salvato: {advice.climateContext.generatedAt ? new Date(advice.climateContext.generatedAt).toLocaleString("it-IT") : "data sconosciuta"}. Questi dati non rappresentano il meteo attuale.</p>}<div className="ai-answer preserve">{advice.summaryMarkdown}</div>
+    {advice && <div className="advice-proposal"><p className="muted small-text">{advice.provider} · {advice.model} · {new Date(advice.createdAt).toLocaleString("it-IT")}</p>{advice.climateContext && <p className="muted small-text">Clima del piano salvato: {advice.climateContext.generatedAt ? new Date(advice.climateContext.generatedAt).toLocaleString("it-IT") : "data sconosciuta"}. Questi dati non rappresentano il meteo attuale.</p>}<div className="ai-answer">
+        <Suspense fallback={<p>{advice.summaryMarkdown}</p>}>
+          <Markdown>{advice.summaryMarkdown}</Markdown>
+        </Suspense>
+      </div>
       <h3>Le frequenze proposte</h3><p className="muted small-text">Scegli quali attività aggiornare. Irrigazione, controlli, potatura e rinvaso seguono i riferimenti stabili del piano nativo. La concimazione resta coerente con la modalità di cura e con il ciclo dell’acqua.</p>
       <fieldset className="advice-options" disabled={!!stale || advice.applied || asking || applying}>{choices.map(([key,label,value,field])=><label key={key}><input type="checkbox" checked={selection[key] || false} onChange={e=>setSelection(s=>({...s,[key]:e.target.checked}))}/><span>{label}<small>{plant[field] ?? "—"} → {advice[value]} giorni</small></span></label>)}</fieldset>
       {!advice.applied && <div className="plan-preview" aria-live="polite"><h4>Il piano dopo l’applicazione</h4>{previewing ? <p>Calcolo delle attività selezionate…</p> : preview && choices.map(([key,label,,field])=><p className="small-text" key={key}>{label}: {plant[field] ?? "non impostata"} → {preview[field] ?? "non impostata"}{preview[field]!=null ? " giorni" : ""}</p>)}</div>}
