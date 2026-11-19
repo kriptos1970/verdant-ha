@@ -11,19 +11,13 @@ import { IOSIcon } from "./ios-icons";
 
 type HomeInsightsProps = {
   onOpenAnalytics: () => void;
-  onOpenPlant: (id: string) => void;
 };
 
 function HomeInsightsSkeleton() {
   return (
     <div className="home-insights" aria-busy="true">
-      <div className="home-insight-grid">
-        <div className="panel home-insight">
-          <ChartSkeleton />
-        </div>
-        <div className="panel home-insight">
-          <ChartSkeleton />
-        </div>
+      <div className="panel home-insight">
+        <ChartSkeleton />
       </div>
     </div>
   );

@@ -32,6 +32,8 @@ const paths = {
  warning: 'M12 1 24 22H0Zm-1 7v7h2v-7Zm0 9v2h2v-2Z',
  ellipsis: 'M5 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm7 0a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm7 0a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
  swap: 'M7 3 2 8l5 5V9h6V7H7Zm10 18 5-5-5-5v4h-6v2h6Z',
+ sunHaze: 'M12 1a5 5 0 0 0-5 5h10a5 5 0 0 0-5-5ZM2 9h20v2H2Zm0 4h20v2H2Zm3 4h14v2H5Z',
+ cloudRain: 'M7 4a6 6 0 0 1 11.7 1.8A5.5 5.5 0 0 1 18 16H6a6 6 0 0 1 1-12Zm1 14 2 1-2 4-2-1Zm6 0 2 1-2 4-2-1Z',
 } as const;
 export type IOSIconName = keyof typeof paths;
 export function IOSIcon({name,size=24,className=''}:{name:IOSIconName;size?:number;className?:string}){

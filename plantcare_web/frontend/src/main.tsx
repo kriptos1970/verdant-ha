@@ -337,12 +337,12 @@ function App() {
   const allActions = plants
     .flatMap((p) => p._actions)
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
-  const due = allActions.filter((a) => a.daysUntil <= 0),
-    week = allActions.filter((a) => a.daysUntil >= 0 && a.daysUntil <= 7);
-  const homeDue = [...due]
+  const due = allActions.filter((a) => a.daysUntil === 0);
+  const homeDue = allActions
+    .filter((action) => action.kind === "Annaffia" && action.daysUntil <= 0)
     .sort((a, b) => a.daysUntil - b.daysUntil)
     .filter((action, index, list) => list.findIndex((item) => item.plantID === action.plantID) === index)
-    .slice(0, 5)
+    .slice(0, 3)
     .flatMap((action) => {
       const plant = plants.find((item) => item.id === action.plantID);
       return plant ? [{ action, plant }] : [];
@@ -595,7 +595,12 @@ function App() {
                             location: latestPlan.locationName,
                           })}
                         >
-                          <Sun size={18} aria-hidden="true" />
+                          <Sun size={18} className="desktop-symbol" aria-hidden="true" />
+                          <IOSIcon
+                            name={latestPlan.precipitationNextWeek > 8 ? "cloudRain" : "sunHaze"}
+                            size={22}
+                            className="mobile-symbol"
+                          />
                           <strong>
                             {Math.round(latestPlan.averageTemperature)}°C
                           </strong>
@@ -605,29 +610,11 @@ function App() {
                         </div>
                       )}
                       <span className="heading-icon">
-                        <Sun size={28} />
+                        <Sun size={28} className="desktop-symbol" />
+                        <IOSIcon name="sunHaze" size={32} className="mobile-symbol" />
                       </span>
                     </div>
                   </div>
-                  {homeDue.length > 0 && (
-                    <section className="home-care-list" aria-label={t("home.attention")}>
-                      {homeDue.slice(0, 2).map(({ action, plant }) => (
-                        <HomeCareRow
-                          key={action.id}
-                          action={action}
-                          plant={plant}
-                          onOpen={() => openPlant(plant.id)}
-                          onAction={() =>
-                            setAction({ plant, kind: action.kind, scheduled: action })
-                          }
-                        />
-                      ))}
-                    </section>
-                  )}
-                  <HomeInsights
-                    onOpenAnalytics={() => setPage("analytics")}
-                    onOpenPlant={openPlant}
-                  />
                   <WeekStrip
                     actions={allActions}
                     zone={settings?.timezone || "Europe/Rome"}
@@ -693,21 +680,15 @@ function App() {
                       <small>{t("home.stats.rooms")}</small>
                     </div>
                   </div>
-                  <section className="panel home-attention">
-                    <div className="section-heading">
-                      <div>
-                        <h2>{t("home.attention")}</h2>
-                        <p>{t("home.attentionSubtitle")}</p>
+                  {homeDue.length > 0 && (
+                    <section className="home-attention">
+                      <div className="section-heading">
+                        <div>
+                          <h2>{t("home.attention")}</h2>
+                          <p>{t("home.attentionSubtitle")}</p>
+                        </div>
                       </div>
-                      <button
-                        className="text-button"
-                        onClick={() => setPage("care")}
-                      >
-                        {t("home.allCare")} <ChevronRight size={16} />
-                      </button>
-                    </div>
-                    {homeDue.length ? (
-                      homeDue.slice(0, 5).map(({ action, plant }) => (
+                      {homeDue.map(({ action, plant }) => (
                         <HomeCareRow
                           key={action.id}
                           action={action}
@@ -717,25 +698,12 @@ function App() {
                             setAction({ plant, kind: action.kind, scheduled: action })
                           }
                         />
-                      ))
-                    ) : (
-                      <div className="gentle-empty">
-                        <CheckCircle2 size={28} />
-                        <div>
-                          <strong>
-                            {plants.length
-                              ? t("home.emptyToday")
-                              : t("home.emptyCalendar")}
-                          </strong>
-                          <p>
-                            {plants.length
-                              ? t("home.emptyTodayText")
-                              : t("home.emptyCalendarText")}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </section>
+                      ))}
+                    </section>
+                  )}
+                  <HomeInsights
+                    onOpenAnalytics={() => setPage("analytics")}
+                  />
                   {proposals.length > 0 && (
                     <section className="ai-banner">
                       <Sparkles size={22} />
@@ -1543,6 +1511,14 @@ function PlantCard({
             )}
           </div>
         </div>
+      </button>
+      <button
+        type="button"
+        className="plant-card-water"
+        aria-label={`${t("plants.actionWater")}: ${plant.name}`}
+        onClick={() => onWater(plant)}
+      >
+        <IOSIcon name="water" size={23} />
       </button>
       <details className="plant-card-menu">
         <summary aria-label={t("plants.actionsAria", { name: plant.name })}>

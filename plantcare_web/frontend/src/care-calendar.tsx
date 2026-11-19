@@ -8,6 +8,7 @@ import {
   Play,
   Clock3,
   Pencil,
+  X,
 } from "lucide-react";
 import type { Action, Plant, CareEvent } from "./types";
 import { api } from "./api";
@@ -145,6 +146,7 @@ export function CareCalendar({
     [month, setMonth] = useState(false),
     [historyPlant, setHistoryPlant] = useState(""),
     [kind, setKind] = useState(""),
+    [historyUsesDates, setHistoryUsesDates] = useState(false),
     [from, setFrom] = useState(""),
     [to, setTo] = useState("");
   const rooms = [...new Set(plants.map((p) => p.room))].sort((a, b) =>
@@ -416,34 +418,57 @@ export function CareCalendar({
                   ))}
               </select>
             </label>
-            <label>
-              {t("calendar.from")}
+            <label className="history-period-toggle">
               <input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
+                type="checkbox"
+                checked={historyUsesDates}
+                onChange={(e) => {
+                  setHistoryUsesDates(e.target.checked);
+                  if (!e.target.checked) {
+                    setFrom("");
+                    setTo("");
+                  }
+                }}
               />
+              <span>{t("calendar.period")}</span>
             </label>
-            <label>
-              {t("calendar.to")}
-              <input
-                type="date"
-                min={from}
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
-            </label>
-            {(historyPlant || kind || from || to) && (
+            {historyUsesDates && (
+              <div className="history-date-range">
+                <label>
+                  {t("calendar.from")}
+                  <input
+                    type="date"
+                    value={from}
+                    onChange={(e) => setFrom(e.target.value)}
+                  />
+                </label>
+                <label>
+                  {t("calendar.to")}
+                  <input
+                    type="date"
+                    min={from}
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                  />
+                </label>
+                <small className="history-date-hint">
+                  {t("calendar.datesIncluded")}
+                </small>
+              </div>
+            )}
+            {(historyPlant || kind || from || to || historyUsesDates) && (
               <button
                 type="button"
-                className="text-button"
+                className="history-clear-filters"
                 onClick={() => {
                   setHistoryPlant("");
                   setKind("");
                   setFrom("");
                   setTo("");
+                  setHistoryUsesDates(false);
                 }}
               >
+                <X size={16} />
                 {t("calendar.clearFilters")}
               </button>
             )}
@@ -454,17 +479,19 @@ export function CareCalendar({
           {historyByDay.map((group) => (
             <div className="history-day-group" key={group.day}>
               <h3 className="history-day">
-                {display(group.day, { weekday: "long", day: "numeric", month: "long" }, locale)}
-                <span>{group.items.length}</span>
+                {display(group.day, { weekday: "long", day: "numeric", month: "long", year: "numeric" }, locale)}
               </h3>
               {group.items.map(({ plant, event }) => {
-            const Icon = eventIcon(event.kind);
             return (
               <div className="global-history-event" key={plant.id + event.id}>
-                <span className="timeline-icon">
-                  <Icon size={17} />
-                </span>
+                <Avatar plant={plant} />
                 <div>
+                  <strong className="history-event-kind" data-kind={event.kind}>
+                    <IOSIcon name={careIconName(event.kind)} size={17} />
+                    {kindLabel(event.kind)}
+                    {event.status === "postponed" ? ` · ${t("calendar.postponed")}` : ""}
+                    {event.health ? ` · ${event.health}` : ""}
+                  </strong>
                   <button
                     className="text-button history-plant-link"
                     onClick={() => onOpenPlant(plant.id)}
@@ -472,11 +499,6 @@ export function CareCalendar({
                     {plant.name}
                     <ChevronRight size={12} />
                   </button>
-                  <strong>
-                    {kindLabel(event.kind)}
-                    {event.status === "postponed" ? ` · ${t("calendar.postponed")}` : ""}
-                    {event.health ? ` · ${event.health}` : ""}
-                  </strong>
                   <small>
                     <MapPin size={11} />
                     {plant.room} ·{" "}
