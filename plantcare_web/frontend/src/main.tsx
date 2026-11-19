@@ -1621,6 +1621,24 @@ function EmptyCollection({
     </section>
   );
 }
+function ProductThumb({ product }: { product: Product }) {
+  const src = photoURL(product.photoPath);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+  return (
+    <span className="fertilizer-thumb">
+      {src && !failed ? (
+        <img
+          src={photoURL(product.photoPath, true)}
+          alt=""
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <FlaskConical size={20} />
+      )}
+    </span>
+  );
+}
 function PlantEditor({
   plant,
   seed,
@@ -1642,6 +1660,7 @@ function PlantEditor({
 }) {
   const { t } = useI18n();
   const { categoryLabel, lightLabel, potLabel, planModeLabel, placementLabel } = useDomainLabels();
+  const { categoryLabel: productCategoryLabel } = useProductLabels();
   const { kindLabel } = useCareLabels();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
@@ -1795,6 +1814,22 @@ function PlantEditor({
     setCandidates(undefined);
     setIdentifyError("");
   };
+  const chooseFertilizer = (product?: Product) => {
+    setDraft((current) => ({
+      ...current,
+      fertilizerProductID: product?.id ?? null,
+      fertilizerType: product?.name ?? null,
+      fertilizerDose: product ? current.fertilizerDose || "Dose intera" : "",
+    }));
+  };
+  const fertilizerProducts = products.filter(
+    (p) =>
+      p.id === draft.fertilizerProductID ||
+      !p.category ||
+      ["Fertilizzante", "Biostimolante", "Ammendante", "Radicante"].includes(
+        p.category,
+      ),
+  );
   const inputDate = (value: string) =>
     new Date(value).toLocaleDateString("en-CA");
   const buildSetup = (value: Plant): PlantSetup => {
@@ -1890,7 +1925,7 @@ function PlantEditor({
             return;
           }
           setError("");setUploading(true);
-          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}if(value.carePlanMode==="Intelligente"){value={...value,adaptivePlan:{...(value.adaptivePlan||{}),placement}} as Plant}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
+          try{let value=draft;const linkedFertilizer=products.find(p=>p.id===value.fertilizerProductID);if(linkedFertilizer){value={...value,fertilizerType:linkedFertilizer.name,fertilizerDose:value.fertilizerDose||"Dose intera"}}if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...value,photoPath:photo.path};setDraft(value)}if(value.carePlanMode==="Intelligente"){value={...value,adaptivePlan:{...(value.adaptivePlan||{}),placement}} as Plant}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
         }}
       >
         <p className="editor-subtitle">{t("plantEditor.subtitle")}</p>
@@ -2364,45 +2399,85 @@ function PlantEditor({
                     }
                   />
                 </label>
-                <label>
-                  {t("plantEditor.fertilizerType")}
-                  <input
-                    value={draft.fertilizerType || ""}
-                    onChange={(e) => set("fertilizerType", e.target.value)}
-                    placeholder={t("plantEditor.fertilizerTypePlaceholder")}
-                  />
-                </label>
-                <label>
-                  {t("plantEditor.fertilizer")}
-                  <select
-                    value={draft.fertilizerProductID || ""}
-                    onChange={(e) =>
-                      set("fertilizerProductID", e.target.value || null)
-                    }
+                <div className="fertilizer-picker full">
+                  <div className="fertilizer-picker-head">
+                    <strong>{t("plantEditor.fertilizerPickTitle")}</strong>
+                    <small>{t("plantEditor.fertilizerPickHint")}</small>
+                  </div>
+                  <div
+                    className="fertilizer-options"
+                    role="radiogroup"
+                    aria-label={t("plantEditor.fertilizerPickTitle")}
                   >
-                    <option value="">{t("plantEditor.none")}</option>
-                    {products.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {draft.fertilizerProductID && (
-                  <label className="full">
-                    {t("plantEditor.fertilizerDose")}
-                    <select
-                      value={draft.fertilizerDose || "Dose intera"}
-                      onChange={(e) => set("fertilizerDose", e.target.value)}
+                    <label
+                      className={`fertilizer-option${!draft.fertilizerProductID ? " selected" : ""}`}
                     >
-                      <option value="Dose intera">{t("plantEditor.dose.full")}</option>
-                      <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
-                      <option value="½ dose">{t("plantEditor.dose.half")}</option>
-                      <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
-                      <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
-                    </select>
-                  </label>
-                )}
+                      <input
+                        type="radio"
+                        name="fertilizer-product"
+                        value=""
+                        checked={!draft.fertilizerProductID}
+                        onChange={() => chooseFertilizer(undefined)}
+                      />
+                      <span className="fertilizer-thumb empty">
+                        <Leaf size={20} />
+                      </span>
+                      <span className="fertilizer-copy">
+                        <strong>{t("plantEditor.fertilizerNone")}</strong>
+                        <small>{t("plantEditor.fertilizerNoneHint")}</small>
+                      </span>
+                      <Check size={17} className="fertilizer-check" />
+                    </label>
+                    {fertilizerProducts.map((p) => (
+                      <label
+                        key={p.id}
+                        className={`fertilizer-option${draft.fertilizerProductID === p.id ? " selected" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          name="fertilizer-product"
+                          value={p.id}
+                          checked={draft.fertilizerProductID === p.id}
+                          onChange={() => chooseFertilizer(p)}
+                        />
+                        <ProductThumb product={p} />
+                        <span className="fertilizer-copy">
+                          <strong>{p.name}</strong>
+                          <small>
+                            {[
+                              p.brand,
+                              p.category ? productCategoryLabel(p.category) : "",
+                              p.form,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </small>
+                        </span>
+                        <Check size={17} className="fertilizer-check" />
+                      </label>
+                    ))}
+                  </div>
+                  {!fertilizerProducts.length && (
+                    <p className="muted small-text">
+                      {t("plantEditor.fertilizerEmpty")}
+                    </p>
+                  )}
+                  {draft.fertilizerProductID && (
+                    <label>
+                      {t("plantEditor.fertilizerDose")}
+                      <select
+                        value={draft.fertilizerDose || "Dose intera"}
+                        onChange={(e) => set("fertilizerDose", e.target.value)}
+                      >
+                        <option value="Dose intera">{t("plantEditor.dose.full")}</option>
+                        <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
+                        <option value="½ dose">{t("plantEditor.dose.half")}</option>
+                        <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
+                        <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
+                      </select>
+                    </label>
+                  )}
+                </div>
               </div>
               <p className="muted small-text">
                 {draft.carePlanMode === "Intelligente"

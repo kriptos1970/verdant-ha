@@ -114,6 +114,13 @@ Confronto diretto con `PlantEditorView.swift`:
 
 Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop), nessun overflow orizzontale, sezioni nell’ordine nativo, apertura delle sezioni e filtri Piano/Sicurezza, salvataggio riletto con versione incrementata.
 
+## Associazione del fertilizzante (19 novembre 2026)
+
+- Rimosso il campo libero **“Tipo di fertilizzante”**.
+- Il prodotto si sceglie da un **elenco visuale** con miniatura, nome, marca, categoria e forma; la prima voce è **“Nessun fertilizzante”**.
+- La dose si sceglie solo dopo aver associato un prodotto.
+- Il backend deriva sempre `fertilizerType` dal prodotto collegato; l’elenco mostra i prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante) più l’eventuale prodotto già associato.
+
 ## Stato dopo l’allineamento del 17 novembre 2026
 
 - **Impaginazione**: form a sezioni non richiudibili (Identità, Posizione, Profilo fisico, Modalità del piano di cura, Attività aggiuntive, Vaso e substrato, Altre informazioni), righe etichetta/controllo, sottotitolo e Annulla/Salva in testa e in fondo; interruttori a levetta. Verificato a 1280 px (righe flex, toggle 44 px) e con CSS dedicato al telefono.

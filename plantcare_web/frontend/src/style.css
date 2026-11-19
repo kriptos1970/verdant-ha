@@ -5155,3 +5155,114 @@ dialog:has(.plant-editor-form) {
 .editor-disclosure[open] > summary {
   border-bottom-color: var(--vc-mint-line);
 }
+
+/* Plant editor: visual fertilizer picker */
+.fertilizer-picker {
+  display: grid;
+  gap: 10px;
+}
+.fertilizer-picker-head {
+  display: grid;
+  gap: 2px;
+}
+.fertilizer-picker-head strong {
+  color: var(--vc-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.fertilizer-picker-head small {
+  color: var(--vc-text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.fertilizer-options {
+  display: grid;
+  gap: 6px;
+}
+.plant-editor-form label.fertilizer-option {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: var(--vc-radius-sm);
+  background: var(--vc-surface);
+  cursor: pointer;
+}
+.plant-editor-form label.fertilizer-option > input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.plant-editor-form label.fertilizer-option:has(input:focus-visible) {
+  outline: 2px solid var(--vc-moss);
+  outline-offset: 2px;
+}
+.plant-editor-form label.fertilizer-option.selected {
+  border-color: var(--vc-moss);
+  background: var(--vc-mint);
+}
+.fertilizer-thumb {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid var(--vc-mint-line);
+  border-radius: 10px;
+  background: var(--vc-surface);
+  color: var(--vc-moss);
+}
+.fertilizer-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.fertilizer-thumb.empty {
+  background: var(--vc-mint-soft);
+}
+.fertilizer-copy {
+  display: grid;
+  flex: 1;
+  gap: 1px;
+  min-width: 0;
+}
+.fertilizer-copy strong {
+  color: var(--vc-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.fertilizer-copy small {
+  color: var(--vc-text-secondary);
+  font-size: 12px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.fertilizer-check {
+  flex: none;
+  color: var(--vc-moss);
+  opacity: 0;
+}
+.fertilizer-option.selected .fertilizer-check {
+  opacity: 1;
+}
+.plant-editor-form .fertilizer-picker > label {
+  margin-top: 2px;
+}
+@media (min-width: 761px) {
+  .fertilizer-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

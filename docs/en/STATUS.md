@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.4**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.5**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,13 @@ Current release: **0.11.4**, published on [GitHub Releases](https://github.com/k
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.5 (19 November 2026)
+
+- The plant editor now associates fertilizer through a **visual list** with thumbnail, name, brand, category and form, plus “No fertilizer”.
+- The free-text “Fertilizer type” field is gone; the type is derived from the selected product on the backend too.
+- Only fertilizer products (Fertilizzante, Biostimolante, Ammendante, Radicante) plus the already linked product are listed; the dose appears only with a product.
+- Verified: 213 backend tests, 1,001 i18n keys, frontend build, no overflow at 320/390 px.
 
 ## Release 0.11.4 (19 November 2026)
 

@@ -142,6 +142,8 @@ async def smart_plan_value(value,previous=None):
 @app.post('/api/plants',status_code=201)
 async def create_plant(body:Plant):
     value=body.model_dump()
+    product=linked_product(value)
+    if product: value['fertilizerType']=product['name']
     if value['history'] or value.get('treatmentPlans'): raise HTTPException(422,'Usa il flusso di importazione per le cronologie esistenti.')
     if value.get('carePlanMode')=='Intelligente': value=await smart_plan_value(value)
     p,v=store.put('plants',value)
@@ -153,6 +155,8 @@ async def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
     with store.connection() as db:
         old,_=store.get('plants',plant_id,db)
         value=body.model_dump()
+        product=linked_product(value,db)
+        if product: value['fertilizerType']=product['name']
         if value['history']!=old['history']: raise HTTPException(422,'Modifica le cure dal diario.')
         if value.get('treatmentPlans')!=old.get('treatmentPlans'): raise HTTPException(422,'Modifica i cicli dalla sezione Trattamenti.')
         transitioning=value.get('carePlanMode')=='Intelligente' and old.get('carePlanMode')!='Intelligente'

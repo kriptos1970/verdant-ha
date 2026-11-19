@@ -6,6 +6,13 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.5 — scelta visuale del fertilizzante
+
+- Nell’editor pianta il fertilizzante si sceglie da un **elenco visuale** con miniatura, nome, marca, categoria e forma; “Nessun fertilizzante” resta la prima voce.
+- Rimosso il campo libero **“Tipo di fertilizzante”**: il tipo viene derivato dal prodotto scelto, anche lato backend, e non è più modificabile.
+- Sono proposti solo i prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante), più l’eventuale prodotto già associato; la dose compare solo con un prodotto selezionato.
+- 213 test backend, 1001 chiavi i18n.
+
 # 0.11.4 — un solo interruttore per il motore di cura
 
 - La modalità del motore di cura ha ora **una sola fonte**: l’opzione `care_engine_mode` nella configurazione dell’add-on, con default **Operativo**.

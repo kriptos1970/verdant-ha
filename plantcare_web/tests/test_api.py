@@ -47,6 +47,16 @@ def test_calendar_endpoint_keeps_the_legacy_frontend_values(client):
     assert not any(a['kind']=='water' for a in actions)
 
 
+def test_fertilizer_type_is_derived_from_the_linked_product(client):
+    product=client.post('/api/fertilizers',json={'name':'Concime A','form':'Liquido'}).json()
+    p=create(client,fertilizerProductID=product['id'],fertilizerType='Etichetta libera')
+    assert p['fertilizerType']=='Concime A'
+    p['fertilizerType']='Altra etichetta'
+    r=client.put(f"/api/plants/{p['id']}?version={p['_version']}",json=p)
+    assert r.status_code==200,r.text
+    assert r.json()['fertilizerType']=='Concime A'
+
+
 def test_error_responses_expose_stable_codes(client):
     assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
     p=create(client)
