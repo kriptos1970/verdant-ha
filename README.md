@@ -31,11 +31,11 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 - Backend: Python 3.13, FastAPI, Pydantic, SQLite.
 - Frontend: React 19, TypeScript, Vite.
 - Packaging: Home Assistant add-on built from a local Dockerfile (aarch64 and amd64).
-- Tests: 213 pytest tests; frontend type-check and build in CI.
+- Tests: 215 pytest tests; frontend type-check and build in CI.
 
 ## Status
 
-Current version: **0.11.5**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
+Current version: **0.11.6**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
 
 Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). The high-level plan is in [ROADMAP.md](ROADMAP.md).
 

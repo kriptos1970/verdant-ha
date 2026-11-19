@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.5**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.6**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.5**, published on [GitHub Releases](https://github.com/k
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.6 (19 November 2026)
+
+- Assisted local → repository add-on migration: imports the database from `/share/plantcare/migrate/plantcare.sqlite` when `/data` is empty and `import-request` exists.
+- SQLite header validation, atomic replacement, request consumed once; the snapshot stays in place for rollback.
+- 215 backend tests.
 
 ## Release 0.11.5 (19 November 2026)
 

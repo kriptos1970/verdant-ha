@@ -6,6 +6,12 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.6 — migrazione assistita tra add-on
+
+- Nuovo import guidato per spostare l’archivio su un add-on con slug diverso (locale → repository): se `/data` è vuoto e esiste `/share/plantcare/migrate/import-request`, l’app importa `/share/plantcare/migrate/plantcare.sqlite` all’avvio.
+- Il database viene validato come SQLite e sostituito atomicamente; il file di migrazione resta in `/share` per il rollback e la richiesta viene consumata una sola volta.
+- 215 test backend.
+
 # 0.11.5 — scelta visuale del fertilizzante
 
 - Nell’editor pianta il fertilizzante si sceglie da un **elenco visuale** con miniatura, nome, marca, categoria e forma; “Nessun fertilizzante” resta la prima voce.

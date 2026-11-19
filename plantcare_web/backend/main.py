@@ -28,6 +28,8 @@ from . import services, ai, care, adaptive
 from .treatments import pin_baselines, update_counts, treatment_view
 
 settings=Settings()
+from .migration import import_shared_database
+import_shared_database(settings.directory)
 store=Store(settings.directory,settings.photo_directory)
 
 @asynccontextmanager
