@@ -6,7 +6,7 @@ Current release: **0.11.7**, published on [GitHub Releases](https://github.com/k
 
 - **Collection**: plants, rooms, products, photos, growth diary, annotated health album, collection pagination.
 - **Care**: guided care round, weekly/monthly calendar, paginated history, treatments, deferrals and reminders.
-- **Planning**: adaptive planner with seasonal rules and optional Open-Meteo. New plants start in manual mode; the advanced Care Engine runs in shadow mode and never rewrites the calendar by itself.
+- **Planning**: adaptive planner with seasonal rules and optional Open-Meteo. New plants start in manual mode; the operational Care Engine can postpone watering on fresh, reliable wet-soil readings (default active) and never advances care. See [CARE_ENGINE.md](CARE_ENGINE.md).
 - **Sensors**: temperature, humidity, light, soil moisture and conductivity from Home Assistant entities mapped to a plant or room.
 - **AI (optional)**: Gemini or OpenAI structured advice with preview and selective application; disabled by default, automatic application off.
 - **Knowledge**: Pl@ntNet identification, iNaturalist catalog, Perenual and Open Plantbook profiles, nine illustrated care guides, guided symptom check.
@@ -18,7 +18,7 @@ Current release: **0.11.7**, published on [GitHub Releases](https://github.com/k
 
 ## Verification
 
-- **180 backend tests** pass.
+- **215 backend tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
@@ -43,8 +43,8 @@ Current release: **0.11.7**, published on [GitHub Releases](https://github.com/k
 - A full **restore on an isolated Home Assistant instance** has not been rehearsed yet.
 - **Live sensors and Open-Meteo** are covered by simulated transports, not by a long-running real installation.
 - **Large real archives** beyond the synthetic benchmark (100 plants / 50,000 events) still need validation.
-- The **Care Engine** is intentionally in shadow mode; measurements do not rewrite the schedule.
-- **AI automatic application** remains disabled by default. The daily analysis runs with the configured provider; a manual real-data trial on Home Assistant was rejected by Gemini with `User location is not supported` (raw 400). The public IP is Italian (Telecom Italia, AS3269), no proxy/VPN is in use, IPv6 is unavailable and Cloudflare only fronts inbound `sicoli.ovh`; Google is misclassifying the public IP, as confirmed by the temporary fix after a router restart. An OpenAI key, a new/static IP or Google’s IP report is needed to complete the trial.
+- The **Care Engine** can only postpone watering, and only with a fresh, reliable moisture reading; it never advances or records care. In shadow mode it is advisory. The full behaviour is in [CARE_ENGINE.md](CARE_ENGINE.md).
+- **AI automatic application** remains disabled by default. Gemini is configured and reachable; the real-data daily trial is deferred and will be repeated on request.
 - **Desktop layout** realignment with the macOS app is postponed; the phone layout was the priority.
 - **MariaDB** and any external database are postponed; SQLite remains the store.
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
@@ -54,6 +54,8 @@ Current release: **0.11.7**, published on [GitHub Releases](https://github.com/k
 ## Release 0.11.7 (19 November 2026)
 
 - QR/NFC labels use the current add-on slug (local or repository); already printed labels remain readable.
+- Real repository add-on migration completed: `309d34f7_plantcare_web` 0.11.7 with the archive and options copied, 124 photos; the old `local_plantcare_web` stays stopped for rollback.
+- Care engine documentation in all three modes: [CARE_ENGINE.md](CARE_ENGINE.md) and [Italian version](../CARE_ENGINE.md).
 - 215 backend tests.
 
 ## Release 0.11.6 (19 November 2026)
@@ -68,7 +70,6 @@ Current release: **0.11.7**, published on [GitHub Releases](https://github.com/k
 - The free-text “Fertilizer type” field is gone; the type is derived from the selected product on the backend too.
 - Only fertilizer products (Fertilizzante, Biostimolante, Ammendante, Radicante) plus the already linked product are listed; the dose appears only with a product.
 - Verified: 213 backend tests, 1,001 i18n keys, frontend build, no overflow at 320/390 px.
-- GitHub add-on repository: `repository.yaml` added; the Supervisor lists **Verdant HA Add-ons** and the `309d34f7_plantcare_web` 0.11.5 add-on. The local `local_plantcare_web` installation stays separate; migration uses the ZIP and regenerated QR labels.
 
 ## Release 0.11.4 (19 November 2026)
 

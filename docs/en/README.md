@@ -4,6 +4,7 @@ This folder contains the English entry points. The full historical documentation
 
 - [Installation on Home Assistant](INSTALL.md)
 - [Status, verification and known limits](STATUS.md)
+- [Care engine — Manual, Verdant, AI](CARE_ENGINE.md)
 - [Architecture and reference matrix](REFERENCE.md)
 - [Roadmap](../../ROADMAP.md)
 - [Changelog](../../plantcare_web/CHANGELOG.md)

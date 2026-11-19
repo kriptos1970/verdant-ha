@@ -8,14 +8,16 @@
 | 2 — Add-on e interfaccia | Installata e aggiornata alla 0.10.3 su Home Assistant il 16 novembre 2026; avvio e interfaccia Ingress verificati in Safari. |
 | 3 — Archivio e importazione | Archivio personale importato su Home Assistant: 18 piante, 7 prodotti e 124 fotografie; collezione, diario, prodotti e scadenze verificati in Ingress. |
 | 4 — Cure e calendario | Completato per questo incremento: giro guidato, calendario settimana/mese, cronologia filtrabile, registrazioni e cicli di trattamento. |
-| 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e Care Engine avanzato in shadow. Attivazione operativa delle raccomandazioni esclusa da questo incremento. |
+| 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.6 disponibile da repository e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.7 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
 
 ## Rilascio 0.11.7 (19 novembre 2026)
 
 - Etichette QR/NFC con lo slug dell’add-on corrente, ricavato dall’hostname del container; le etichette già stampate restano leggibili.
+- Migrazione reale al repository add-on completata: `309d34f7_plantcare_web` 0.11.7, archivio e opzioni copiati, 124 foto; il vecchio `local_plantcare_web` resta fermo per rollback.
+- Documentazione del motore di cura nelle tre modalità: `docs/CARE_ENGINE.md` e `docs/en/CARE_ENGINE.md`.
 - 215 test backend.
 
 ## Rilascio 0.11.6 (19 novembre 2026)
@@ -30,7 +32,6 @@
 - Rimosso il campo libero “Tipo di fertilizzante”; il tipo è derivato dal prodotto scelto anche lato backend.
 - Filtro ai prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante) con l’eventuale prodotto già associato; dose visibile solo con un prodotto.
 - Verifica: 213 test backend, 1001 chiavi i18n, build frontend, nessun overflow a 320/390 px.
-- Repository add-on GitHub: aggiunto `repository.yaml`, il Supervisor vede **Verdant HA Add-ons** e l’add-on `309d34f7_plantcare_web` 0.11.5. L’installazione locale `local_plantcare_web` resta separata; migrazione tramite ZIP e nuove etichette QR.
 
 ## Rilascio 0.11.4 (19 novembre 2026)
 
@@ -178,7 +179,7 @@ Add-on Ingress senza porta pubblicata; SQLite locale; piante, prodotti, stanze, 
 
 ## Limiti ancora presenti
 
-- I piani importati mantengono gli intervalli finché non vengono ricalcolati esplicitamente. Il meteo automatico richiede attivazione esplicita per pianta. Le misure dei sensori non cambiano il calendario: il Care Engine resta shadow, come previsto dal piano.
+- I piani importati mantengono gli intervalli finché non vengono ricalcolati esplicitamente. Il meteo automatico richiede attivazione esplicita per pianta. Le misure dei sensori non cambiano il calendario: alla 0.3.0 il Care Engine restava shadow, come previsto dal piano.
 - Il motore legge i profili botanici e i dati di vaso/substrato dell’archivio importato. Catalogo e collegamento guidato sono disponibili dalla 0.8.0; la configurazione avanzata dei profili fisiologici resta da approfondire. Senza un profilo affidabile non vengono presunti requisiti idrici/nutrizionali.
 - L’adattatore dati web e gli identificativi delle raccomandazioni usano una rappresentazione locale Python; i confronti Swift verificano gli esiti del pianificatore/evaluatori, non la parità binaria dell’intera app nativa.
 - Le valutazioni usano al massimo le 10.000 letture SQL più recenti per pianta, oltre alle letture native conservate. Archivi molto grandi richiedono ancora il collaudo dello step 8.
@@ -469,15 +470,15 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - La modalità si sceglie nella configurazione dell’add-on (`care_engine_mode`, default **Operativo**) e la web UI la mostra in sola lettura; non esiste più un override nel database.
 - In modalità operativa, dopo una misura manuale o un campionamento dei sensori, il motore può **solo rinviare** l’annaffiatura quando il terreno è ancora umido e la misura è fresca e affidabile. Non anticipa mai una cura e non la registra.
 - Regole di sicurezza: misura con affidabilità ≥ 65%, gate non `restricted`, confidenza ≥ 35% per umidità ≥ 70% (≥ 55% negli altri casi), un solo rinvio per ciclo di annaffiatura, massimo 14 giorni. Il rinvio è scritto in `nextWateringOverride`, con nota nel diario (`Aggiornamento piano`) e riepilogo `careEngineApplied` visibile nel piano.
-- Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **212 test backend**.
+- Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **215 test backend**. Dettagli delle tre modalità in [CARE_ENGINE.md](CARE_ENGINE.md).
 - Su Home Assistant la modalità effettiva è quella dell’opzione dell’add-on; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
 
 ## Prova AI con provider reale (18 novembre 2026)
 
 - Provider **Gemini** configurato su Home Assistant (`gemini-3.5-flash-lite`), 18 piante in modalità AI, `auto_apply_ai` disattivato. L’analisi giornaliera precedente aveva già girato con successo senza proposte.
 - La prova manuale di oggi (`POST /api/ai/analyze`) è stata rifiutata da Gemini con **“non disponibile per la località della connessione Home Assistant”** (HTTP 422, codice `remote`). Non sono state create proposte né modificati piani; la chiave OpenAI non è configurata.
-- La pipeline AI resta verificata con trasporto simulato e la prova reale è bloccata dalla geografia del provider, non dal codice. Per completarla serve una chiave OpenAI (o un provider raggiungibile dalla posizione dell’istanza).
-- **Diagnosi della risposta Gemini**: la richiesta grezza restituisce `400 FAILED_PRECONDITION — User location is not supported for the API use`. L’IP pubblico dell’istanza è `95.235.2.120` (Telecom Italia, AS3269, Puglia); più database geografici lo indicano in Italia e Scamalytics lo classifica a basso rischio. Non ci sono proxy/VPN, IPv6 non è disponibile e Cloudflare protegge solo l’ingresso di `sicoli.ovh`, non il traffico uscente verso Google. Il problema è quindi la **classificazione dell’IP pubblico da parte di Google**, coerente con il fatto che riavviare il router (nuovo IP) lo risolve temporaneamente e che succede anche ad altre integrazioni Google. Segnalazione consigliata: `https://support.google.com/websearch/workflow/9308722`. Workaround: nuovo IP dal router, IP statico/aziendale, oppure provider AI diverso (OpenAI).
+- La pipeline AI resta verificata con trasporto simulato. Aggiornamento successivo: il provider Gemini è tornato raggiungibile e configurato; la prova reale giornaliera resta rinviata e va ripetuta su richiesta.
+- **Nota storica sulla risposta Gemini (18 novembre 2026)**: la richiesta grezza restituisce `400 FAILED_PRECONDITION — User location is not supported for the API use`. L’IP pubblico dell’istanza è `95.235.2.120` (Telecom Italia, AS3269, Puglia); più database geografici lo indicano in Italia e Scamalytics lo classifica a basso rischio. Non ci sono proxy/VPN, IPv6 non è disponibile e Cloudflare protegge solo l’ingresso di `sicoli.ovh`, non il traffico uscente verso Google. Il problema è quindi la **classificazione dell’IP pubblico da parte di Google**, coerente con il fatto che riavviare il router (nuovo IP) lo risolve temporaneamente e che succede anche ad altre integrazioni Google. Segnalazione consigliata: `https://support.google.com/websearch/workflow/9308722`. Workaround: nuovo IP dal router, IP statico/aziendale, oppure provider AI diverso (OpenAI).
 
 ## Archivio — pulizia fotografie (18 novembre 2026)
 

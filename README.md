@@ -18,7 +18,7 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 
 - **Collection**: plants, rooms, products, photos, growth diary and annotated health album.
 - **Care**: guided care rounds by room, weekly and monthly calendar, paginated history, treatment cycles, deferrals and reminders.
-- **Scheduling**: adaptive planner with seasonal rules and optional Open-Meteo weather. New plants start in manual mode; the advanced Care Engine runs in shadow mode and never rewrites the calendar on its own.
+- **Scheduling**: adaptive planner with seasonal rules and optional Open-Meteo weather. New plants start in manual mode; the operational Care Engine can postpone watering on fresh, reliable wet-soil readings (default active) and never advances care. See [docs/en/CARE_ENGINE.md](docs/en/CARE_ENGINE.md).
 - **Sensors**: temperature, humidity, light, soil moisture and conductivity from Home Assistant entities, mapped to a plant or a room.
 - **AI advice (optional)**: Gemini or OpenAI with structured output, explicit preview and selective application. Disabled by default; automatic application is off.
 - **Knowledge**: Pl@ntNet plant identification, iNaturalist species catalog, Perenual and Open Plantbook profiles, nine care guides and a guided symptom check.
@@ -88,6 +88,7 @@ The CI workflow runs the same backend tests and the frontend build on every push
 - [Installation on Home Assistant (English)](docs/en/INSTALL.md)
 - [Status and known limits (English)](docs/en/STATUS.md)
 - [Architecture and reference matrix (English)](docs/en/REFERENCE.md)
+- [Care engine — Manual, Verdant and AI](docs/en/CARE_ENGINE.md)
 - [Full Italian reference matrix](docs/REFERENCE.md)
 - [Full Italian status and verification notes](docs/STATUS.md)
 - [iOS layout comparison (Italian)](docs/IOS_LAYOUT.md)

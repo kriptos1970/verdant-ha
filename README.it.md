@@ -6,7 +6,7 @@ Versione incrementale **0.11.7**. Add-on autonomo con React/TypeScript, FastAPI,
 
 Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. L’interfaccia è disponibile in italiano e inglese, comprese cure, prodotti, trattamenti, dettaglio iOS, guide e diagnosi. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
 
-La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md).
+La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md). Il motore di cura è spiegato per esteso in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md): Manuale, Verdant, AI, modalità shadow/operativa, ricalcoli e limiti.
 
 ## Installazione su Home Assistant OS
 
@@ -94,7 +94,7 @@ docker build -t plantcare-web:0.2.0 plantcare_web
 
 ## Pianificazione intelligente (0.3.0)
 
-Dalla scheda della pianta aprire **Configura piano intelligente**: esposizione, località e clima manuale o meteo Open-Meteo opzionale. Il sistema mostra un’anteprima prima di cambiare il calendario. I piani importati non avviano richieste meteo automaticamente. Le osservazioni avanzate dei sensori restano consultive (modalità shadow).
+Dalla scheda della pianta aprire **Configura piano intelligente**: esposizione, località e clima manuale o meteo Open-Meteo opzionale. Il sistema mostra un’anteprima prima di cambiare il calendario. I piani importati non avviano richieste meteo automaticamente. Dalla 0.11.4 il motore operativo si imposta nelle opzioni dell’add-on ed è **operativo per default**; dettagli in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md).
 
 La 0.3.0 è installata su Home Assistant e la dashboard Ingress è stata verificata in Safari.
 
