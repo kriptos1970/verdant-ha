@@ -11,6 +11,19 @@ const INTERVAL_FIELDS: Record<string, keyof Plant> = {
   "Aggiorna progressi": "progressInterval",
 };
 
+const VERB_KEYS: Record<string, MessageKey> = {
+  Annaffia: "care.verb.water",
+  Concima: "care.verb.fertilize",
+  Ruota: "care.verb.rotate",
+  Rinvasa: "care.verb.repot",
+  Pota: "care.verb.prune",
+  "Controlla salute": "care.verb.inspect",
+  "Aggiorna progressi": "care.verb.progress",
+  Trattamento: "care.verb.treatment",
+  Spostamento: "care.verb.move",
+  "Aggiornamento piano": "care.verb.planUpdate",
+};
+
 const KIND_KEYS: Record<string, MessageKey> = {
   Annaffia: "care.kind.water",
   Concima: "care.kind.fertilize",
@@ -29,6 +42,9 @@ export function useCareLabels() {
 
   const kindLabel = (kind: string) =>
     KIND_KEYS[kind] ? t(KIND_KEYS[kind]) : kind;
+
+  const verbLabel = (kind: string) =>
+    VERB_KEYS[kind] ? t(VERB_KEYS[kind]) : kind;
 
   const actionLabel = (action: Action) =>
     action.includesFertilizing
@@ -68,5 +84,5 @@ export function useCareLabels() {
     return action ? deadline(action.daysUntil) : t("care.notScheduled");
   };
 
-  return { kindLabel, actionLabel, dueLabel, deadline, dateLabel, careValue };
+  return { kindLabel, verbLabel, actionLabel, dueLabel, deadline, dateLabel, careValue };
 }

@@ -138,7 +138,7 @@ export function CareCalendar({
   onEditEvent: (plant: Plant, event: CareEvent) => void;
 }) {
   const { t, plural, locale } = useI18n();
-  const { actionLabel, dueLabel, kindLabel } = useCareLabels();
+  const { actionLabel, dueLabel, kindLabel, verbLabel } = useCareLabels();
   const today = dayKey(new Date().toISOString(), zone);
   const [mode, setMode] = useState("Calendario"),
     [selected, setSelected] = useState(today),
@@ -205,7 +205,7 @@ export function CareCalendar({
             <Avatar plant={plant} />
             <span>
               <strong>{plant.name}</strong>
-              <small className="care-card-kind">{actionLabel(a)}</small>
+              <small className="care-card-kind">{a.includesFertilizing ? t("care.waterFertilize") : verbLabel(a.kind)}</small>
               <small>{plant.room}</small>
               <em className={a.daysUntil < 0 ? "late" : ""}>
                 {dueLabel(a.daysUntil)}
@@ -362,7 +362,7 @@ export function CareCalendar({
                 <div className="care-kind-group" key={careKind}>
                   <h3 className="care-kind-title" data-kind={careKind}>
                     <IOSIcon name={careIconName(careKind)} size={20} />
-                    {kindLabel(careKind)}
+                    {verbLabel(careKind)}
                   </h3>
                   {items.map(row)}
                 </div>
