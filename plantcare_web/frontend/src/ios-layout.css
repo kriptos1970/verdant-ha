@@ -734,3 +734,6 @@
  .editor-candidate strong{font-size:14px}
  .editor-candidate em{font-size:13px}
 }
+@media(max-width:760px){
+ .plant-editor-form .photo-upload > img{width:96px;height:96px;border-radius:14px}
+}

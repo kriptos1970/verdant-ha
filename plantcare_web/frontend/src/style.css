@@ -4915,3 +4915,10 @@ dialog:has(.plant-editor-form) {
   font-size: 12px;
   white-space: nowrap;
 }
+
+/* Editor: larger photo thumbnail for recognition */
+.plant-editor-form .photo-upload > img {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--vc-radius-md);
+}

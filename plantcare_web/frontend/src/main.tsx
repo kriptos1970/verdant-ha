@@ -1699,7 +1699,6 @@ function PlantEditor({
   const [error, setError] = useState(""),
     [uploading, setUploading] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | undefined>(seed?.file);
-  const [identifyOpen, setIdentifyOpen] = useState(false);
   const [identifying, setIdentifying] = useState(false);
   const [identifyError, setIdentifyError] = useState("");
   const [candidates, setCandidates] = useState<
@@ -1713,6 +1712,7 @@ function PlantEditor({
   >();
   const [seedPhoto,setSeedPhoto]=useState("");
   useEffect(()=>{if(!seed?.file)return;const url=URL.createObjectURL(seed.file);setSeedPhoto(url);return()=>URL.revokeObjectURL(url)},[seed?.file]);
+  const hasPhoto = Boolean(photoFile || draft.photoPath || seedPhoto || seed?.file);
   const set = (key: string, value: unknown) =>
     setDraft((d) => ({ ...d, [key]: value }));
   const upload = async (file?: File) => {
@@ -1734,7 +1734,6 @@ function PlantEditor({
     }
   };
   const identifyPhoto = async () => {
-    setIdentifyOpen(false);
     setIdentifying(true);
     setIdentifyError("");
     setCandidates(undefined);
@@ -1929,14 +1928,15 @@ function PlantEditor({
             </div>
             <button
               type="button"
-              className="button secondary"
+              className={`button ${hasPhoto ? "primary" : "secondary"}`}
+              aria-busy={identifying}
               disabled={
                 identifying ||
                 uploading ||
                 !settings?.services?.plantnet ||
-                (!photoFile && !draft.photoPath && !seed?.file)
+                !hasPhoto
               }
-              onClick={() => setIdentifyOpen(true)}
+              onClick={() => void identifyPhoto()}
             >
               {identifying ? (
                 <LoaderCircle size={17} className="spin" />
@@ -1956,27 +1956,6 @@ function PlantEditor({
               <p className="form-error" role="alert">
                 {identifyError}
               </p>
-            )}
-            {identifyOpen && (
-              <div className="editor-consent">
-                <p>{t("plantEditor.identifyConsent")}</p>
-                <div className="button-row">
-                  <button
-                    type="button"
-                    className="button secondary"
-                    onClick={() => setIdentifyOpen(false)}
-                  >
-                    {t("common.cancel")}
-                  </button>
-                  <button
-                    type="button"
-                    className="button primary"
-                    onClick={() => void identifyPhoto()}
-                  >
-                    {t("plantEditor.identifySend")}
-                  </button>
-                </div>
-              </div>
             )}
             {candidates && (
               <div className="editor-candidates" aria-live="polite">
