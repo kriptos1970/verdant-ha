@@ -390,6 +390,13 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Confronto visivo con il simulatore iPhone (19 novembre 2026)
+
+- Compilata e avviata **Verdant iOS** dal progetto `PlantCare2.0/VerdantMultiplatform` su **iPhone 17 Pro / iOS 26.5** con `xcodebuild` e `simctl`; screenshot nativo salvato e confrontato con il web a 430 px.
+- Il simulatore aveva 4 piante ma 0 cure in scadenza, quindi le sezioni condizionali “oggi” e “Come evolve la tua collezione” non erano visibili; per lo stato popolato sono state usate le schermate native fornite dall’utente.
+- Allineati al nativo: icone **piene** (goccia, foglia, calendario, casa, grafico, warning, ellissi), riquadri colorati delle metriche, righe pianta con pulsante blu, card azioni con foto grande, pulsante **Completa**, menu **⋯** e intestazioni di gruppo (“Annaffia”).
+- Restano differenze funzionali consapevoli: la campanella “Attive” del nativo non esiste nel web (nessuna notifica push), e le foto demo sono segnaposto finché non si usano immagini reali.
+
 ## Motore di cura operativo (18 novembre 2026)
 
 - In **Impostazioni → Motore di cura** si sceglie **Solo osservazione (shadow)** o **Operativo**; la preferenza è salvata nello stato dell’app e prevale sull’opzione dell’add-on.
