@@ -1,0 +1,43 @@
+:root {
+  /* Verdant visual tokens: source of truth for the phone UI. */
+  --vc-forest: #194330;
+  --vc-moss: #406e4d;
+  --vc-blue: #2f84dc;
+  --vc-orange: #e08a2e;
+  --vc-danger: #a33b32;
+  --vc-text: #17251d;
+  --vc-text-secondary: #737b74;
+  --vc-line: #e5e9df;
+  --vc-surface: #ffffff;
+  --vc-mint: #e8f0e8;
+
+  --vc-radius-xs: 10px;
+  --vc-radius-sm: 12px;
+  --vc-radius-md: 14px;
+  --vc-radius-lg: 18px;
+  --vc-radius-xl: 22px;
+
+  --vc-font-caption: 12px;
+  --vc-font-small: 13px;
+  --vc-font-body: 15px;
+  --vc-font-title: 18px;
+  --vc-font-h2: 20px;
+  --vc-font-display: 30px;
+
+  --vc-space-1: 4px;
+  --vc-space-2: 8px;
+  --vc-space-3: 12px;
+  --vc-space-4: 16px;
+  --vc-space-5: 20px;
+
+  --vc-icon-sm: 18px;
+  --vc-icon-md: 22px;
+  --vc-icon-lg: 26px;
+  --vc-tap: 44px;
+
+  /* Existing styles consume the same semantic values. */
+  --forest: var(--vc-forest);
+  --moss: var(--vc-moss);
+  --line: var(--vc-line);
+  --muted: var(--vc-text-secondary);
+}

@@ -4,11 +4,11 @@
   background: #fff;
   font-synthesis: none;
   font-weight: 400;
-  --forest: #194330;
-  --moss: #406e4d;
+  --forest: var(--vc-forest);
+  --moss: var(--vc-moss);
   --cream: #fff;
   --muted: #7c877e;
-  --line: #e5e9df;
+  --line: var(--vc-line);
   --sidebar: 238px;
   --detail: 390px;
 }
@@ -2203,7 +2203,7 @@ main {
   color: #294c3a;
 }
 .hero {
-  background: linear-gradient(115deg, #194330, #406e4d);
+  background: linear-gradient(115deg, var(--vc-forest), var(--vc-moss));
   color: #fff;
   border-radius: 24px;
 }
@@ -2217,11 +2217,11 @@ main {
   opacity: 0.25;
 }
 .hero .hero-button {
-  color: #194330;
+  color: var(--vc-forest);
   background: #fff;
 }
 .page-heading h1 {
-  color: #194330;
+  color: var(--vc-forest);
 }
 .panel {
   border-radius: 18px;
@@ -2261,8 +2261,8 @@ main {
   letter-spacing: -0.5px;
 }
 .calendar-day.selected {
-  background: #194330;
-  border-color: #194330;
+  background: var(--vc-forest);
+  border-color: var(--vc-forest);
   color: #fff;
 }
 .calendar-day.is-today:not(.selected) {
@@ -2427,7 +2427,7 @@ main {
 .round-ready strong {
   font-size: 35px;
   font-weight: 550;
-  color: #194330;
+  color: var(--vc-forest);
 }
 .round-ready span {
   font-size: 12px;
@@ -2459,7 +2459,7 @@ main {
 progress {
   width: 100%;
   height: 6px;
-  accent-color: #406e4d;
+  accent-color: var(--vc-moss);
   border: 0;
   border-radius: 6px;
   overflow: hidden;
@@ -2658,7 +2658,7 @@ progress::-webkit-progress-value {
   justify-content: center;
   text-align: center;
   padding: 30px;
-  color: #406e4d;
+  color: var(--vc-moss);
   gap: 22px;
 }
 .empty-native-detail h2 {
@@ -2827,7 +2827,7 @@ progress::-webkit-progress-value {
 .advice-proposal { margin-top: 24px; }
 .advice-options { border: 0; padding: 0; display: grid; gap: 12px; margin: 18px 0; min-width: 0; }
 .advice-options label { display: flex; align-items: flex-start; gap: 10px; border: 1px solid #e5e7df; border-radius: 12px; padding: 12px; }
-.advice-options input { width: 18px; height: 18px; flex-shrink: 0; accent-color: #406e4d; }
+.advice-options input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--vc-moss); }
 .advice-options small { display: block; color: #6b746b; margin-top: 5px; }
 .ai-catalog { padding: 18px; margin: 20px 0; background: #f5f2e8; border-radius: 14px; }
 .ai-catalog summary { cursor: pointer; font-weight: 600; }
@@ -2836,7 +2836,7 @@ progress::-webkit-progress-value {
 
 /* Native recognition: photo canvas, organ picker, and ranked species cards. */
 .knowledge-panel { max-width: 960px; }
-.recognition-dropzone { display:flex; position:relative; align-items:center; justify-content:center; flex-direction:column; gap:14px; min-height:245px; border:1.5px dashed var(--moss,#406e4d); border-radius:20px; background:white; padding:24px; color:var(--moss,#406e4d); text-align:center; cursor:pointer; }
+.recognition-dropzone { display:flex; position:relative; align-items:center; justify-content:center; flex-direction:column; gap:14px; min-height:245px; border:1.5px dashed var(--moss,var(--vc-moss)); border-radius:20px; background:white; padding:24px; color:var(--moss,var(--vc-moss)); text-align:center; cursor:pointer; }
 .recognition-dropzone input { width:100%; max-width:320px; }
 .recognition-dropzone img { max-height:330px; max-width:100%; object-fit:contain; border-radius:12px; }
 .recognition-controls { display:flex; gap:18px; align-items:end; flex-wrap:wrap; margin:22px 0; }
@@ -2844,20 +2844,20 @@ progress::-webkit-progress-value {
 .identification-candidate { padding:20px; margin:16px 0; background:var(--cream,#f5f2e8); border-radius:16px; }
 .candidate-title { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
 .candidate-title div { flex:1; min-width:150px; display:flex; flex-direction:column; gap:5px; }
-.candidate-title em,.candidate-title small { font-size:13px; color:var(--moss,#406e4d); }
+.candidate-title em,.candidate-title small { font-size:13px; color:var(--moss,var(--vc-moss)); }
 .identification-candidate details,.botanical-reference { margin-top:20px; }
 .reference-profile { margin-top:20px; padding:20px; background:white; border-radius:14px; overflow-wrap:anywhere; }
 .reference-profile dl { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.reference-profile dt { color:var(--moss,#406e4d); }
+.reference-profile dt { color:var(--moss,var(--vc-moss)); }
 .reference-profile dd { margin:0; }
 @media(max-width:600px) { .recognition-controls { align-items:stretch; flex-direction:column; }.candidate-title .button {width:100%;}.recognition-dropzone {padding:16px;}.reference-profile dl {grid-template-columns:1fr;}.reference-profile dd {margin-bottom:8px;} }
 
 .action-guide {border:1px solid #c5d9c7;background:#eff5ec;border-radius:16px;padding:16px;margin:18px 0;}
 .action-guide summary {display:flex;gap:8px;align-items:center;cursor:pointer;color:var(--forest,#1a4230);font-weight:600;}
 .action-guide ol{padding-left:28px;}.action-guide li{padding:6px 0 6px 4px;}.action-guide li p,.guide-tiles p,.guide-ranges p{font-size:13px;line-height:1.5;}.guide-tip{padding:12px;border-radius:10px;background:#ffffffa0;font-size:13px;}
-.guide-ranges,.guide-tiles{display:grid;gap:10px;margin:16px 0;}.guide-ranges{grid-template-columns:repeat(3,minmax(0,1fr));}.guide-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.guide-ranges article,.guide-tiles article{background:#eaf2e5;border-radius:12px;padding:14px;overflow-wrap:anywhere;}.guide-ranges h4,.guide-tiles h4{margin:0 0 10px;color:var(--moss,#406e4d);}.guide-ranges small,.guide-ranges strong{display:block;margin:6px 0;}
-.seasonal-guide{padding:16px 10px;background:#f5f6f1;border-radius:12px;}.seasonal-bars{display:flex;gap:4px;align-items:end;min-height:145px;margin:20px 0;}.seasonal-bars>div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;}.seasonal-bars i{display:block;width:75%;background:linear-gradient(#406e4d,#a3c6aa);border-radius:4px 4px 0 0;}.seasonal-bars span,.seasonal-bars small{font-size:10px;}
-.symptoms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0;}.symptoms-grid button{display:flex;gap:10px;align-items:center;text-align:left;background:#f0f2ed;border:1px solid transparent;border-radius:12px;padding:16px;color:var(--forest,#1a4230);}.symptoms-grid button.selected{background:var(--moss,#406e4d);color:white;}.diagnosis-result{background:#dbebd9;border-radius:18px;padding:22px;margin-top:24px;}.diagnosis-result h3{display:flex;gap:8px;align-items:center;}.detail-tabs{overflow-x:auto;}.detail-tabs button{flex-shrink:0;}
+.guide-ranges,.guide-tiles{display:grid;gap:10px;margin:16px 0;}.guide-ranges{grid-template-columns:repeat(3,minmax(0,1fr));}.guide-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.guide-ranges article,.guide-tiles article{background:#eaf2e5;border-radius:12px;padding:14px;overflow-wrap:anywhere;}.guide-ranges h4,.guide-tiles h4{margin:0 0 10px;color:var(--moss,var(--vc-moss));}.guide-ranges small,.guide-ranges strong{display:block;margin:6px 0;}
+.seasonal-guide{padding:16px 10px;background:#f5f6f1;border-radius:12px;}.seasonal-bars{display:flex;gap:4px;align-items:end;min-height:145px;margin:20px 0;}.seasonal-bars>div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;}.seasonal-bars i{display:block;width:75%;background:linear-gradient(var(--vc-moss),#a3c6aa);border-radius:4px 4px 0 0;}.seasonal-bars span,.seasonal-bars small{font-size:10px;}
+.symptoms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0;}.symptoms-grid button{display:flex;gap:10px;align-items:center;text-align:left;background:#f0f2ed;border:1px solid transparent;border-radius:12px;padding:16px;color:var(--forest,#1a4230);}.symptoms-grid button.selected{background:var(--moss,var(--vc-moss));color:white;}.diagnosis-result{background:#dbebd9;border-radius:18px;padding:22px;margin-top:24px;}.diagnosis-result h3{display:flex;gap:8px;align-items:center;}.detail-tabs{overflow-x:auto;}.detail-tabs button{flex-shrink:0;}
 @media(max-width:600px){.guide-ranges,.guide-tiles{grid-template-columns:1fr;}.symptoms-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.symptoms-grid button{padding:12px;}.seasonal-bars{gap:2px;}}
 
 .product-photo {display:flex;align-items:center;justify-content:center;width:100%;height:180px;margin-bottom:18px;background:#fff;border-radius:14px;overflow:hidden;}
@@ -2897,7 +2897,7 @@ progress::-webkit-progress-value {
 .care-health-options{border:0;margin:20px 0;padding:0;min-width:0}
 .care-health-options legend{font-size:17px;font-weight:650;margin-bottom:10px}
 .care-health-options>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.care-health-options button{min-height:58px;display:flex;gap:6px;align-items:center;justify-content:center;font-size:14px;padding:9px;border:2px solid transparent;background:#77777712;border-radius:11px;color:#17251d}
+.care-health-options button{min-height:58px;display:flex;gap:6px;align-items:center;justify-content:center;font-size:14px;padding:9px;border:2px solid transparent;background:#77777712;border-radius:11px;color:var(--vc-text)}
 .care-health-options button[aria-pressed=true]{border-color:#4b7055;background:#e4efe4}
 .care-health-details{padding:14px;border-radius:14px;background:#7777770d}
 .care-health-details .care-health-options button{justify-content:flex-start}
@@ -4182,7 +4182,7 @@ dialog:has(.plant-editor-form) {
     padding: 13px 14px;
     border: 0;
     background: #fff;
-    color: #17251d;
+    color: var(--vc-text);
     text-align: left;
   }
   .desktop-ios-overview .ios-section-card > button > span {
@@ -4197,7 +4197,7 @@ dialog:has(.plant-editor-form) {
   .desktop-ios-overview .ios-section-card > button small {
     display: block;
     margin-top: 3px;
-    color: #737b74;
+    color: var(--vc-text-secondary);
     font-size: 12px;
   }
   .desktop-ios-overview .ios-section-card > button > svg {
@@ -4319,7 +4319,7 @@ dialog:has(.plant-editor-form) {
   background: #f2f6ee;
 }
 .plant-card-menu > div button.danger {
-  color: #a33b32;
+  color: var(--vc-danger);
 }
 
 /* Care calendar: native action cards */
@@ -4334,7 +4334,7 @@ dialog:has(.plant-editor-form) {
   letter-spacing: 0;
   text-transform: none;
 }
-.care-kind-title[data-kind="Annaffia"] { color: #2f84dc; }
+.care-kind-title[data-kind="Annaffia"] { color: var(--vc-blue); }
 .care-kind-title[data-kind="Concima"] { color: #c47c2f; }
 .care-kind-title[data-kind="Aggiorna progressi"] { color: #b33ed0; }
 .care-kind-title[data-kind="Pota"] { color: #4b8b5d; }
@@ -4382,7 +4382,7 @@ dialog:has(.plant-editor-form) {
   overflow-wrap: anywhere;
 }
 .care-card-identity small {
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 13px;
   line-height: 1.35;
 }
@@ -4534,7 +4534,7 @@ dialog:has(.plant-editor-form) {
   color: #4b7055;
 }
 .home-care-action.water {
-  background: #2f84dc;
+  background: var(--vc-blue);
   color: #fff;
 }
 .home-care-action:hover {
@@ -4548,7 +4548,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-insights-heading p {
   margin: 6px 0 0;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 16px;
   line-height: 1.35;
 }
@@ -4570,7 +4570,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-metric-icon.metric-days {
   background: #e3f0ff;
-  color: #2f84dc;
+  color: var(--vc-blue);
 }
 .home-metric-icon.metric-regularity {
   background: #e0f4f4;
@@ -4588,7 +4588,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-metric small {
   margin: 0;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 14px;
   line-height: 1.3;
 }
@@ -4597,7 +4597,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-attention .section-heading p {
   margin: 4px 0 0;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 15px;
 }
 .home-stats > div {
@@ -4615,11 +4615,11 @@ dialog:has(.plant-editor-form) {
   height: 40px;
   border-radius: 13px;
   background: #eef3e9;
-  color: #406e4d;
+  color: var(--vc-moss);
 }
 .home-stat-icon.water {
   background: #e3f0ff;
-  color: #2f84dc;
+  color: var(--vc-blue);
 }
 .home-stat-icon.earth {
   background: #f3ece6;
@@ -4633,7 +4633,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-stats small {
   margin: 0;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 14px;
 }
 
@@ -4650,7 +4650,7 @@ dialog:has(.plant-editor-form) {
   height: 16px;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #2f84dc;
+  background: var(--vc-blue);
   color: #fff;
   font-size: 10px;
   font-weight: 800;
@@ -4673,7 +4673,7 @@ dialog:has(.plant-editor-form) {
 .care-day-count {
   display: block;
   margin-top: 2px;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 15px;
   font-weight: 600;
 }
@@ -4728,7 +4728,7 @@ dialog:has(.plant-editor-form) {
 .home-attention-placeholder {
   display: grid;
   place-items: center;
-  background: #e8f0e8;
+  background: var(--vc-mint);
   color: var(--moss);
 }
 .home-attention-identity > span:last-child {
@@ -4737,7 +4737,7 @@ dialog:has(.plant-editor-form) {
   gap: 2px;
 }
 .home-attention-identity strong {
-  color: #17251d;
+  color: var(--vc-text);
   font-size: 18px;
   line-height: 1.25;
   overflow-wrap: anywhere;
@@ -4755,7 +4755,7 @@ dialog:has(.plant-editor-form) {
   flex: 0 0 50px;
   border: 0;
   border-radius: 50%;
-  background: #2f84dc;
+  background: var(--vc-blue);
   color: #fff;
 }
 .home-attention-action.health {
@@ -4779,7 +4779,7 @@ dialog:has(.plant-editor-form) {
 }
 .home-attention:not(.panel) .section-heading p {
   margin: 3px 0 0;
-  color: #737b74;
+  color: var(--vc-text-secondary);
   font-size: 15px;
 }
 
@@ -4792,7 +4792,7 @@ dialog:has(.plant-editor-form) {
   gap: 2px;
   height: 132px;
   padding-top: 8px;
-  border-bottom: 1px solid #e5e9df;
+  border-bottom: 1px solid var(--vc-line);
   background: repeating-linear-gradient(
     to top,
     transparent 0,
@@ -4816,4 +4816,102 @@ dialog:has(.plant-editor-form) {
   margin-top: 4px;
   color: #7a847c;
   font-size: 11px;
+}
+
+/* Plant editor: in-form Pl@ntNet recognition */
+.editor-recognition {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--vc-line);
+  border-radius: var(--vc-radius-md);
+  background: #f9fbf8;
+}
+.editor-recognition-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.editor-recognition-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--vc-radius-xs);
+  background: var(--vc-mint);
+  color: var(--vc-moss);
+}
+.editor-recognition-head > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.editor-recognition-head strong {
+  color: var(--vc-text);
+  font-size: 14px;
+}
+.editor-recognition-head small {
+  color: var(--vc-text-secondary);
+  font-size: var(--vc-font-caption);
+  line-height: 1.3;
+}
+.editor-consent {
+  padding: 10px;
+  border-radius: var(--vc-radius-sm);
+  background: var(--vc-mint);
+}
+.editor-consent p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.editor-candidates {
+  display: grid;
+  gap: 6px;
+}
+.editor-candidates > strong {
+  font-size: 13px;
+}
+.editor-candidate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--vc-line);
+  border-radius: var(--vc-radius-xs);
+  background: var(--vc-surface);
+}
+.editor-candidate > span {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.editor-candidate strong {
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.editor-candidate em {
+  color: var(--vc-text-secondary);
+  font-size: 12px;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.editor-candidate small {
+  color: var(--vc-text-secondary);
+  font-size: 11px;
+}
+.editor-candidate > b {
+  color: var(--vc-moss);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.editor-candidate .button {
+  min-height: 36px;
+  padding: 6px 9px;
+  font-size: 12px;
+  white-space: nowrap;
 }

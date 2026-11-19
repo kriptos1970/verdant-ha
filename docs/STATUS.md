@@ -390,6 +390,23 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 - **Editor pianta**: verificato a 320, 360, 390, 686 e 1280 px; `scrollWidth` uguale a `clientWidth` a ogni larghezza, scroll verticale regolare e `scrollbar-gutter: stable` sulla finestra di modifica, così la barra orizzontale non compare durante lo scorrimento.
 - **Test**: 185 test backend (5 nuovi sul cestino: uscita dall’archivio, ripristino con versione, eliminazione definitiva, scadenza e svuotamento, backup senza piante nel cestino). Build, **871 chiavi i18n**.
 
+## Token visivi e riconoscimento nell’editor (19 novembre 2026)
+
+- Nuovo file `frontend/src/tokens.css` come fonte unica per colori, tipografia telefono, spazi, raggi, icone e target di tocco; i CSS esistenti usano gli stessi valori semantici. Documento: `docs/VISUAL_TOKENS.md`.
+- Nell’editor **Nuova pianta / Modifica pianta** c’è ora **Riconosci con Pl@ntNet**: usa la foto scelta o quella già salvata, richiede consenso, mostra fino a cinque corrispondenze e compila **nome (se vuoto), specie, famiglia e categoria**. Il riconoscimento resta separato dallo strumento “Riconoscimento AI” per le foto non ancora associate.
+- Verifica: blocco presente a 390 px senza overflow, pulsante disabilitato senza chiave Pl@ntNet e attivo quando il servizio è configurato. Build, **988 chiavi i18n**, **212 test backend**.
+
+## Collaudi rinviati (19 novembre 2026)
+
+- iPhone fisico / Companion e safe area.
+- Scansione QR/NFC reale.
+- Ripristino su istanza Home Assistant isolata.
+- Sensori Home Assistant e Open-Meteo reali.
+- Archivio reale molto grande.
+- Luxmetro dalla fotocamera del telefono (da valutare).
+- Prova AI reale: il provider Gemini è ora raggiungibile e funzionante; l’analisi va rieseguita quando richiesto.
+- Foto e archivio reale sono già popolati.
+
 ## Confronto visivo con il simulatore iPhone (19 novembre 2026)
 
 - Compilata e avviata **Verdant iOS** dal progetto `PlantCare2.0/VerdantMultiplatform` su **iPhone 17 Pro / iOS 26.5** con `xcodebuild` e `simctl`; screenshot nativo salvato e confrontato con il web a 430 px.

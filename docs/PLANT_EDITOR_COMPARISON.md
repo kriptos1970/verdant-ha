@@ -100,5 +100,5 @@ Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop)
 
 - **Fatto**: posizione reale, metodo di coltivazione, altezza (già), qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà, ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori e valori predefiniti delle attività, valori iniziali per una nuova pianta.
 - **Allineato**: il form espone le tre modalità Manuale / Verdant / AI. Verdant calcola gli intervalli al salvataggio; Manuale li conserva; AI li affida alle proposte giornaliere. La spiegazione cambia con la modalità scelta.
-- **Assente**: identificazione e reidentificazione Pl@ntNet dentro il form; il web mantiene lo strumento separato con il proprio consenso.
+- **Allineato (19 novembre 2026)**: identificazione Pl@ntNet **dentro il form** con consenso, fino a cinque corrispondenze e compilazione automatica di nome (se vuoto), specie, famiglia e categoria. Resta il riconoscimento come strumento separato per le foto già archiviate.
 - **Persistenza**: i campi viaggiano in `setup` (container e substrato) e nei campi già previsti dall’archivio; verificati su archivio sintetico con salvataggio e rilettura.

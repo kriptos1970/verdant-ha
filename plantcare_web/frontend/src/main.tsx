@@ -64,6 +64,7 @@ import type {
 } from "./types";
 import { api, photoURL, uid, todayISO } from "./api";
 import "./style.css";
+import "./tokens.css";
 import "./ios-layout.css";
 import {IOSProducts,IOSPlantOverview,useIOSLayout} from "./ios-layout";
 import { PlantAssistant, AIModelCatalog } from "./ai-assistant";
@@ -1697,12 +1698,26 @@ function PlantEditor({
   );
   const [error, setError] = useState(""),
     [uploading, setUploading] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | undefined>(seed?.file);
+  const [identifyOpen, setIdentifyOpen] = useState(false);
+  const [identifying, setIdentifying] = useState(false);
+  const [identifyError, setIdentifyError] = useState("");
+  const [candidates, setCandidates] = useState<
+    Array<{
+      scientificName: string;
+      commonName: string;
+      family?: string;
+      score: number;
+      category?: string;
+    }>
+  >();
   const [seedPhoto,setSeedPhoto]=useState("");
   useEffect(()=>{if(!seed?.file)return;const url=URL.createObjectURL(seed.file);setSeedPhoto(url);return()=>URL.revokeObjectURL(url)},[seed?.file]);
   const set = (key: string, value: unknown) =>
     setDraft((d) => ({ ...d, [key]: value }));
   const upload = async (file?: File) => {
     if (!file) return;
+    setPhotoFile(file);
     setUploading(true);
     try {
       const form = new FormData();
@@ -1717,6 +1732,69 @@ function PlantEditor({
     } finally {
       setUploading(false);
     }
+  };
+  const identifyPhoto = async () => {
+    setIdentifyOpen(false);
+    setIdentifying(true);
+    setIdentifyError("");
+    setCandidates(undefined);
+    try {
+      let file = photoFile || seed?.file;
+      if (!file && draft.photoPath) {
+        const source = photoURL(draft.photoPath);
+        if (!source) throw new Error(t("plantEditor.identifyNoPhoto"));
+        const response = await fetch(source);
+        if (!response.ok) throw new Error(t("plantEditor.identifyNoPhoto"));
+        const blob = await response.blob();
+        file = new File([blob], "plant.jpg", {
+          type: blob.type || "image/jpeg",
+        });
+      }
+      if (!file) throw new Error(t("plantEditor.identifyNoPhoto"));
+      const form = new FormData();
+      form.append("file", file);
+      form.append("organ", "leaf");
+      form.append("consent", "true");
+      const result = await api<{
+        candidates: Array<{
+          scientificName: string;
+          commonName: string;
+          family?: string;
+          score: number;
+          category?: string;
+        }>;
+      }>("identify", { method: "POST", body: form });
+      setCandidates(result.candidates);
+      if (!draft.photoPath) await upload(file);
+    } catch (e) {
+      setIdentifyError((e as Error).message);
+    } finally {
+      setIdentifying(false);
+    }
+  };
+  const applyCandidate = (candidate: {
+    scientificName: string;
+    commonName: string;
+    family?: string;
+    score: number;
+    category?: string;
+  }) => {
+    setDraft((current) => ({
+      ...current,
+      name: current.name.trim()
+        ? current.name
+        : candidate.commonName.slice(0, 200),
+      species: candidate.scientificName,
+      family: candidate.family || current.family,
+      category: (candidate.category as Plant["category"]) || current.category,
+      notes: current.notes.trim()
+        ? current.notes
+        : t("plantEditor.identifyNote", {
+            percent: Math.round(candidate.score * 100),
+          }),
+    }));
+    setCandidates(undefined);
+    setIdentifyError("");
   };
   const inputDate = (value: string) =>
     new Date(value).toLocaleDateString("en-CA");
@@ -1839,6 +1917,101 @@ function PlantEditor({
             />
           </label>
           {seed && <p className="muted small-text">{t("plantEditor.seedHint")}</p>}
+          <div className="editor-recognition">
+            <div className="editor-recognition-head">
+              <span className="editor-recognition-icon">
+                <Sparkles size={18} />
+              </span>
+              <div>
+                <strong>{t("plantEditor.identifyTitle")}</strong>
+                <small>{t("plantEditor.identifyHint")}</small>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="button secondary"
+              disabled={
+                identifying ||
+                uploading ||
+                !settings?.services?.plantnet ||
+                (!photoFile && !draft.photoPath && !seed?.file)
+              }
+              onClick={() => setIdentifyOpen(true)}
+            >
+              {identifying ? (
+                <LoaderCircle size={17} className="spin" />
+              ) : (
+                <Sparkles size={17} />
+              )}
+              {identifying
+                ? t("plantEditor.identifyBusy")
+                : t("plantEditor.identifyButton")}
+            </button>
+            {!settings?.services?.plantnet && (
+              <p className="muted small-text">
+                {t("plantEditor.identifyUnavailable")}
+              </p>
+            )}
+            {identifyError && (
+              <p className="form-error" role="alert">
+                {identifyError}
+              </p>
+            )}
+            {identifyOpen && (
+              <div className="editor-consent">
+                <p>{t("plantEditor.identifyConsent")}</p>
+                <div className="button-row">
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => setIdentifyOpen(false)}
+                  >
+                    {t("common.cancel")}
+                  </button>
+                  <button
+                    type="button"
+                    className="button primary"
+                    onClick={() => void identifyPhoto()}
+                  >
+                    {t("plantEditor.identifySend")}
+                  </button>
+                </div>
+              </div>
+            )}
+            {candidates && (
+              <div className="editor-candidates" aria-live="polite">
+                <strong>{t("plantEditor.identifyResults")}</strong>
+                {!candidates.length && (
+                  <p className="muted small-text">
+                    {t("plantEditor.identifyEmpty")}
+                  </p>
+                )}
+                {candidates.map((candidate) => (
+                  <div
+                    className="editor-candidate"
+                    key={candidate.scientificName}
+                  >
+                    <span>
+                      <strong>{candidate.commonName}</strong>
+                      <em>{candidate.scientificName}</em>
+                      <small>{candidate.family}</small>
+                    </span>
+                    <b>{Math.round(candidate.score * 100)}%</b>
+                    <button
+                      type="button"
+                      className="button secondary"
+                      onClick={() => applyCandidate(candidate)}
+                    >
+                      {t("plantEditor.identifyUse")}
+                    </button>
+                  </div>
+                ))}
+                <p className="muted small-text">
+                  {t("plantEditor.identifyDisclaimer")}
+                </p>
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="editor-section">
