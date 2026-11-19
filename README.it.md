@@ -2,7 +2,7 @@
 
 **Italiano** | [English](README.md)
 
-Versione incrementale **0.11.6**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
+Versione incrementale **0.11.7**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
 
 Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. L’interfaccia è disponibile in italiano e inglese, comprese cure, prodotti, trattamenti, dettaglio iOS, guide e diagnosi. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
 

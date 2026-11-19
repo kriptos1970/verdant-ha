@@ -6,6 +6,12 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.7 — etichette QR con lo slug dell’add-on
+
+- Le etichette QR/NFC usano lo slug dell’add-on corrente (`local_plantcare_web` per l’installazione locale, `309d34f7_plantcare_web` per quella da repository) invece del valore fisso `local_plantcare_web`.
+- Il parser delle etichette accetta qualsiasi percorso `/app/<slug>/plant/<id>`, mantenendo compatibili le etichette già stampate.
+- 215 test backend.
+
 # 0.11.6 — migrazione assistita tra add-on
 
 - Nuovo import guidato per spostare l’archivio su un add-on con slug diverso (locale → repository): se `/data` è vuoto e esiste `/share/plantcare/migrate/import-request`, l’app importa `/share/plantcare/migrate/plantcare.sqlite` all’avvio.

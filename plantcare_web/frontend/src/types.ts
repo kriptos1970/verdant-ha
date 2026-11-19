@@ -196,6 +196,7 @@ export type LocationMatch = {
 export type Settings = {
   version: string;
   ingress?:boolean;
+  panelSlug?:string;
   services?: {plantnet:boolean;perenual:boolean;openplantbook?:boolean};
   timezone: string;
   location?: LocationMatch | null;
