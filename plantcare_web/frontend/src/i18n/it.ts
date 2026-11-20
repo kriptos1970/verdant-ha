@@ -240,7 +240,8 @@ const it = {
   "growth.health": "Come sta?",
   "growth.height": "Altezza · cm",
   "growth.note": "Il tuo aggiornamento",
-  "growth.photos": "Aggiungi fotografie",
+  "growth.camera": "Scatta una foto",
+  "growth.photos": "Scegli fotografie",
   "growth.photoAlt": "Fotografia caricata",
   "growth.save": "Salva aggiornamento",
 

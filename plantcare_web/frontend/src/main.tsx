@@ -204,6 +204,7 @@ function App() {
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
     [useProduct, setUseProduct] = useState<Product | null>(null),
     [action, setAction] = useState<CareSelection | null>(null),
+    [growthAction, setGrowthAction] = useState<CareSelection | null>(null),
     [roundOpen, setRoundOpen] = useState(false),
     [cycleProduct, setCycleProduct] = useState<Product | null>(null),
     [confirm, setConfirm] = useState<{
@@ -532,6 +533,13 @@ function App() {
     setSearch("");
     setRoom("Tutte");
   };
+  const openCareAction = (value: CareSelection) => {
+    if (value.kind === "Aggiorna progressi" && !value.event && !value.postponed) {
+      setGrowthAction(value);
+      return;
+    }
+    setAction(value);
+  };
   const activeTool = tool ? toolDefinitions.find((item) => item.id === tool) : undefined;
   const pageTitle = page === "plants"
     ? (room === "Tutte" ? t("page.allPlants") : room)
@@ -821,7 +829,7 @@ function App() {
                           plant={plant}
                           onOpen={() => openPlant(plant.id)}
                           onAction={() =>
-                            setAction({ plant, kind: action.kind, scheduled: action })
+                            openCareAction({ plant, kind: action.kind, scheduled: action })
                           }
                         />
                       ))}
@@ -979,7 +987,7 @@ function App() {
                     onAction={(a) => {
                       const plant = plants.find((p) => p.id === a.plantID);
                       if (plant)
-                        setAction({ plant, kind: a.kind, scheduled: a });
+                        openCareAction({ plant, kind: a.kind, scheduled: a });
                     }}
                     onPostpone={(a) => {
                       const plant = plants.find((p) => p.id === a.plantID);
@@ -1344,7 +1352,7 @@ function App() {
           onClose={() => openPlant(null)}
           onEdit={() => setPlantEditor(selectedPlant)}
           onAction={(kind, scheduled) =>
-            setAction({ plant: selectedPlant, kind, scheduled })
+            openCareAction({ plant: selectedPlant, kind, scheduled })
           }
           onEditEvent={(event) =>
             setAction({ plant: selectedPlant, kind: event.kind, event })
@@ -1509,6 +1517,23 @@ function App() {
               "Ciclo pianificato",
             );
             setCycleProduct(null);
+          }}
+        />
+      )}
+      {growthAction && (
+        <GrowthEditor
+          busy={busy}
+          onClose={() => setGrowthAction(null)}
+          onSave={async (value) => {
+            await run(
+              () =>
+                api(`plants/${growthAction.plant.id}/growth`, {
+                  method: "POST",
+                  body: JSON.stringify(value),
+                }),
+              "Diario aggiornato",
+            );
+            setGrowthAction(null);
           }}
         />
       )}
@@ -4009,6 +4034,25 @@ function GrowthEditor({
     [paths, setPaths] = useState<string[]>([]),
     [uploading, setUploading] = useState(false),
     [error, setError] = useState("");
+  const uploadFiles = async (files: File[]) => {
+    setUploading(true);
+    setError("");
+    try {
+      for (const file of files) {
+        const data = new FormData();
+        data.append("file", file);
+        const p = await api<{ path: string }>("photos", {
+          method: "POST",
+          body: data,
+        });
+        setPaths((old) => [...old, p.path]);
+      }
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <Modal title={t("growth.title")} onClose={onClose}>
       <form
@@ -4050,35 +4094,36 @@ function GrowthEditor({
             onChange={(e) => setNote(e.target.value)}
           />
         </label>
-        <label className="file-label">
-          <ImagePlus size={20} />
-          {uploading ? t("common.loading") : t("growth.photos")}
-          <input
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/webp"
-            disabled={uploading}
-            onChange={async (e) => {
-              const files = Array.from(e.target.files || []);
-              setUploading(true);
-              try {
-                for (const file of files) {
-                  const data = new FormData();
-                  data.append("file", file);
-                  const p = await api<{ path: string }>("photos", {
-                    method: "POST",
-                    body: data,
-                  });
-                  setPaths((old) => [...old, p.path]);
-                }
-              } catch (e) {
-                setError((e as Error).message);
-              } finally {
-                setUploading(false);
-              }
-            }}
-          />
-        </label>
+        <div className="growth-photo-actions">
+          <label className="file-label">
+            <Camera size={20} />
+            {uploading ? t("common.loading") : t("growth.camera")}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              capture="environment"
+              disabled={uploading}
+              onChange={(e) => {
+                void uploadFiles(Array.from(e.target.files || []));
+                e.target.value = "";
+              }}
+            />
+          </label>
+          <label className="file-label">
+            <ImagePlus size={20} />
+            {uploading ? t("common.loading") : t("growth.photos")}
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading}
+              onChange={(e) => {
+                void uploadFiles(Array.from(e.target.files || []));
+                e.target.value = "";
+              }}
+            />
+          </label>
+        </div>
         <div className="growth-photos">
           {paths.map((p) => (
             <img key={p} src={photoURL(p, true)} alt={t("growth.photoAlt")} />

@@ -242,7 +242,8 @@ const en: Record<MessageKey, string> = {
   "growth.health": "How is it?",
   "growth.height": "Height · cm",
   "growth.note": "Your update",
-  "growth.photos": "Add photos",
+  "growth.camera": "Take a photo",
+  "growth.photos": "Choose photos",
   "growth.photoAlt": "Uploaded photo",
   "growth.save": "Save update",
 

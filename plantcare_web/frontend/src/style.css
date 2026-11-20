@@ -5527,3 +5527,17 @@ dialog:has(.care-confirm-heading) {
     border-radius: 12px;
   }
 }
+
+/* Growth editor: camera and library choices */
+.growth-photo-actions {
+  display: grid;
+  gap: 8px;
+}
+.growth-photo-actions .file-label {
+  margin-bottom: 0;
+}
+@media (min-width: 761px) {
+  .growth-photo-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
