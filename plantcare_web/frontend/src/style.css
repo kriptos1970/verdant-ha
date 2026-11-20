@@ -5397,7 +5397,7 @@ dialog:has(.plant-editor-form) {
   position: fixed;
   top: 0;
   bottom: 0;
-  z-index: 30;
+  z-index: 70;
   width: 10px;
   background: transparent;
   cursor: col-resize;

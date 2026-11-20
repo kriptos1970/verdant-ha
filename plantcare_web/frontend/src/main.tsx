@@ -1299,7 +1299,7 @@ function App() {
           else if(event.key==="Home"){event.preventDefault();setSidebarWidth(null)}
         }}
       />}
-      {selectedSummary && <div
+      {!phoneLayout && (selectedSummary || ["today","plants","care"].includes(page)) && <div
         className="detail-resizer"
         role="separator"
         aria-orientation="vertical"

@@ -6,6 +6,12 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.11 — maniglia del pannello destro sempre disponibile
+
+- La maniglia del pannello dettaglio è ora presente anche quando il pannello è nello stato vuoto (prima compariva solo con una pianta aperta), quindi la colonna destra si ridimensiona subito.
+- Z-index delle maniglie alzato per evitare sovrapposizioni con il contenuto del dettaglio.
+- 215 test backend, build frontend.
+
 # 0.11.10 — pannelli desktop ridimensionabili
 
 - Nella versione desktop la **colonna sinistra** e il **pannello del dettaglio** si ridimensionano trascinando il bordo; maniglia visibile al passaggio del mouse, doppio clic per tornare alla larghezza predefinita.
