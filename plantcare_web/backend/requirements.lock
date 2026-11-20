@@ -11,7 +11,7 @@ idna==3.20
 pillow==13.0.0
 pydantic==2.14.3
 pydantic_core==2.50.4
-python-multipart==0.0.22
+python-multipart==0.0.31
 starlette==1.10.0
 typing-inspection==0.4.5
 typing_extensions==4.16.0
