@@ -1,11 +1,3 @@
-# Non rilasciato — grafici, fase 1
-
-- Indice salute per pianta portato dal nativo (`healthAssessment`): ritardi di acqua e concime, ultima osservazione con peso per età, controlli e progressi arretrati, misure luce ripetute; normalizzazione 20–100 e consigli con codici traducibili.
-- `_health` incluso nella scheda pianta e nella collezione sintetica, senza aggiungere la cronologia alla lista.
-- Nuovo endpoint `/api/analytics?days=30|90|365` con cure completate, giorni attivi, regolarità dell’acqua, attività giornaliera, tipi di cura, ambienti, ultimo stato registrato e piante da osservare.
-- Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
-- 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
-
 # 0.11.13 — pulsante Completa compatto su desktop
 
 - Nelle card della sezione Attività su desktop il pulsante **Completa** ha ora una larghezza proporzionata di 200 px (massimo 100% della card) e altezza 44 px, invece di occupare tutta la riga.
@@ -93,6 +85,8 @@
 - Editor pianta riordinato come il nativo, con riconoscimento Pl@ntNet nel form e compilazione automatica di nome, specie, famiglia e categoria.
 - Icone piene, token visivi in `tokens.css`, layout Home/Cure/Cronologia allineato a Verdant.
 - Pulizia foto non utilizzate, con protezione dei caricamenti recenti.
+- Grafici e analisi, fase 1: indice salute per pianta portato dal nativo (`healthAssessment`), con ritardi di acqua e concime, ultima osservazione, controlli e misure di luce; normalizzazione 20–100 e consigli con codici traducibili.
+- `_health` incluso nella scheda pianta e nella collezione sintetica; endpoint `/api/analytics?days=30|90|365` e `/api/plants/{id}/timeline` per unire eventi e misure.
 - 212 test backend, 988 chiavi i18n.
 
 # 0.11.1 — caricamento fotografie
