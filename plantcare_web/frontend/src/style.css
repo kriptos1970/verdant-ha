@@ -5541,3 +5541,23 @@ dialog:has(.care-confirm-heading) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Soft green canvas: the page tints while panels, cards and sheets stay white,
+   so sections separate visually as in Verdant native. */
+:root {
+  --cream: #fff;
+  background: var(--vc-canvas);
+}
+main {
+  background: var(--vc-canvas);
+}
+@media (max-width: 760px) {
+  .detail,
+  .detail-top {
+    background: var(--vc-canvas);
+  }
+  .care-card {
+    border-color: var(--vc-line);
+    background: var(--vc-surface);
+  }
+}

@@ -2,7 +2,7 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **0.11.19** (20 November 2026).
+Current release: **0.11.20** (20 November 2026).
 
 ## Done recently
 
@@ -17,6 +17,7 @@ Current release: **0.11.19** (20 November 2026).
 - [x] Desktop resizable sidebar and detail panel; phone care sheet scrolls vertically only; compact Complete button on desktop.
 - [x] Validation errors now name the field and reason; the generic banner is hidden when there is no useful detail.
 - [x] Growth diary activity keeps the previous care confirmation layout and adds camera/library photos; Pillow 13 and python-multipart 0.0.31 security updates applied.
+- [x] Soft green page canvas; panels, cards and sheets stay white, matching the native section separation at phone and desktop widths.
 
 ## Care engine — requested steps complete
 

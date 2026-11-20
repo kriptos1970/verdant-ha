@@ -1,3 +1,9 @@
+# 0.11.20 — sfondo verde tenue
+
+- Lo sfondo della pagina usa un verde tenue (`--vc-canvas`); pannelli, schede e finestre restano bianchi, così le sezioni si separano visivamente come nell’app nativa.
+- Su telefono anche l’intestazione del dettaglio segue lo sfondo della pagina, mentre le schede cura restano bianche.
+- Nessun cambiamento a contenuti, flussi o dati; 224 test backend, 1013 chiavi i18n, build frontend.
+
 # 0.11.19 — foto nel layout precedente dell’attività
 
 - L’attività **Diario di crescita** torna al layout di conferma precedente — data, rinvio, stato di salute e note — con l’aggiunta di **Scatta una foto** e **Scegli fotografie**.

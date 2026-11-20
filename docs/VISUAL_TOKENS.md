@@ -15,6 +15,7 @@ Fonte unica: `plantcare_web/frontend/src/tokens.css`, importato dopo `style.css`
 | `--vc-text-secondary` | `#737b74` | etichette e testo secondario |
 | `--vc-line` | `#e5e9df` | bordi e separatori |
 | `--vc-surface` | `#ffffff` | superfici |
+| `--vc-canvas` | `#f2f6ec` | sfondo verde tenue della pagina |
 | `--vc-mint` | `#e8f0e8` | sfondi tenui e icone |
 | `--vc-mint-soft` | `#f6faf3` | riquadri del diario e dell’editor |
 | `--vc-mint-line` | `#e2ecdc` | bordi dei riquadri verdi |
