@@ -5516,3 +5516,14 @@ dialog:has(.care-confirm-heading) {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+/* Desktop care cards: keep the Complete action compact */
+@media (min-width: 761px) {
+  .care-card-complete {
+    width: 200px;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+  }
+}

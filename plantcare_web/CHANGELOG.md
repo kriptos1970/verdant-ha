@@ -6,6 +6,12 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.13 — pulsante Completa compatto su desktop
+
+- Nelle card della sezione Attività su desktop il pulsante **Completa** ha ora una larghezza proporzionata di 200 px (massimo 100% della card) e altezza 44 px, invece di occupare tutta la riga.
+- Su telefono il pulsante resta a tutta larghezza.
+- 215 test backend, build frontend.
+
 # 0.11.12 — conferma cura senza scorrimento orizzontale
 
 - Su telefono la finestra che si apre con **Completa** accetta solo lo scorrimento verticale: overflow orizzontale nascosto, overscroll orizzontale disattivato e `touch-action` limitata a pan verticale e pinch-zoom.
