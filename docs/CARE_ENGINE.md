@@ -15,7 +15,7 @@ Non sono la stessa cosa. Una pianta Manuale può ricevere un rinvio automatico d
 |---|---|---|---|
 | Intervalli | quelli impostati dall’utente | calcolati dal pianificatore | proposti dal provider |
 | Meteo e stagione | no | sì, ricalcolo giornaliero | come contesto della proposta |
-| Apprendimento dalle cure | no | sì, ±1 giorno per volta | no, decide il modello |
+| Apprendimento dalle cure | no | sì, passo adattivo 1–2 giorni | no, decide il modello |
 | Località predefinita | non necessaria | obbligatoria | non necessaria |
 | Quando cambia | solo se si modificano gli intervalli | creazione, ricalcolo, spostamento, refresh giornaliero, annaffiatura completata | analisi giornaliera o manuale, poi applicazione della proposta |
 | Controllo | totale | automatico ma prudente | proposta con anteprima |
@@ -71,7 +71,10 @@ Dopo almeno **3 annaffiature completate** e **2 intervalli**:
 - si considerano le ultime 7 annaffiature completate;
 - si calcola la mediana dei giorni tra un’annaffiatura e la successiva;
 - il valore viene contenuto entro ±30% rispetto alla base Verdant;
-- l’intervallo corrente si muove di **±1 giorno** verso quel valore;
+- l’intervallo corrente si muove verso quel valore con un passo di **1 giorno**;
+- il passo sale a **2 giorni** quando almeno **2 rinvii onorati** (con almeno un giorno di rinvio) confermano un ritmo più lungo, oppure quando almeno **2 rinvii anticipati** indicano un ritmo più corto;
+- i **ritardi senza rinvio** non aumentano il passo: restano evidenza debole e il passo resta 1;
+- il valore resta entro ±30% e non supera il target;
 - la confidenza cresce con il numero di intervalli osservati.
 
 L’apprendimento si applica:
@@ -79,7 +82,7 @@ L’apprendimento si applica:
 - quando si registra un’annaffiatura completata, se la pianta è in Verdant e il piano non è stato bloccato da una modifica manuale o da una revisione AI;
 - durante il refresh giornaliero.
 
-Non si applica alla **concimazione**: viene solo riallineata all’intervallo d’acqua. I **rinvii non addestrano** il motore: contano solo le annaffiature completate.
+Non si applica alla **concimazione**: viene solo riallineata all’intervallo d’acqua. I rinvii non contano come annaffiature completate: il calcolo degli intervalli usa solo le cure completate, mentre rinvii onorati e coerenti possono aumentare il passo di apprendimento.
 
 ### Quando si ricalcola
 
@@ -136,7 +139,7 @@ Il motore operativo **non controlla** la modalità del piano: se è attivo, può
 
 ## Rinvii e ritardi: non sono la stessa cosa
 
-- **Rinvio**: un evento con stato `postponed` e una data `postponedUntil`. Sposta solo quella scadenza; non cambia l’intervallo e non entra nell’apprendimento.
+- **Rinvio**: un evento con stato `postponed` e una data `postponedUntil`. Sposta solo quella scadenza, non conta come cura completata e non entra nel calcolo degli intervalli; se è onorato e coerente può aumentare il passo di apprendimento.
 - **Ritardo**: un’annaffiatura completata dopo la scadenza senza un rinvio registrato. È una cura completata a tutti gli effetti e contribuisce agli intervalli osservati; non viene trattato come un rinvio.
 - Un rinvio viene considerato solo se è più recente dell’ultima annaffiatura completata.
 - Quando si completa un’annaffiatura con la concimazione in scadenza, l’app può registrare anche la concimazione. Se non viene inclusa, la concimazione viene rinviata alla prossima annaffiatura.
@@ -165,7 +168,7 @@ La **località predefinita** non è un’opzione dell’add-on: si imposta in **
 
 ## Limiti attuali
 
-- L’apprendimento si muove di **±1 giorno** e non è ancora modulato dal grado di esperienza o dai rinvii.
+- L’apprendimento usa un passo adattivo di **1–2 giorni**; il profilo di esperienza del coltivatore non è ancora implementato.
 - L’analisi AI riceve località, rinvii e ritardi come contesto, ma non applica automaticamente il piano: le proposte attendono approvazione, salvo `auto_apply_ai`.
 - Il pianificatore usa la Posizione reale, non il campo Esposizione.
 - La modalità Manuale non è stagionale e non usa il meteo.

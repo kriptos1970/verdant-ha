@@ -15,7 +15,7 @@ They are not the same thing. A Manual plant can be postponed by the operational 
 |---|---|---|---|
 | Intervals | set by the user | calculated by the planner | proposed by the provider |
 | Weather and season | no | yes, daily refresh | as context for the proposal |
-| Learning from care | no | yes, ±1 day at a time | no, the model decides |
+| Learning from care | no | yes, adaptive 1–2 day step | no, the model decides |
 | Default location | not required | required | not required |
 | When it changes | only when intervals are edited | creation, recalculation, move, daily refresh, completed watering | daily or manual analysis, then proposal approval |
 | Control | full | automatic but cautious | proposal with preview |
@@ -71,7 +71,10 @@ After at least **3 completed waterings** and **2 intervals**:
 - the last 7 completed waterings are considered;
 - the median gap in days is calculated;
 - the value is kept within ±30% of the Verdant baseline;
-- the current interval moves by **±1 day** towards that value;
+- the current interval moves towards that value by **1 day**;
+- the step rises to **2 days** when at least **2 honoured postponements** (with at least one day of deferral) confirm a longer rhythm, or when at least **2 early postponements** point to a shorter rhythm;
+- **late gaps without a postponement** never increase the step: they remain weak evidence and the step stays 1;
+- the value stays within ±30% and never overshoots the target;
 - confidence grows with the number of observed intervals.
 
 Learning applies:
@@ -79,7 +82,7 @@ Learning applies:
 - when a completed watering is recorded, if the plant is in Verdant and the plan has not been locked by a manual edit or an AI revision;
 - during the daily refresh.
 
-It does **not** apply to feeding: that is only realigned to the watering interval. **Postponements do not train** the engine: only completed waterings count.
+It does **not** apply to feeding: that is only realigned to the watering interval. Postponements never count as completed waterings; the gap calculation uses completed waterings only, while honoured and consistent postponements can increase the learning step.
 
 ### When it is recalculated
 
@@ -136,7 +139,7 @@ The operational engine **does not check** the plan mode: when active, it can pos
 
 ## Postponements and delays are not the same
 
-- **Postponement**: an event with status `postponed` and a `postponedUntil` date. It moves only that occurrence; it does not change the interval and does not enter learning.
+- **Postponement**: an event with status `postponed` and a `postponedUntil` date. It moves only that occurrence, is not completed care and does not enter the gap calculation; when honoured and consistent it can increase the learning step.
 - **Delay**: a completed watering after the due date without a recorded postponement. It is a completed care event and contributes to the observed intervals; it is not treated as a postponement.
 - A postponement is considered only if it is newer than the last completed watering.
 - When watering is completed with feeding due, the app can record feeding too. If it is not included, feeding is postponed to the next watering.
@@ -165,7 +168,7 @@ The **default location** is not an add-on option: it is set in **Settings → De
 
 ## Current limits
 
-- Learning moves by **±1 day** and is not yet weighted by the grower’s experience level or by postponements.
+- Learning uses an adaptive **1–2 day** step; the grower experience profile is not implemented yet.
 - The daily AI analysis receives location, postponements and delays as context, but never applies the plan automatically: proposals need approval unless `auto_apply_ai` is enabled.
 - The planner uses the real position, not the Exposure field.
 - Manual mode is not seasonal and does not use weather.

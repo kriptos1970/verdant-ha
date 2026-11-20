@@ -32,7 +32,7 @@ Import supports web ZIP archives and native JSON envelopes v1–v3. Import runs 
 Each plant uses one of three plan modes:
 
 - **Manual**: the intervals you set are used as they are; no weather, season or learning.
-- **Verdant (Intelligent)**: the plan is calculated from species, real position, the default location, the Open-Meteo forecast and the season, then refreshed once a day. Completed waterings allow cautious learning (currently ±1 day). Manual and AI revisions stay protected.
+- **Verdant (Intelligent)**: the plan is calculated from species, real position, the default location, the Open-Meteo forecast and the season, then refreshed once a day. Completed waterings allow cautious learning with an adaptive 1–2 day step. Manual and AI revisions stay protected.
 - **AI**: only plants in AI mode are analysed; the provider proposes new intervals with a reason and a preview. Automatic application is off by default.
 
 Separately, the `care_engine_mode` add-on option controls the operational engine:
@@ -40,7 +40,7 @@ Separately, the `care_engine_mode` add-on option controls the operational engine
 - **shadow**: recommendations are advisory and do not change the calendar;
 - **operational** (default): it may postpone watering when a fresh, reliable moisture reading says the substrate is still wet. It never advances care, never records care and applies at most one postponement per watering cycle.
 
-Postponements are not delays: a postponement moves only that occurrence and is not used for learning. Full explanation, thresholds and recalculation times: [Care engine — Manual, Verdant and AI](https://github.com/kriptos1970/verdant-ha/blob/main/docs/CARE_ENGINE.md).
+Postponements are not delays: a postponement moves only that occurrence and is not completed care. Honoured, consistent postponements can increase the learning step, but never count as care. Full explanation, thresholds and recalculation times: [Care engine — Manual, Verdant and AI](https://github.com/kriptos1970/verdant-ha/blob/main/docs/CARE_ENGINE.md).
 
 ## Smart plan
 

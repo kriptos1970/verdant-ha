@@ -111,6 +111,41 @@ def stable_water(plant):
         return min(120, max(minimum, swift_round(max(minimum, baseline) * multiplier)))
     return min(120, max(minimum, plant['wateringInterval']))
 
+def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
+    """Honoured postponements are intentional evidence; late gaps without one are weaker."""
+    tz = ZoneInfo(zone)
+    def day(value):
+        return parse(value).astimezone(tz).date()
+    events = [e for e in active_history(plant) if e['kind'] == 'water']
+    completed = recent or sorted(day(e['date']) for e in events if e.get('status') != 'postponed')
+    starts = []
+    for event in events:
+        if event.get('status') != 'postponed' or not event.get('postponedUntil'):
+            continue
+        start = day(event['date'])
+        if completed and not (completed[0] <= start <= completed[-1]):
+            continue
+        due = day(event['postponedUntil'])
+        after = [d for d in completed if d > start]
+        if not after:
+            continue
+        outcome = 'honored' if min(after) >= due else 'early'
+        starts.append((start, outcome, max(0, (due-start).days)))
+    honoured = [days for _, outcome, days in starts if outcome == 'honored' and days >= 1]
+    early = sum(1 for _, outcome, _ in starts if outcome == 'early')
+    deferred = sorted(honoured)
+    median_deferred = 0
+    if deferred:
+        mid = len(deferred)//2
+        median_deferred = deferred[mid] if len(deferred) % 2 else swift_round((deferred[mid-1]+deferred[mid])/2)
+    current = min(35, max(2, plant['wateringInterval']))
+    late = 0
+    for a, b in zip(completed, completed[1:]):
+        gap = (b-a).days
+        if gap > current + 2 and not any(a < start <= b for start, _, _ in starts):
+            late += 1
+    return {'honoredPostponements': len(honoured), 'earlyPostponements': early, 'medianDeferredDays': median_deferred, 'lateGapsWithoutPostponement': late}
+
 def learning(plant, baseline, zone, language='it'):
     plant = canonical_plant(plant)
     dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed')
@@ -126,9 +161,38 @@ def learning(plant, baseline, zone, language='it'):
     distance = max(1, swift_round(baseline * .3))
     target = min(min(35, baseline + distance), max(max(2, baseline-distance), median))
     current = min(35, max(2, plant['wateringInterval']))
-    learned = current + (1 if target > current else -1 if target < current else 0)
-    explanation=(f'The latest care suggests about {median} days between waterings. Prudent change: {learned-current:+d} day.' if language=='en' else f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Variazione prudente: {learned-current:+d} giorno.')
-    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
+    evidence = water_learning_evidence(plant, zone, recent)
+    honoured = evidence['honoredPostponements']
+    early = evidence['earlyPostponements']
+    late = evidence['lateGapsWithoutPostponement']
+    step = 1
+    if target > current and honoured >= 2 and early == 0 and evidence['medianDeferredDays'] >= 1:
+        step = 2
+    elif target < current and early >= 2 and honoured == 0:
+        step = 2
+    step = min(step, abs(target-current)) if target != current else 0
+    learned = current + (step if target > current else -step if target < current else 0)
+    if language == 'en':
+        if step == 2 and target > current:
+            reason = f'{honoured} honoured postponements confirm a longer rhythm.'
+        elif step == 2 and target < current:
+            reason = f'{early} postponements followed by earlier watering suggest a shorter rhythm.'
+        elif late and not honoured:
+            reason = 'Late gaps without a postponement do not accelerate learning.'
+        else:
+            reason = 'Prudent change.'
+        explanation = f'The latest care suggests about {median} days between waterings. Honoured postponements: {honoured}, early: {early}, late gaps without postponement: {late}. {reason} Change: {learned-current:+d} days.'
+    else:
+        if step == 2 and target > current:
+            reason = f'{honoured} rinvii onorati confermano un ritmo più lungo.'
+        elif step == 2 and target < current:
+            reason = f'{early} rinvii seguiti da annaffiature anticipate indicano un ritmo più corto.'
+        elif late and not honoured:
+            reason = 'I ritardi senza rinvio non accelerano l’apprendimento.'
+        else:
+            reason = 'Variazione prudente.'
+        explanation = f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Rinvii onorati: {honoured}, anticipati: {early}, ritardi senza rinvio: {late}. {reason} Variazione: {learned-current:+d} giorni.'
+    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'adaptiveStepDays': step, 'honoredPostponements': honoured, 'earlyPostponements': early, 'medianDeferredDays': evidence['medianDeferredDays'], 'lateGapsWithoutPostponement': late, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
 
 def evidence(declared, reason):
     signals = ['dati insufficienti', 'non ci sono dati sufficienti', 'non abbiamo dati sufficienti', 'mancano dati', 'mancano informazioni', 'mantengo gli intervalli', 'manteniamo gli intervalli', 'mantenere gli intervalli', 'intervalli attuali', 'continuiamo con gli intervalli']

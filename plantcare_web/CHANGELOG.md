@@ -1,3 +1,10 @@
+# 0.11.15 — apprendimento adattivo ai rinvii
+
+- L’apprendimento Verdant non usa più un passo fisso di ±1 giorno: parte da 1 e sale a **2 giorni** quando almeno **2 rinvii onorati** (con almeno un giorno di rinvio) confermano un ritmo più lungo, oppure quando almeno **2 rinvii anticipati** indicano un ritmo più corto.
+- I **ritardi senza rinvio** restano evidenza debole e non accelerano l’apprendimento; il limite ±30% e il mancato superamento del target restano invariati.
+- `careLearning` espone `adaptiveStepDays`, `honoredPostponements`, `earlyPostponements`, `medianDeferredDays` e `lateGapsWithoutPostponement`.
+- 220 test backend, build frontend.
+
 # 0.11.14 — contesto AI con rinvii e località
 
 - L’analisi AI giornaliera riceve ora la **località** (dal piano o da quella predefinita) e `careTiming`: intervalli osservati, rinvii intenzionali con data, nuova data e nota, e ritardi senza rinvio.

@@ -41,6 +41,50 @@ def test_learning_requires_three_dates_and_moves_only_one_day():
     assert result['observedIntervalDays']==9
     assert result['confidence']==2/6
 
+def test_learning_uses_honoured_postponements_for_a_two_day_step():
+    p=plant();p['wateringInterval']=7
+    p['history']=[
+        {'kind':'Annaffia','date':'2026-11-01T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-10T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-20T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-03T12:00:00Z','status':'postponed','postponedUntil':'2026-11-06T12:00:00Z'},
+        {'kind':'Annaffia','date':'2026-11-12T12:00:00Z','status':'postponed','postponedUntil':'2026-11-15T12:00:00Z'},
+    ]
+    result=learning(p,7,'Europe/Rome')
+    assert result['observedIntervalDays']==10
+    assert result['honoredPostponements']==2
+    assert result['adaptiveStepDays']==2
+    assert result['learnedIntervalDays']==9
+
+
+def test_learning_uses_early_postponements_for_a_two_day_step():
+    p=plant();p['wateringInterval']=7
+    p['history']=[
+        {'kind':'Annaffia','date':'2026-11-01T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-05T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-09T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-02T12:00:00Z','status':'postponed','postponedUntil':'2026-11-10T12:00:00Z'},
+        {'kind':'Annaffia','date':'2026-11-06T12:00:00Z','status':'postponed','postponedUntil':'2026-11-12T12:00:00Z'},
+    ]
+    result=learning(p,7,'Europe/Rome')
+    assert result['earlyPostponements']==2
+    assert result['adaptiveStepDays']==2
+    assert result['learnedIntervalDays']==5
+
+
+def test_learning_does_not_accelerate_for_late_gaps_without_postponement():
+    p=plant();p['wateringInterval']=7
+    p['history']=[
+        {'kind':'Annaffia','date':'2026-11-01T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-11T12:00:00Z','status':'completed'},
+        {'kind':'Annaffia','date':'2026-11-21T12:00:00Z','status':'completed'},
+    ]
+    result=learning(p,7,'Europe/Rome')
+    assert result['lateGapsWithoutPostponement']==2
+    assert result['adaptiveStepDays']==1
+    assert result['learnedIntervalDays']==8
+
+
 def test_succulent_safety_has_priority_over_ai_25_percent():
     p=plant();p['category']='Succulenta';p['light']='Luce bassa'
     assert minimum_water(p)==30
