@@ -1,3 +1,10 @@
+# 0.11.17 — validazione più chiara, niente banner generico
+
+- Il banner globale “Controlla i dati inseriti.” non viene più mostrato quando la risposta non contiene un dettaglio utile o quando l’errore arriva da un form modale; l’errore specifico resta nel form.
+- Il backend di validazione restituisce ora il **campo** e il **motivo** (ad esempio `name: Campo obbligatorio`), così un eventuale banner è azionabile.
+- Aggiunti limiti `maxLength` ai testi lunghi dell’editor pianta, delle note cura, dei prodotti e della crescita per evitare rifiuti evitabili.
+- 223 test backend, build frontend.
+
 # 0.11.16 — profilo di esperienza del coltivatore
 
 - Nuova impostazione **Esperienza del coltivatore**: principiante, intermedio, esperto, professionista (default intermedio), salvata nelle preferenze dell’app e visibile in Impostazioni.

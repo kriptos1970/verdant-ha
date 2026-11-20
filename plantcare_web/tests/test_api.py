@@ -67,6 +67,14 @@ def test_experience_preference_merges_with_language(client):
     assert client.put('/api/preferences',json={'experience':'invalid'}).status_code==422
 
 
+def test_validation_error_detail_names_the_field(client):
+    response=client.post('/api/plants',json={'name':'   ','room':'Casa','wateringInterval':7,'lastWatered':'2026-11-01T12:00:00Z','acquiredOn':'2026-01-01T12:00:00Z'})
+    assert response.status_code==422
+    payload=response.json()
+    assert payload['code']=='validation'
+    assert 'Campo obbligatorio' in payload['detail'] or 'name' in payload['detail']
+
+
 def test_error_responses_expose_stable_codes(client):
     assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
     p=create(client)

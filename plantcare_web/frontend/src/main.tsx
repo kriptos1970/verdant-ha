@@ -369,7 +369,14 @@ function App() {
       await reload();
       if (message) setNotice(message);
     } catch (e) {
-      setError((e as Error).message);
+      const message = (e as Error).message;
+      const code = (e as Error & { code?: string }).code;
+      const generic = /^(Controlla i dati inseriti\.|Check the data and try again\.)$/.test(message);
+      if (code === "validation" && (document.querySelector("dialog[open]") || generic)) {
+        console.warn("Errore di validazione gestito dal form:", message);
+      } else {
+        setError(message);
+      }
       throw e;
     } finally {
       setBusy(false);
@@ -2216,6 +2223,7 @@ function PlantEditor({
               {t("plantEditor.species")}
               <input
                 value={draft.species}
+                maxLength={300}
                 placeholder={t("plantEditor.speciesPlaceholder")}
                 onChange={(e) => set("species", e.target.value)}
               />
@@ -2245,6 +2253,7 @@ function PlantEditor({
               <input
                 required
                 list="rooms"
+                maxLength={200}
                 value={draft.room}
                 onChange={(e) => set("room", e.target.value)}
               />
@@ -2745,6 +2754,7 @@ function PlantEditor({
                   {t("event.note")}
                   <textarea
                     rows={3}
+                    maxLength={20000}
                     value={draft.notes}
                     onChange={(e) => set("notes", e.target.value)}
                     placeholder={t("plantEditor.notesPlaceholder")}
@@ -3085,6 +3095,7 @@ function ProductEditor({
           {t("product.notes")}
           <textarea
             rows={4}
+            maxLength={20000}
             value={p.notes}
             onChange={(e) => set({ ...p, notes: e.target.value })}
           />
@@ -4034,6 +4045,7 @@ function GrowthEditor({
           {t("growth.note")}
           <textarea
             rows={4}
+            maxLength={20000}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

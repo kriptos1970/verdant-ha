@@ -100,7 +100,9 @@ export async function api<T>(
     } catch {
       // Keep the status-derived code.
     }
-    throw new Error(errorMessage(code, detail));
+    const failure = new Error(errorMessage(code, detail)) as Error & { code?: string };
+    failure.code = code;
+    throw failure;
   }
   if (response.status === 204) return undefined as T;
   return response.json();

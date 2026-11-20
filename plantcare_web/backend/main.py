@@ -66,7 +66,14 @@ async def http_error(request,error):
     return JSONResponse({'detail':error.detail,'code':ERROR_CODES.get(error.status_code,'error')},status_code=error.status_code,headers=getattr(error,'headers',None))
 @app.exception_handler(RequestValidationError)
 async def request_validation(request,error):
-    return JSONResponse({'detail':'Controlla i dati inseriti.','code':'validation'},status_code=422)
+    parts=[]
+    for item in error.errors()[:3]:
+        loc='.'.join(str(part) for part in item.get('loc',[]) if part not in {'body','query','path'})
+        message=str(item.get('msg','')).removeprefix('Value error, ').strip()
+        if loc: message=f"{loc}: {message}"
+        if message: parts.append(message)
+    detail='; '.join(parts) if parts else 'Controlla i dati inseriti.'
+    return JSONResponse({'detail':detail,'code':'validation'},status_code=422)
 @app.exception_handler(Conflict)
 async def conflict(request,error): return JSONResponse({'detail':str(error),'code':'conflict'},status_code=409)
 @app.exception_handler(KeyError)
