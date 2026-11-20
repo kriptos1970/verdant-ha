@@ -1,3 +1,10 @@
+# 0.11.18 — foto nel diario di crescita e dipendenze sicure
+
+- Dalla sezione **Attività**, l’attività **Diario di crescita** apre ora l’editor del diario invece del form generico della cura: “Scatta una foto” usa la fotocamera, “Scegli fotografie” apre la libreria; le immagini vengono salvate nella voce di crescita e l’attività viene registrata.
+- Aggiornati **Pillow 13.0.0** e **python-multipart 0.0.31** per correggere le vulnerabilità segnalate.
+- `pip-audit` sul lock aggiornato e `npm audit` non segnalano più vulnerabilità note.
+- 223 test backend, 1013 chiavi i18n.
+
 # 0.11.17 — validazione più chiara, niente banner generico
 
 - Il banner globale “Controlla i dati inseriti.” non viene più mostrato quando la risposta non contiene un dettaglio utile o quando l’errore arriva da un form modale; l’errore specifico resta nel form.

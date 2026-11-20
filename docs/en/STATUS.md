@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.17**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.18**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.17**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.18 (20 November 2026)
+
+- **Growth diary activity** now opens the diary editor with **Take a photo** and **Choose photos**; photos are saved in the growth entry and the activity is recorded.
+- **Pillow 13.0.0** and **python-multipart 0.0.31** security updates; `pip-audit` and `npm audit` report no known vulnerabilities.
+- 223 backend tests, 1,013 i18n keys, frontend build.
 
 ## Release 0.11.17 (20 November 2026)
 
@@ -160,7 +166,7 @@ Current release: **0.11.17**, published on [GitHub Releases](https://github.com/
 - Operational care engine and unreferenced photo cleanup.
 - 212 backend tests, 988 i18n keys, frontend build.
 
-## Next release (0.11.18)
+## Next release (0.11.19)
 
 - Phone camera light meter, “Active” notification bell/web notifications if requested, in-place backup restore.
 - Deferred field checks: physical iPhone/Companion, real QR/NFC, real Pl@ntNet, real Gemini, isolated HA restore, real sensors/weather, very large archive.
