@@ -62,6 +62,6 @@ Open **AI** on the plant card, write a question and choose **Ask for advice**. M
 
 Select the activities to apply and review **The plan after applying**. Text indications are added to the notes. If the plant changes after the analysis, a new advice is required. Repeating the same confirmation does not create a second event.
 
-Daily analyses cover plants in AI mode. Automatic application is off by default; proposals create a persistent Home Assistant notification. A notification error appears in the AI status and does not lose the proposals.
+Daily analyses cover plants in AI mode and receive the location plus a structured `careTiming` summary (completed gaps, intentional postponements and late gaps without a postponement). Automatic application is off by default; proposals create a persistent Home Assistant notification. A notification error appears in the AI status and does not lose the proposals.
 
 Live provider tests require your own keys; development checks use simulated responses. Do not paste keys into chats or issues.

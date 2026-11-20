@@ -1,3 +1,10 @@
+# 0.11.14 — contesto AI con rinvii e località
+
+- L’analisi AI giornaliera riceve ora la **località** (dal piano o da quella predefinita) e `careTiming`: intervalli osservati, rinvii intenzionali con data, nuova data e nota, e ritardi senza rinvio.
+- Il prompt distingue esplicitamente **rinvii e ritardi**: i primi sono scelte del coltivatore, i secondi no; i rinvii onorati e coerenti pesano come evidenza del ritmo reale.
+- Anche l’assistente della scheda pianta riceve località e rinvii recenti; `contextVersion` portato a 3 per non riusare i consigli precedenti.
+- 217 test backend, build frontend.
+
 # 0.11.13 — pulsante Completa compatto su desktop
 
 - Nelle card della sezione Attività su desktop il pulsante **Completa** ha ora una larghezza proporzionata di 200 px (massimo 100% della card) e altezza 44 px, invece di occupare tutta la riga.

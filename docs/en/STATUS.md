@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.13**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.14**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.13**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.14 (20 November 2026)
+
+- Care engine step 1.1: the daily AI analysis receives the **location** and `careTiming` (observed gaps, postponements with notes, late gaps without a postponement); the prompt separates intentional postponements from delays.
+- The plant-card assistant receives location and recent postponements too; `contextVersion` updated to 3.
+- 217 backend tests, frontend build.
 
 ## Release 0.11.13 (20 November 2026)
 
@@ -134,12 +140,12 @@ Current release: **0.11.13**, published on [GitHub Releases](https://github.com/
 - Operational care engine and unreferenced photo cleanup.
 - 212 backend tests, 988 i18n keys, frontend build.
 
-## Next release (0.11.4)
+## Next release (0.11.15)
 
-- Phone camera light meter.
-- Web “Active” notification bell, if requested.
-- Live Pl@ntNet editor trial and real Gemini AI trial.
-- Deferred field checks: physical iPhone/Companion, real QR/NFC, isolated HA restore, real sensors/weather, very large archive.
+- Care engine step 1.2: adaptive learning step based on postponements, without confusing them with delays.
+- Care engine step 1.3: grower experience profile (beginner, intermediate, expert, professional).
+- Phone camera light meter, “Active” notification bell/web notifications if requested, in-place backup restore.
+- Deferred field checks: physical iPhone/Companion, real QR/NFC, real Pl@ntNet, real Gemini, isolated HA restore, real sensors/weather, very large archive.
 
 ## Remaining roadmap
 

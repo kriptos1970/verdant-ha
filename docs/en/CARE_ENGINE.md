@@ -103,7 +103,8 @@ The planner uses the **real position**, not the **Exposure** field (low/indirect
 
 - The daily analysis considers **only plants in AI mode**.
 - It runs once a day at `ai_update_time` (default **03:00**) or on demand with “Analyse now”.
-- The provider receives: current intervals, Verdant baseline, care rhythm, room, light, saved season and climate, recent care, the linked fertilizer product and pot data.
+- The provider receives: current intervals, Verdant baseline, care rhythm, room, light, saved season and climate, **location**, recent care, the linked fertilizer product and pot data.
+- `careTiming` summarises, for water and feeding, observed gaps, intentional postponements with date, new date and note, and late gaps without a postponement. The prompt explicitly separates postponements from delays.
 - Proposals are validated:
   - they must declare sufficient evidence and a concrete reason;
   - watering stays within **±25%** of the Verdant baseline, respecting the species minimum;
@@ -165,7 +166,7 @@ The **default location** is not an add-on option: it is set in **Settings → De
 ## Current limits
 
 - Learning moves by **±1 day** and is not yet weighted by the grower’s experience level or by postponements.
-- The daily AI analysis receives recent care as kind and date; it does **not** receive a structured list of postponements or the location name. The plant-card assistant does see the plan location.
+- The daily AI analysis receives location, postponements and delays as context, but never applies the plan automatically: proposals need approval unless `auto_apply_ai` is enabled.
 - The planner uses the real position, not the Exposure field.
 - Manual mode is not seasonal and does not use weather.
 - The operational engine requires configured sensors and operational mode; without fresh readings it does nothing.

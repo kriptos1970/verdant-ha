@@ -103,7 +103,8 @@ Il pianificatore usa **Posizione reale**, non il campo **Esposizione** (Luce bas
 
 - L’analisi giornaliera considera **solo le piante in modalità AI**.
 - Parte una volta al giorno all’orario `ai_update_time` (predefinito **03:00**) oppure su richiesta con “Analizza ora”.
-- Il provider riceve: intervalli correnti, base Verdant, ritmo delle cure scelto, ambiente, luce, stagione e clima salvato, ultime cure, prodotto fertilizzante e dati del vaso.
+- Il provider riceve: intervalli correnti, base Verdant, ritmo delle cure scelto, ambiente, luce, stagione e clima salvato, **località**, ultime cure, prodotto fertilizzante e dati del vaso.
+- `careTiming` riassume, per acqua e concime, gli intervalli osservati, i rinvii intenzionali con data, nuova data e nota, e i ritardi senza rinvio. Il prompt distingue esplicitamente rinvii e ritardi.
 - Le proposte sono validate:
   - devono dichiarare sufficiente evidenza e una motivazione concreta;
   - l’annaffiatura resta entro **±25%** della base Verdant, rispettando la soglia minima della specie;
@@ -165,7 +166,7 @@ La **località predefinita** non è un’opzione dell’add-on: si imposta in **
 ## Limiti attuali
 
 - L’apprendimento si muove di **±1 giorno** e non è ancora modulato dal grado di esperienza o dai rinvii.
-- L’analisi AI giornaliera riceve le ultime cure come tipo e data; **non** riceve un elenco strutturato dei rinvii né il nome della località. L’assistente della scheda pianta, invece, vede la località del piano.
+- L’analisi AI riceve località, rinvii e ritardi come contesto, ma non applica automaticamente il piano: le proposte attendono approvazione, salvo `auto_apply_ai`.
 - Il pianificatore usa la Posizione reale, non il campo Esposizione.
 - La modalità Manuale non è stagionale e non usa il meteo.
 - Il motore operativo richiede sensori configurati e la modalità operativa; senza misure fresche non fa nulla.
