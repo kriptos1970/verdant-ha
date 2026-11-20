@@ -20,14 +20,16 @@ from pydantic import ValidationError
 from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
-from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareEnginePreference, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
-from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
+from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
+from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions, normalize_experience
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
 from . import services, ai, care, adaptive
 from .treatments import pin_baselines, update_counts, treatment_view
 
 settings=Settings()
+from .migration import import_shared_database
+import_shared_database(settings.directory)
 store=Store(settings.directory,settings.photo_directory)
 
 @asynccontextmanager
@@ -64,7 +66,14 @@ async def http_error(request,error):
     return JSONResponse({'detail':error.detail,'code':ERROR_CODES.get(error.status_code,'error')},status_code=error.status_code,headers=getattr(error,'headers',None))
 @app.exception_handler(RequestValidationError)
 async def request_validation(request,error):
-    return JSONResponse({'detail':'Controlla i dati inseriti.','code':'validation'},status_code=422)
+    parts=[]
+    for item in error.errors()[:3]:
+        loc='.'.join(str(part) for part in item.get('loc',[]) if part not in {'body','query','path'})
+        message=str(item.get('msg','')).removeprefix('Value error, ').strip()
+        if loc: message=f"{loc}: {message}"
+        if message: parts.append(message)
+    detail='; '.join(parts) if parts else 'Controlla i dati inseriti.'
+    return JSONResponse({'detail':detail,'code':'validation'},status_code=422)
 @app.exception_handler(Conflict)
 async def conflict(request,error): return JSONResponse({'detail':str(error),'code':'conflict'},status_code=409)
 @app.exception_handler(KeyError)
@@ -80,7 +89,7 @@ async def remote_error(request,error):
 @app.get('/health')
 def health(): return {'status':'ok','version':__version__}
 @app.get('/api/settings')
-def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow'),'adaptiveStatus':store.state('adaptive-status')}
+def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':settings.options.get('care_engine_mode','active'),'experience':preference_experience(),'adaptiveStatus':store.state('adaptive-status')}
 
 def linked_product(plant, db=None):
     if not plant.get('fertilizerProductID'):
@@ -91,9 +100,12 @@ def linked_product(plant, db=None):
         return None
 
 
+def preference_experience():
+    return normalize_experience((store.state('preferences') or {}).get('experience'))
+
 def render_plant(plant, version, db=None):
     from .services import message_language
-    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db),language=message_language(store,settings)))
+    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db),language=message_language(store,settings),experience=preference_experience()))
 
 @app.get('/api/plants')
 def list_plants(summary:bool=False):
@@ -136,12 +148,14 @@ async def smart_plan_value(value,previous=None):
     plan=adaptive.make_plan(value.get('species',''),value.get('family') or '',placement,location,climate,zone=settings.zone,botanical=adaptive.saved_botanical(previous))
     plan['weatherEnabled']=True
     value['carePlanMode']='Intelligente'
-    adaptive.apply_plan(value,plan,settings.zone,previous or None)
+    adaptive.apply_plan(value,plan,settings.zone,previous or None,experience=preference_experience())
     return value
 
 @app.post('/api/plants',status_code=201)
 async def create_plant(body:Plant):
     value=body.model_dump()
+    product=linked_product(value)
+    if product: value['fertilizerType']=product['name']
     if value['history'] or value.get('treatmentPlans'): raise HTTPException(422,'Usa il flusso di importazione per le cronologie esistenti.')
     if value.get('carePlanMode')=='Intelligente': value=await smart_plan_value(value)
     p,v=store.put('plants',value)
@@ -153,6 +167,8 @@ async def update_plant(plant_id:str,body:Plant,version:int=Query(ge=1)):
     with store.connection() as db:
         old,_=store.get('plants',plant_id,db)
         value=body.model_dump()
+        product=linked_product(value,db)
+        if product: value['fertilizerType']=product['name']
         if value['history']!=old['history']: raise HTTPException(422,'Modifica le cure dal diario.')
         if value.get('treatmentPlans')!=old.get('treatmentPlans'): raise HTTPException(422,'Modifica i cicli dalla sezione Trattamenti.')
         transitioning=value.get('carePlanMode')=='Intelligente' and old.get('carePlanMode')!='Intelligente'
@@ -183,7 +199,7 @@ def move_plant(plant_id:str,body:MoveRequest):
                 climate={k:plan[k] for k in ['averageTemperature','relativeHumidity','precipitationNextWeek']}
                 refreshed=adaptive.make_plan(plant['species'],plant.get('family') or '',body.placement,location,climate,parse(body.date),settings.zone,adaptive.saved_botanical(plan))
                 refreshed['weatherEnabled']=plan.get('weatherEnabled',False)
-                adaptive.apply_plan(plant,refreshed,settings.zone,plan,parse(body.date))
+                adaptive.apply_plan(plant,refreshed,settings.zone,plan,parse(body.date),experience=preference_experience())
         route=f"{previous_room} → {plant['room']}" if previous_room!=plant['room'] else f"{previous_placement or previous_room} → {body.placement}"
         note=' · '.join(value for value in [route,body.note.strip()] if value)
         plant.setdefault('history',[]).append({'id':str(uuid4()).upper(),'kind':'move','date':iso(parse(body.date)),'status':'completed','note':note,'origin':'user','schemaVersion':2})
@@ -252,7 +268,7 @@ async def proposed_plan(plant, body, version=None):
         plan.update(botanicalScientificName=botanical['scientificName'],botanicalFetchedAt=botanical['fetchedAt'],botanicalExactMatch=botanical['exactMatch'])
     plan['weatherEnabled'] = body.weatherEnabled
     candidate = {**plant,'carePlanMode':'Intelligente'}
-    adaptive.apply_plan(candidate,plan,settings.zone,previous or None)
+    adaptive.apply_plan(candidate,plan,settings.zone,previous or None,experience=preference_experience())
     return candidate
 
 @app.post('/api/plants/{plant_id}/adaptive/preview')
@@ -282,19 +298,19 @@ def apply_adaptive(plant_id:str,previewID:str=Query(min_length=1,max_length=100)
     return render_plant(p,v)
 
 @app.get('/api/preferences')
-def preferences(): return store.state('preferences',{'language':settings.options.get('language','auto')})
+def preferences():
+    current=store.state('preferences',{})
+    return {'language':current.get('language',settings.options.get('language','auto')),'experience':normalize_experience(current.get('experience'))}
 @app.put('/api/preferences')
 def save_preferences(body:LanguagePreference):
-    store.set_state('preferences',body.model_dump())
-    return body
+    current=store.state('preferences',{})
+    current.update(body.model_dump(exclude_unset=True,exclude_none=True))
+    store.set_state('preferences',current)
+    return {'language':current.get('language',settings.options.get('language','auto')),'experience':normalize_experience(current.get('experience'))}
 @app.get('/api/preferences/location')
 def default_location(): return store.state('location')
 @app.get('/api/preferences/care-engine')
-def care_engine_mode(): return {'mode':store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow')}
-@app.put('/api/preferences/care-engine')
-def save_care_engine_mode(body:CareEnginePreference):
-    store.set_state('care-engine-mode',body.mode)
-    return {'mode':body.mode}
+def care_engine_mode(): return {'mode':settings.options.get('care_engine_mode','active')}
 @app.put('/api/preferences/location')
 def save_default_location(body:CareLocation):
     location=body.model_dump()
@@ -346,7 +362,7 @@ def calendar():
 def add_event(plant_id:str,body:EventRequest):
     with store.connection() as db:
         plant,version=store.get('plants',plant_id,db)
-        changed=care.record(plant,body,settings.zone,linked_product(plant,db))
+        changed=care.record(plant,body,settings.zone,linked_product(plant,db),preference_experience())
         p,v=store.put('plants',plant,version,db) if changed else (plant,version)
         return render_plant(p,v,db)
 
@@ -409,7 +425,7 @@ def round_action(body:RoundCommand):
             note=body.note,includingFertilizing=body.includingFertilizing,
             treatmentPlanID=action.get('treatmentPlanID'),productID=action.get('productID'),
             expectedApplicationNumber=action.get('applicationNumber'),scheduledDueDate=action['dueDate'])
-        care.record(plant,event,settings.zone,product)
+        care.record(plant,event,settings.zone,product,preference_experience())
         record=next(e for e in plant['history'] if e['id']==body.eventID)
         record['sourceActionID']=body.expectedActionID
         completed=0 if postponed else 1+int(bool(record.get('pairedFertilizingEventID')))
@@ -701,7 +717,7 @@ def shadow_engine(plant_id:str):
     native_keys={(m['kind'],m['value'],m['unit'],iso(parse(m['date']))) for m in normalized_measurements(native)}
     rows=[r for r in rows if not any((m['kind'],m['value'],m['unit'],iso(parse(m['date']))) in native_keys for m in normalized_measurements([r]))]
     result=evaluate(plant,rows+native,biology,settings.zone)
-    result['mode']='active' if (store.state('care-engine-mode') or settings.options.get('care_engine_mode','shadow'))=='active' else 'shadow'
+    result['mode']='active' if settings.options.get('care_engine_mode','active')=='active' else 'shadow'
     return result
 
 @app.get('/api/plants/{plant_id}/measurements')

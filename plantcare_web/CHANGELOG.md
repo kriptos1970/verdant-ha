@@ -1,10 +1,106 @@
-# Non rilasciato — grafici, fase 1
+# 0.11.17 — validazione più chiara, niente banner generico
 
-- Indice salute per pianta portato dal nativo (`healthAssessment`): ritardi di acqua e concime, ultima osservazione con peso per età, controlli e progressi arretrati, misure luce ripetute; normalizzazione 20–100 e consigli con codici traducibili.
-- `_health` incluso nella scheda pianta e nella collezione sintetica, senza aggiungere la cronologia alla lista.
-- Nuovo endpoint `/api/analytics?days=30|90|365` con cure completate, giorni attivi, regolarità dell’acqua, attività giornaliera, tipi di cura, ambienti, ultimo stato registrato e piante da osservare.
-- Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
-- 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
+- Il banner globale “Controlla i dati inseriti.” non viene più mostrato quando la risposta non contiene un dettaglio utile o quando l’errore arriva da un form modale; l’errore specifico resta nel form.
+- Il backend di validazione restituisce ora il **campo** e il **motivo** (ad esempio `name: Campo obbligatorio`), così un eventuale banner è azionabile.
+- Aggiunti limiti `maxLength` ai testi lunghi dell’editor pianta, delle note cura, dei prodotti e della crescita per evitare rifiuti evitabili.
+- 223 test backend, build frontend.
+
+# 0.11.16 — profilo di esperienza del coltivatore
+
+- Nuova impostazione **Esperienza del coltivatore**: principiante, intermedio, esperto, professionista (default intermedio), salvata nelle preferenze dell’app e visibile in Impostazioni.
+- Apprendimento Verdant: il passo massimo è 1, 2, 3 o 4 giorni secondo il profilo; con almeno due rinvii onorati (o due anticipati) il passo è pari al numero di rinvii, fino al massimo. I ritardi senza rinvio non accelerano; restano il limite ±30% e il target.
+- L’analisi AI giornaliera e l’assistente ricevono `experienceLevel`; il prompt calibra prudenza e peso dei rinvii. `contextVersion` portato a 4.
+- Il PUT delle preferenze unisce lingua ed esperienza senza sovrascriversi.
+- 222 test backend, 1012 chiavi i18n.
+
+# 0.11.15 — apprendimento adattivo ai rinvii
+
+- L’apprendimento Verdant non usa più un passo fisso di ±1 giorno: parte da 1 e sale a **2 giorni** quando almeno **2 rinvii onorati** (con almeno un giorno di rinvio) confermano un ritmo più lungo, oppure quando almeno **2 rinvii anticipati** indicano un ritmo più corto.
+- I **ritardi senza rinvio** restano evidenza debole e non accelerano l’apprendimento; il limite ±30% e il mancato superamento del target restano invariati.
+- `careLearning` espone `adaptiveStepDays`, `honoredPostponements`, `earlyPostponements`, `medianDeferredDays` e `lateGapsWithoutPostponement`.
+- 220 test backend, build frontend.
+
+# 0.11.14 — contesto AI con rinvii e località
+
+- L’analisi AI giornaliera riceve ora la **località** (dal piano o da quella predefinita) e `careTiming`: intervalli osservati, rinvii intenzionali con data, nuova data e nota, e ritardi senza rinvio.
+- Il prompt distingue esplicitamente **rinvii e ritardi**: i primi sono scelte del coltivatore, i secondi no; i rinvii onorati e coerenti pesano come evidenza del ritmo reale.
+- Anche l’assistente della scheda pianta riceve località e rinvii recenti; `contextVersion` portato a 3 per non riusare i consigli precedenti.
+- 217 test backend, build frontend.
+
+# 0.11.13 — pulsante Completa compatto su desktop
+
+- Nelle card della sezione Attività su desktop il pulsante **Completa** ha ora una larghezza proporzionata di 200 px (massimo 100% della card) e altezza 44 px, invece di occupare tutta la riga.
+- Su telefono il pulsante resta a tutta larghezza.
+- 215 test backend, build frontend.
+
+# 0.11.12 — conferma cura senza scorrimento orizzontale
+
+- Su telefono la finestra che si apre con **Completa** accetta solo lo scorrimento verticale: overflow orizzontale nascosto, overscroll orizzontale disattivato e `touch-action` limitata a pan verticale e pinch-zoom.
+- Nomi pianta, passaggi della guida e motivazioni lunghe vanno a capo; campi e pulsanti non superano la larghezza del pannello.
+- Verifica a 320/390 px con un nome pianta molto lungo: nessun overflow orizzontale.
+- 215 test backend, build frontend.
+
+# 0.11.11 — maniglia del pannello destro sempre disponibile
+
+- La maniglia del pannello dettaglio è ora presente anche quando il pannello è nello stato vuoto (prima compariva solo con una pianta aperta), quindi la colonna destra si ridimensiona subito.
+- Z-index delle maniglie alzato per evitare sovrapposizioni con il contenuto del dettaglio.
+- 215 test backend, build frontend.
+
+# 0.11.10 — pannelli desktop ridimensionabili
+
+- Nella versione desktop la **colonna sinistra** e il **pannello del dettaglio** si ridimensionano trascinando il bordo; maniglia visibile al passaggio del mouse, doppio clic per tornare alla larghezza predefinita.
+- Larghezza memorizzata per browser, frecce da tastiera, limiti: colonna 190–420 px, dettaglio 320–720 px, almeno 420 px per il contenuto.
+- Le maniglie sono disponibili solo sopra i 1000 px; su telefono e tablet resta il layout esistente.
+- 215 test backend, build frontend.
+
+# 0.11.9 — nome Verdant
+
+- Add-on, pannello laterale, web app, titolo della pagina, notifiche e messaggi visibili ora usano il nome **Verdant**.
+- Slug dell’add-on, cartella `/data`, database, percorsi delle foto, formato dei backup e identificatori interni restano invariati: aggiornamento e dati sono preservati.
+- 215 test backend, build frontend.
+
+# 0.11.8 — risposte AI in Markdown
+
+- Le risposte dell’assistente AI nel riquadro verde vengono renderizzate come Markdown: titoli, paragrafi, grassetto e corsivo, elenchi puntati e numerati, citazioni, codice e tabelle GFM.
+- Il renderer viene caricato solo quando serve ed è separato dal bundle principale; non interpreta HTML grezzo.
+- Stesso comportamento per Gemini e OpenAI, che restituiscono lo stesso campo `summaryMarkdown`.
+- 215 test backend, build frontend.
+
+# 0.11.7 — etichette QR con lo slug dell’add-on
+
+- Le etichette QR/NFC usano lo slug dell’add-on corrente (`local_plantcare_web` per l’installazione locale, `309d34f7_plantcare_web` per quella da repository) invece del valore fisso `local_plantcare_web`.
+- Il parser delle etichette accetta qualsiasi percorso `/app/<slug>/plant/<id>`, mantenendo compatibili le etichette già stampate.
+- 215 test backend.
+
+# 0.11.6 — migrazione assistita tra add-on
+
+- Nuovo import guidato per spostare l’archivio su un add-on con slug diverso (locale → repository): se `/data` è vuoto e esiste `/share/plantcare/migrate/import-request`, l’app importa `/share/plantcare/migrate/plantcare.sqlite` all’avvio.
+- Il database viene validato come SQLite e sostituito atomicamente; il file di migrazione resta in `/share` per il rollback e la richiesta viene consumata una sola volta.
+- 215 test backend.
+
+# 0.11.5 — scelta visuale del fertilizzante
+
+- Nell’editor pianta il fertilizzante si sceglie da un **elenco visuale** con miniatura, nome, marca, categoria e forma; “Nessun fertilizzante” resta la prima voce.
+- Rimosso il campo libero **“Tipo di fertilizzante”**: il tipo viene derivato dal prodotto scelto, anche lato backend, e non è più modificabile.
+- Sono proposti solo i prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante), più l’eventuale prodotto già associato; la dose compare solo con un prodotto selezionato.
+- 213 test backend, 1001 chiavi i18n.
+
+# 0.11.4 — un solo interruttore per il motore di cura
+
+- La modalità del motore di cura ha ora **una sola fonte**: l’opzione `care_engine_mode` nella configurazione dell’add-on, con default **Operativo**.
+- Rimossa la preferenza salvata dal web che poteva divergere dalla configurazione: niente più doppio valore shadow/active.
+- In **Impostazioni → Motore di cura** la web UI mostra la modalità effettiva e spiega entrambe le modalità e dove cambiarle; l’endpoint di scrittura è stato rimosso.
+- 212 test backend, 1000 chiavi i18n.
+
+# 0.11.3 — editor pianta web-first
+
+- Editor **Nuova pianta / Modifica pianta** riorganizzato per il web, senza copiare il form nativo: foto e riconoscimento in alto, poi i dati essenziali sempre visibili (nome, specie, famiglia e categoria, ambiente ed esposizione, piano, annaffiatura e ultima annaffiatura).
+- Le informazioni secondarie passano a cinque sezioni richiudibili con riepilogo: Posizione e profilo, Vaso e substrato, Frequenze e concimazione, Attività aggiuntive, Altre informazioni.
+- Una sola barra **Annulla / Salva pianta** sticky in fondo al dialog, con rispetto della safe area; rimossa la doppia barra in testa.
+- Griglie a due colonne per i campi brevi e una colonna sotto 360 px; contenuto ridotto da circa 4.038 px a circa 1.392 px a 390 px.
+- I campi obbligatori restano nelle sezioni sempre visibili; un controllo non valido dentro una sezione chiusa la apre e riceve il focus.
+- Diario della pianta e editor pianta con riquadri verde tenue: crescita, cronologia, linea del tempo, sezioni e riconoscimento Pl@ntNet.
+- 212 test backend, 999 chiavi i18n.
 
 # 0.11.2 — parità funzionale, token visivi e riconoscimento
 
@@ -18,6 +114,8 @@
 - Editor pianta riordinato come il nativo, con riconoscimento Pl@ntNet nel form e compilazione automatica di nome, specie, famiglia e categoria.
 - Icone piene, token visivi in `tokens.css`, layout Home/Cure/Cronologia allineato a Verdant.
 - Pulizia foto non utilizzate, con protezione dei caricamenti recenti.
+- Grafici e analisi, fase 1: indice salute per pianta portato dal nativo (`healthAssessment`), con ritardi di acqua e concime, ultima osservazione, controlli e misure di luce; normalizzazione 20–100 e consigli con codici traducibili.
+- `_health` incluso nella scheda pianta e nella collezione sintetica; endpoint `/api/analytics?days=30|90|365` e `/api/plants/{id}/timeline` per unire eventi e misure.
 - 212 test backend, 988 chiavi i18n.
 
 # 0.11.1 — caricamento fotografie

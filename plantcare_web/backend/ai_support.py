@@ -6,7 +6,7 @@ from .domain import now, iso, parse, feed_days
 from .storage import Conflict
 
 
-ADVICE_CONTEXT_VERSION = 2
+ADVICE_CONTEXT_VERSION = 4
 
 
 def advice_context_current(advice):

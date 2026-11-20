@@ -114,7 +114,8 @@ class Question(BaseModel):
         return value.strip()
 
 class LanguagePreference(BaseModel):
-    language: Literal['auto','it','en']
+    language: Literal['auto','it','en'] | None = None
+    experience: Literal['principiante','intermedio','esperto','professionista'] | None = None
 
 class Mapping(BaseModel):
     entityID: str = Field(min_length=1,max_length=200)
@@ -192,9 +193,6 @@ class ClimateInput(BaseModel):
     averageTemperature: float = Field(ge=-90,le=65,allow_inf_nan=False)
     relativeHumidity: int = Field(ge=0,le=100)
     precipitationNextWeek: float = Field(ge=0,le=5000,allow_inf_nan=False)
-
-class CareEnginePreference(BaseModel):
-    mode: Literal['shadow','active']
 
 class PhotoCleanupRequest(BaseModel):
     names: list[str] = Field(default_factory=list, max_length=10000)

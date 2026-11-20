@@ -47,6 +47,34 @@ def test_calendar_endpoint_keeps_the_legacy_frontend_values(client):
     assert not any(a['kind']=='water' for a in actions)
 
 
+def test_fertilizer_type_is_derived_from_the_linked_product(client):
+    product=client.post('/api/fertilizers',json={'name':'Concime A','form':'Liquido'}).json()
+    p=create(client,fertilizerProductID=product['id'],fertilizerType='Etichetta libera')
+    assert p['fertilizerType']=='Concime A'
+    p['fertilizerType']='Altra etichetta'
+    r=client.put(f"/api/plants/{p['id']}?version={p['_version']}",json=p)
+    assert r.status_code==200,r.text
+    assert r.json()['fertilizerType']=='Concime A'
+
+
+def test_experience_preference_merges_with_language(client):
+    assert client.get('/api/settings').json()['experience']=='intermedio'
+    assert client.put('/api/preferences',json={'experience':'esperto'}).status_code==200
+    assert client.get('/api/preferences').json()['experience']=='esperto'
+    assert client.put('/api/preferences',json={'language':'en'}).status_code==200
+    assert client.get('/api/preferences').json()['experience']=='esperto'
+    assert client.get('/api/settings').json()['experience']=='esperto'
+    assert client.put('/api/preferences',json={'experience':'invalid'}).status_code==422
+
+
+def test_validation_error_detail_names_the_field(client):
+    response=client.post('/api/plants',json={'name':'   ','room':'Casa','wateringInterval':7,'lastWatered':'2026-11-01T12:00:00Z','acquiredOn':'2026-01-01T12:00:00Z'})
+    assert response.status_code==422
+    payload=response.json()
+    assert payload['code']=='validation'
+    assert 'Campo obbligatorio' in payload['detail'] or 'name' in payload['detail']
+
+
 def test_error_responses_expose_stable_codes(client):
     assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
     p=create(client)

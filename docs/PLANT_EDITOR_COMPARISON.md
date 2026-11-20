@@ -78,6 +78,26 @@ Legenda: ✅ presente, 🟡 parziale, ❌ assente nel form web. “Nel dato” i
 - Presenti nel form web: **34** intere, **2** parziali, **2** assenti (identificazione e reidentificazione nel form).
 - I dati mancanti sono in gran parte **già nell’archivio**: il backend conserva i campi extra (`extra='allow'`) e l’archivio reale contiene `plantingMethod`, `careFrequencyPreference`, `fertilizerDose`, `lastFertilized`, `fertilizerType`, `heightCM` e `setup.container` (materiale, diametro, drenaggio, cachepot, sottovaso, qualità). L’allineamento è quindi soprattutto interfaccia, senza migrazione.
 
+## Layout web-first dell’editor (19 novembre 2026)
+
+Scelta deliberata: **non copiare** l’impostazione nativa a otto sezioni sempre aperte. Il web usa la divulgazione progressiva.
+
+| Blocco | Contenuto | Comportamento |
+|---|---|---|
+| Foto e riconoscimento | foto, cambio foto, Pl@ntNet con risultati inline | sempre visibile |
+| Dati essenziali | nome, specie, famiglia e categoria, ambiente ed esposizione, piano, annaffiatura, ultima annaffiatura | sempre visibili, griglia a due colonne |
+| Posizione e profilo | posizione reale, altezza, metodo di coltivazione | richiudibile, riepilogo |
+| Vaso e substrato | materiale, diametro, altezza, volume, drenaggio, cachepot, sottovaso, substrato e proprietà | richiudibile, riepilogo |
+| Frequenze e concimazione | ritmo, concimazione, ultima fertilizzazione, tipo/prodotto/dose | richiudibile, riepilogo |
+| Attività aggiuntive | rotazione, controllo, diario, potatura, rinvaso | richiudibile, conteggio attività |
+| Altre informazioni | data di acquisizione, note | richiudibile, data o nota |
+
+- Una sola barra **Annulla / Salva** sticky a fine form, con `env(safe-area-inset-bottom)`.
+- Riepiloghi sempre leggibili: titolo su una riga e valore secondario sotto, senza troncamenti aggressivi.
+- Campi brevi in due colonne; sotto 360 px tornano a una colonna.
+- I campi obbligatori restano fuori dalle sezioni chiuse; se un controllo non valido finisce comunque in una sezione chiusa, il submit la apre e porta il focus sul campo.
+- Misure: contenuto del dialog a 390 px da ~4.038 px a ~1.392 px; 2.975 px con tutte le sezioni aperte; nessun overflow a 320/390/430 px.
+
 ## Allineamento visivo e ordine delle sezioni (18 novembre 2026)
 
 Confronto diretto con `PlantEditorView.swift`:
@@ -94,11 +114,18 @@ Confronto diretto con `PlantEditorView.swift`:
 
 Verifica: screenshot e misure DOM a 686 px (telefono/tablet) e 1280 px (desktop), nessun overflow orizzontale, sezioni nell’ordine nativo, apertura delle sezioni e filtri Piano/Sicurezza, salvataggio riletto con versione incrementata.
 
+## Associazione del fertilizzante (19 novembre 2026)
+
+- Rimosso il campo libero **“Tipo di fertilizzante”**.
+- Il prodotto si sceglie da un **elenco visuale** con miniatura, nome, marca, categoria e forma; la prima voce è **“Nessun fertilizzante”**.
+- La dose si sceglie solo dopo aver associato un prodotto.
+- Il backend deriva sempre `fertilizerType` dal prodotto collegato; l’elenco mostra i prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante) più l’eventuale prodotto già associato.
+
 ## Stato dopo l’allineamento del 17 novembre 2026
 
 - **Impaginazione**: form a sezioni non richiudibili (Identità, Posizione, Profilo fisico, Modalità del piano di cura, Attività aggiuntive, Vaso e substrato, Altre informazioni), righe etichetta/controllo, sottotitolo e Annulla/Salva in testa e in fondo; interruttori a levetta. Verificato a 1280 px (righe flex, toggle 44 px) e con CSS dedicato al telefono.
 
 - **Fatto**: posizione reale, metodo di coltivazione, altezza (già), qualità del drenaggio, altezza e volume del vaso, cachepot, sottovaso, substrato con nome e tre proprietà, ritmo delle cure con ridimensionamento, ultima fertilizzazione, tipo e dose del fertilizzante, interruttori e valori predefiniti delle attività, valori iniziali per una nuova pianta.
-- **Allineato**: il form espone le tre modalità Manuale / Verdant / AI. Verdant calcola gli intervalli al salvataggio; Manuale li conserva; AI li affida alle proposte giornaliere. La spiegazione cambia con la modalità scelta.
+- **Allineato**: il form espone le tre modalità Manuale / Verdant / AI. Verdant calcola gli intervalli al salvataggio; Manuale li conserva; AI li affida alle proposte giornaliere. La spiegazione cambia con la modalità scelta. Funzionamento completo, ricalcoli e limiti: [CARE_ENGINE.md](CARE_ENGINE.md).
 - **Allineato (19 novembre 2026)**: identificazione Pl@ntNet **dentro il form** con consenso, fino a cinque corrispondenze e compilazione automatica di nome (se vuoto), specie, famiglia e categoria. Resta il riconoscimento come strumento separato per le foto già archiviate.
 - **Persistenza**: i campi viaggiano in `setup` (container e substrato) e nei campi già previsti dall’archivio; verificati su archivio sintetico con salvataggio e rilettura.

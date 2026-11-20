@@ -13,7 +13,7 @@ ORGANS = {'leaf', 'flower', 'fruit', 'bark', 'auto'}
 def key(settings, service):
     value = settings.options.get(service + '_api_key', '').strip()
     if not value:
-        raise ValueError(f'Configura la chiave {"Pl@ntNet" if service == "plantnet" else "Perenual"} nelle opzioni dell’add-on Home Assistant e riavvia PlantCare.')
+        raise ValueError(f'Configura la chiave {"Pl@ntNet" if service == "plantnet" else "Perenual"} nelle opzioni dell’add-on Home Assistant e riavvia Verdant.')
     return value
 
 

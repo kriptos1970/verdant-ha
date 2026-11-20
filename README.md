@@ -6,7 +6,7 @@
 [![Release](https://img.shields.io/github/v/release/kriptos1970/verdant-ha?label=release)](https://github.com/kriptos1970/verdant-ha/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Verdant HA** (internally *PlantCare Web*) is a self-hosted **Home Assistant add-on** for looking after a houseplant collection: care scheduling, guided care rounds, history, treatments, sensors and optional AI advice.
+**Verdant** is a self-hosted **Home Assistant add-on** for looking after a houseplant collection: care scheduling, guided care rounds, history, treatments, sensors and optional AI advice.
 
 Everything runs on your own Home Assistant instance, with SQLite and photos stored locally. There is no cloud account and no synchronization with the native Apple apps.
 
@@ -18,7 +18,7 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 
 - **Collection**: plants, rooms, products, photos, growth diary and annotated health album.
 - **Care**: guided care rounds by room, weekly and monthly calendar, paginated history, treatment cycles, deferrals and reminders.
-- **Scheduling**: adaptive planner with seasonal rules and optional Open-Meteo weather. New plants start in manual mode; the advanced Care Engine runs in shadow mode and never rewrites the calendar on its own.
+- **Scheduling**: adaptive planner with seasonal rules and optional Open-Meteo weather. New plants start in manual mode; the operational Care Engine can postpone watering on fresh, reliable wet-soil readings (default active) and never advances care. See [docs/en/CARE_ENGINE.md](docs/en/CARE_ENGINE.md).
 - **Sensors**: temperature, humidity, light, soil moisture and conductivity from Home Assistant entities, mapped to a plant or a room.
 - **AI advice (optional)**: Gemini or OpenAI with structured output, explicit preview and selective application. Disabled by default; automatic application is off.
 - **Knowledge**: Pl@ntNet plant identification, iNaturalist species catalog, Perenual and Open Plantbook profiles, nine care guides and a guided symptom check.
@@ -31,22 +31,34 @@ Everything runs on your own Home Assistant instance, with SQLite and photos stor
 - Backend: Python 3.13, FastAPI, Pydantic, SQLite.
 - Frontend: React 19, TypeScript, Vite.
 - Packaging: Home Assistant add-on built from a local Dockerfile (aarch64 and amd64).
-- Tests: 151 pytest tests; frontend type-check and build in CI.
+- Tests: 215 pytest tests; frontend type-check and build in CI.
 
 ## Status
 
-Current version: **0.11.1**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
+Current version: **0.11.17**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The project is usable and runs on a real Home Assistant installation with a personal archive, but it is still under active development. The interface is available in Italian and English, including care flows, products, treatments, iOS detail, guides and diagnosis. Some long notes already stored in archives may remain in their original language.
 
 Known limits and the remaining roadmap are tracked in the Italian documentation, starting from [docs/STATUS.md](docs/STATUS.md) and [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). The high-level plan is in [ROADMAP.md](ROADMAP.md).
 
 ## Installation
 
+### Home Assistant add-on repository (recommended)
+
+1. In Home Assistant open **Settings → Add-ons → Add-on store**.
+2. Open the **⋮** menu → **Repositories** and add `https://github.com/kriptos1970/verdant-ha`.
+3. Refresh the store, open **Verdant** and install it.
+4. Start the add-on and open **Web UI**: it uses Ingress and does not expose a port.
+5. Configure timezone, exposed sensor entities, photo directory and optional AI/Pl@ntNet keys in the add-on options.
+6. To migrate from the native app, use **Altro → Archivio e backup** and import the exported backup.
+
+Home Assistant checks `plantcare_web/config.yaml` in the repository, so a new version is offered directly in the add-on store after a release.
+
+### Local add-on (offline or development)
+
 1. Download the latest `plantcare-web-<version>.zip` from [Releases](https://github.com/kriptos1970/verdant-ha/releases) and extract it.
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on your Home Assistant host.
-3. Refresh the local add-ons in the Home Assistant App store, install **PlantCare Web** and start it.
-4. Open **Web UI**: the add-on uses Ingress and does not expose a port.
-5. Optionally configure timezone, exposed sensor entities, photo directory and AI provider in the add-on options.
-6. To migrate from the native app, use **Altro → Archivio e backup** and import the exported backup.
+3. Refresh the local add-ons in the Home Assistant App store, install **Verdant** and start it.
+
+> A repository install creates a repository-prefixed add-on (for example `309d34f7_plantcare_web`), while a local install is registered as `local_plantcare_web`. They have separate data volumes. To move an existing local installation to the repository add-on, export the ZIP backup first, install the repository add-on, re-enter the options and import the ZIP on the empty archive.
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the detailed procedure and [docs/IMPORT.md](docs/IMPORT.md) for the import notes.
 
@@ -76,6 +88,7 @@ The CI workflow runs the same backend tests and the frontend build on every push
 - [Installation on Home Assistant (English)](docs/en/INSTALL.md)
 - [Status and known limits (English)](docs/en/STATUS.md)
 - [Architecture and reference matrix (English)](docs/en/REFERENCE.md)
+- [Care engine — Manual, Verdant and AI](docs/en/CARE_ENGINE.md)
 - [Full Italian reference matrix](docs/REFERENCE.md)
 - [Full Italian status and verification notes](docs/STATUS.md)
 - [iOS layout comparison (Italian)](docs/IOS_LAYOUT.md)

@@ -14,6 +14,7 @@ La documentazione dettagliata è in italiano. Il README principale del repositor
 
 ## Riferimenti e stato
 
+- [Motore di cura](CARE_ENGINE.md) — Manuale, Verdant e AI; shadow/operativo, ricalcoli, rinvii e limiti.
 - [Matrice funzionale e decisioni](REFERENCE.md) — riferimento al codice Swift originale.
 - [Stato e limiti](STATUS.md) — cosa è stato verificato, cosa manca.
 - [Layout iOS](IOS_LAYOUT.md) — confronto con Verdant iOS e scostamenti.

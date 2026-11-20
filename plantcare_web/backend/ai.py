@@ -6,8 +6,9 @@ import re
 from pathlib import Path
 from uuid import uuid4
 import httpx
-from .care_kinds import legacy_kind
-from .domain import active_history, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now
+from zoneinfo import ZoneInfo
+from .care_kinds import canonical_kind, legacy_kind
+from .domain import active_history, parse, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now, normalize_experience
 from .storage import Conflict
 from .ai_support import effective_settings, advice_values, climate_context, ADVICE_CONTEXT_VERSION
 
@@ -56,13 +57,64 @@ def stable_feed(plant,water):
         baseline=swift_round(baseline*{'Molto frequente':.7,'Frequente':.85,'Normale':1,'Diradata':1.15,'Molto diradata':1.3}.get(plant.get('careFrequencyPreference'),1))
     return feed_days(baseline,water)
 
-def daily_context(plant,products):
+def care_timing(plant,zone='Europe/Rome'):
+    """Structured care timing for the AI: postponements are intentional, not delays."""
+    tz=ZoneInfo(zone)
+    def day(value):
+        return parse(value).astimezone(tz).date()
+    def kind_events(kind):
+        result=[]
+        for event in active_history(plant):
+            try: event_kind=canonical_kind(event.get('kind',''))
+            except ValueError: continue
+            if event_kind==kind: result.append(event)
+        return result
+    def kind_timing(kind,interval):
+        events=kind_events(kind)
+        completed=sorted(day(e['date']) for e in events if e.get('status')!='postponed')
+        gaps=[(b-a).days for a,b in zip(completed,completed[1:]) if (b-a).days>0][-8:]
+        raw=[e for e in events if e.get('status')=='postponed' and e.get('postponedUntil')]
+        raw.sort(key=lambda e:e.get('date',''),reverse=True)
+        postponements=[]
+        for e in raw[:6]:
+            start=day(e['date']); due=day(e['postponedUntil'])
+            after=[d for d in completed if d>start]
+            if not after: outcome='pending'
+            elif min(after)>=due: outcome='honored'
+            else: outcome='early'
+            postponements.append({'date':iso(parse(e['date'])),'postponedUntil':iso(parse(e['postponedUntil'])),'deferredDays':max(0,(due-start).days),'note':str(e.get('note') or '')[:300],'outcome':outcome})
+        starts={day(e['date']) for e in raw}
+        late=0
+        for a,b in zip(completed,completed[1:]):
+            gap=(b-a).days
+            if interval and gap>interval+2 and not any(a<start<=b for start in starts): late+=1
+        return {'recentCompletedGapsDays':gaps,'postponements':postponements,'honoredPostponements':sum(1 for p in postponements if p['outcome']=='honored'),'pendingPostponements':sum(1 for p in postponements if p['outcome']=='pending'),'earlyPostponements':sum(1 for p in postponements if p['outcome']=='early'),'lateGapsWithoutPostponement':late}
+    return {'water':kind_timing('water',plant.get('wateringInterval') or 0),'fertilize':kind_timing('fertilize',plant.get('fertilizingInterval') or 0)}
+
+def care_timing_text(plant,zone='Europe/Rome',language='it'):
+    timing=care_timing(plant,zone)
+    def line(kind,label):
+        data=timing[kind]
+        items=[]
+        for item in data['postponements']:
+            note=f" · nota: {item['note']}" if item['note'] else ''
+            items.append(f"{item['date'][:10]} → {item['postponedUntil'][:10]} ({item['deferredDays']} g, {item['outcome']}{note})")
+        detail='; '.join(items) if items else ('nessuno' if language!='en' else 'none')
+        if language=='en':
+            return f"{label}: honored {data['honoredPostponements']}, pending {data['pendingPostponements']}, early {data['earlyPostponements']}, late gaps without postponement {data['lateGapsWithoutPostponement']}; recent gaps {data['recentCompletedGapsDays']} days; {detail}."
+        return f"{label}: onorati {data['honoredPostponements']}, in attesa {data['pendingPostponements']}, anticipati {data['earlyPostponements']}, ritardi senza rinvio {data['lateGapsWithoutPostponement']}; intervalli recenti {data['recentCompletedGapsDays']} giorni; {detail}."
+    return line('water','Annaffiatura' if language!='en' else 'Watering')+' '+line('fertilize','Concimazione' if language!='en' else 'Feeding')
+
+def daily_context(plant,products,location=None,zone='Europe/Rome',experience='intermedio'):
     water=stable_water(plant)
     item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage'),'recentCare':[{'kind':legacy_kind(e['kind']),'date':e['date']} for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]]}
     product=next((p for p in products if p['id']==plant.get('fertilizerProductID')),None)
     if product:
         item.update(fertilizerProduct=product['name'],fertilizerManufacturerDays=product.get('applicationIntervalDays'))
     plan=plant.get('adaptivePlan') or {}
+    item['locationName']=plan.get('locationName') or (location or {}).get('name') or 'Località non indicata'
+    item['experienceLevel']=normalize_experience(experience)
+    item['careTiming']=care_timing(plant,zone)
     for dest,source in [('season','seasonName'),('temperatureC','averageTemperature'),('humidityPercent','relativeHumidity'),('rainNext7DaysMM','precipitationNextWeek'),('placement','placement')]:
         if source in plan: item[dest]=plan[source]
     if plan: item['climateContext']=climate_context(plan)
@@ -77,7 +129,8 @@ async def analyze(store,settings):
         plants=[(p,v) for p,v in store.list('plants') if p.get('carePlanMode')=='AI']
         if not plants: return {'summary':'No plants with an AI plan.' if language=='en' else 'Nessuna pianta con piano AI.','proposals':0,'skipped':True}
         products=[p for p,_ in store.list('fertilizers')]
-        context=[daily_context(p,products) for p,_ in plants]
+        experience=normalize_experience((store.state('preferences') or {}).get('experience'))
+        context=[daily_context(p,products,store.state('location') or {},settings.zone,experience) for p,_ in plants]
         prompt=Path(__file__).with_name('daily_prompt.txt').read_text().replace('{plants}',json.dumps(context,ensure_ascii=False))
         prompt+='\nData della richiesta: '+iso(now())+'\nI dati climatici sono istantanee del piano salvato: cita climateContext.generatedAt, oppure specifica data sconosciuta. Non presentarli come meteo attuale, stagione attuale o previsioni attuali; non giustificare modifiche con quei dati storici.'
         if language=='en': prompt+='\nWrite summary and every explanatory text in English.'
@@ -115,10 +168,10 @@ async def analyze(store,settings):
         if proposals:
             from .services import notify
             try:
-                message=(f"{len(proposals)} plan changes proposed. {applied} applied automatically. Open PlantCare → More → AI plan to review them." if language=='en' else f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri PlantCare → Altro → Piano AI per esaminarle.")
+                message=(f"{len(proposals)} plan changes proposed. {applied} applied automatically. Open Verdant → More → AI plan to review them." if language=='en' else f"{len(proposals)} modifiche proposte per i piani AI. {applied} applicate automaticamente. Apri Verdant → Altro → Piano AI per esaminarle.")
                 await notify(settings,message)
                 status['notificationError']=None
-            except httpx.HTTPError:status['notificationError']='Notifica non inviata. Le proposte restano disponibili in PlantCare.'
+            except httpx.HTTPError:status['notificationError']='Notifica non inviata. Le proposte restano disponibili in Verdant.'
         store.set_state('ai-status',status)
         from zoneinfo import ZoneInfo
         store.set_state('last-ai-day',now().astimezone(ZoneInfo(settings.zone)).date().isoformat())
@@ -154,11 +207,18 @@ async def _advice(store,settings,plant_id,question):
     prompt='\n\n'.join(blocks)
     for index,value in enumerate(values): prompt=prompt.replace('{v'+str(index)+'}',str(value))
     climate=climate_context(plan) if plan else None
+    from .services import message_language
+    language=message_language(store,settings)
+    location_name=plan.get('locationName') or (store.state('location') or {}).get('name') or ('non indicata' if language!='en' else 'not specified')
+    prompt+='\n\nLOCALITÀ: '+str(location_name)
+    experience=normalize_experience((store.state('preferences') or {}).get('experience'))
+    prompt+='\nESPERIENZA DEL COLTATORE: '+experience
+    prompt+=('\nPer un principiante spiega e resta conservativo; per un professionista puoi dare più peso a rinvii ripetuti e coerenti, senza superare mai le soglie di sicurezza.' if language!='en' else '\nFor a beginner, explain and stay conservative; for a professional, you may give more weight to repeated, consistent postponements without ever exceeding safety thresholds.')
+    prompt+='\nRINVII RECENTI (scelte intenzionali del coltivatore, non ritardi; non sono cure completate): '+care_timing_text(plant,settings.zone,language)
     prompt+='\n\nDATA DELLA RICHIESTA: '+iso(now())[:10]
     if climate:
         prompt+='\nData del contesto stagionale e climatico salvato: '+(climate['generatedAt'] or 'sconosciuta')+'\nQuesti dati provengono dal piano salvato, non da una lettura meteo attuale. Cita esplicitamente la data (oppure data sconosciuta) se li menzioni. Non presentarli come stagione, temperatura, umidità o pioggia attuali e non usarli per giustificare cambiamenti delle frequenze attuali. La pioggia era prevista nei sette giorni successivi alla data del piano, non alla richiesta.'
-    from .services import message_language
-    if message_language(store,settings)=='en': prompt+='\nAnswer in English: summaryMarkdown and careNotes must be written in English.'
+    if language=='en': prompt+='\nAnswer in English: summaryMarkdown and careNotes must be written in English.'
     info=settings.public()
     signature=hashlib.sha256((info['aiProvider']+'\n'+info['aiModel']+'\n'+prompt).encode()).hexdigest()
     cached=store.state('ai-advice-'+plant_id)

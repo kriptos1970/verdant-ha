@@ -1,12 +1,12 @@
 # Status and known limits
 
-Current release: **0.11.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.17**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
 - **Collection**: plants, rooms, products, photos, growth diary, annotated health album, collection pagination.
 - **Care**: guided care round, weekly/monthly calendar, paginated history, treatments, deferrals and reminders.
-- **Planning**: adaptive planner with seasonal rules and optional Open-Meteo. New plants start in manual mode; the advanced Care Engine runs in shadow mode and never rewrites the calendar by itself.
+- **Planning**: adaptive planner with seasonal rules and optional Open-Meteo. New plants start in manual mode; the operational Care Engine can postpone watering on fresh, reliable wet-soil readings (default active) and never advances care. See [CARE_ENGINE.md](CARE_ENGINE.md).
 - **Sensors**: temperature, humidity, light, soil moisture and conductivity from Home Assistant entities mapped to a plant or room.
 - **AI (optional)**: Gemini or OpenAI structured advice with preview and selective application; disabled by default, automatic application off.
 - **Knowledge**: Pl@ntNet identification, iNaturalist catalog, Perenual and Open Plantbook profiles, nine illustrated care guides, guided symptom check.
@@ -18,7 +18,7 @@ Current release: **0.11.2**, published on [GitHub Releases](https://github.com/k
 
 ## Verification
 
-- **180 backend tests** pass.
+- **215 backend tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
@@ -43,13 +43,114 @@ Current release: **0.11.2**, published on [GitHub Releases](https://github.com/k
 - A full **restore on an isolated Home Assistant instance** has not been rehearsed yet.
 - **Live sensors and Open-Meteo** are covered by simulated transports, not by a long-running real installation.
 - **Large real archives** beyond the synthetic benchmark (100 plants / 50,000 events) still need validation.
-- The **Care Engine** is intentionally in shadow mode; measurements do not rewrite the schedule.
-- **AI automatic application** remains disabled by default. The daily analysis runs with the configured provider; a manual real-data trial on Home Assistant was rejected by Gemini with `User location is not supported` (raw 400). The public IP is Italian (Telecom Italia, AS3269), no proxy/VPN is in use, IPv6 is unavailable and Cloudflare only fronts inbound `sicoli.ovh`; Google is misclassifying the public IP, as confirmed by the temporary fix after a router restart. An OpenAI key, a new/static IP or Google’s IP report is needed to complete the trial.
+- The **Care Engine** can only postpone watering, and only with a fresh, reliable moisture reading; it never advances or records care. In shadow mode it is advisory. The full behaviour is in [CARE_ENGINE.md](CARE_ENGINE.md).
+- **AI automatic application** remains disabled by default. Gemini is configured and reachable; the real-data daily trial is deferred and will be repeated on request.
 - **Desktop layout** realignment with the macOS app is postponed; the phone layout was the priority.
 - **MariaDB** and any external database are postponed; SQLite remains the store.
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.17 (20 November 2026)
+
+- The generic “Check the data and try again.” banner is no longer shown for errors without detail or while a modal form is open; validation messages name the field and reason and remain inline in the form.
+- Added `maxLength` limits to long text fields to avoid avoidable validation errors.
+- 223 backend tests, frontend build.
+
+## Release 0.11.16 (20 November 2026)
+
+- Care engine step 1.3: **beginner / intermediate / expert / professional** grower profile in Settings, with maximum step 1/2/3/4 days.
+- Learning uses the number of honoured or early postponements, up to the profile maximum; late gaps without a postponement and insufficient data stay at 1 day.
+- Daily AI and assistant receive `experienceLevel`; `contextVersion` 4.
+- 222 backend tests, 1,012 i18n keys, frontend build.
+
+## Release 0.11.15 (20 November 2026)
+
+- Care engine step 1.2: adaptive learning from postponements. The step is 1 day by default and rises to 2 days with at least two honoured postponements (or two early postponements in the opposite direction).
+- Late gaps without a postponement do not accelerate learning; the ±30% bound and target remain.
+- `careLearning` exposes the step and the postponement/delay counts used.
+- 220 backend tests, frontend build.
+
+## Release 0.11.14 (20 November 2026)
+
+- Care engine step 1.1: the daily AI analysis receives the **location** and `careTiming` (observed gaps, postponements with notes, late gaps without a postponement); the prompt separates intentional postponements from delays.
+- The plant-card assistant receives location and recent postponements too; `contextVersion` updated to 3.
+- 217 backend tests, frontend build.
+
+## Release 0.11.13 (20 November 2026)
+
+- Desktop care cards: the **Complete** button is 200 px wide (at most 100% of the card) and 44 px high, no longer full width.
+- On phones it remains full width.
+- 215 backend tests, frontend build.
+
+## Release 0.11.12 (20 November 2026)
+
+- The phone **Complete** sheet scrolls vertically only: horizontal overflow hidden, horizontal overscroll disabled and `touch-action: pan-y pinch-zoom`.
+- Long plant names, guide steps and reasons wrap; fields and buttons stay within the panel width.
+- Verified at 320/390 px with a very long plant name, with no horizontal overflow.
+- 215 backend tests, frontend build.
+
+## Release 0.11.11 (20 November 2026)
+
+- The detail-panel handle is now available in the empty state too, not only with an open plant, so the right column can be resized immediately.
+- Handle z-index raised to avoid overlap with the detail content.
+- 215 backend tests, frontend build.
+
+## Release 0.11.10 (20 November 2026)
+
+- Desktop: the **left sidebar** and the **detail panel** are resizable by dragging their edge, with persistent width and double-click reset.
+- Keyboard arrows, limits 190–420 px (sidebar) and 320–720 px (detail), at least 420 px for the content.
+- Handles are available above 1000 px only; phone/tablet layout is unchanged.
+- 215 backend tests, frontend build.
+
+## Release 0.11.9 (19 November 2026)
+
+- Visible add-on and web app name changed to **Verdant**: add-on name, sidebar panel, brand, page title, notifications and messages.
+- The `plantcare_web` slug, `/data`, database, photos, backup format and internal identifiers are unchanged, preserving data and updates.
+- 215 backend tests, frontend build.
+
+## Release 0.11.8 (19 November 2026)
+
+- AI answers are rendered as Markdown in the green box: headings, paragraphs, bold/italic, lists, quotes, code and tables.
+- The renderer is loaded on demand in a separate chunk and does not interpret raw HTML.
+- Gemini and OpenAI use the same `summaryMarkdown` field and the same rendering.
+- 215 backend tests, frontend build.
+
+## Release 0.11.7 (19 November 2026)
+
+- QR/NFC labels use the current add-on slug (local or repository); already printed labels remain readable.
+- Real repository add-on migration completed: `309d34f7_plantcare_web` 0.11.7 with the archive and options copied, 124 photos; the old `local_plantcare_web` stays stopped for rollback.
+- Care engine documentation in all three modes: [CARE_ENGINE.md](CARE_ENGINE.md) and [Italian version](../CARE_ENGINE.md).
+- 215 backend tests.
+
+## Release 0.11.6 (19 November 2026)
+
+- Assisted local → repository add-on migration: imports the database from `/share/plantcare/migrate/plantcare.sqlite` when `/data` is empty and `import-request` exists.
+- SQLite header validation, atomic replacement, request consumed once; the snapshot stays in place for rollback.
+- 215 backend tests.
+
+## Release 0.11.5 (19 November 2026)
+
+- The plant editor now associates fertilizer through a **visual list** with thumbnail, name, brand, category and form, plus “No fertilizer”.
+- The free-text “Fertilizer type” field is gone; the type is derived from the selected product on the backend too.
+- Only fertilizer products (Fertilizzante, Biostimolante, Ammendante, Radicante) plus the already linked product are listed; the dose appears only with a product.
+- Verified: 213 backend tests, 1,001 i18n keys, frontend build, no overflow at 320/390 px.
+
+## Release 0.11.4 (19 November 2026)
+
+- The care engine now has a **single source of truth**: the `care_engine_mode` add-on option, defaulting to **Operational**. The web override that could diverge from the configuration is gone.
+- **Settings → Care engine** shows the effective mode, explains shadow and operational, and says where to change it; there is no selector that can diverge.
+- Verified: 212 backend tests, 1,000 i18n keys, frontend build.
+
+## Release 0.11.3 (19 November 2026)
+
+- **Web-first plant editor** with progressive disclosure: photo and Pl@ntNet recognition, identity, room, care plan, watering and last watering always visible.
+- Five collapsible optional sections with a summary line (Position and profile, Pot and substrate, Schedule and feeding, Additional activities, Other information).
+- A single sticky Cancel/Save bar at the bottom, safe area included; the duplicate top bar is gone.
+- Two-column grids for short fields, one column below 360 px. Content at 390 px drops from about 4,038 px to about 1,392 px (2,975 px with every section open).
+- Validation: required fields stay visible; an invalid control inside a closed section opens it and receives focus.
+- Soft green panels (`--vc-mint-soft` / `--vc-mint-line`) for growth, care history, merged timeline, trend, editor sections and Pl@ntNet recognition.
+- Verified: 320/390/430 px without overflow, 212 backend tests, 999 i18n keys, frontend build.
 
 ## Release 0.11.2 (19 November 2026)
 
@@ -59,12 +160,10 @@ Current release: **0.11.2**, published on [GitHub Releases](https://github.com/k
 - Operational care engine and unreferenced photo cleanup.
 - 212 backend tests, 988 i18n keys, frontend build.
 
-## Next release (0.11.3)
+## Next release (0.11.18)
 
-- Phone camera light meter.
-- Web “Active” notification bell, if requested.
-- Live Pl@ntNet editor trial and real Gemini AI trial.
-- Deferred field checks: physical iPhone/Companion, real QR/NFC, isolated HA restore, real sensors/weather, very large archive.
+- Phone camera light meter, “Active” notification bell/web notifications if requested, in-place backup restore.
+- Deferred field checks: physical iPhone/Companion, real QR/NFC, real Pl@ntNet, real Gemini, isolated HA restore, real sensors/weather, very large archive.
 
 ## Remaining roadmap
 

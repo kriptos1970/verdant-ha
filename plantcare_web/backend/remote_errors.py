@@ -22,7 +22,7 @@ def describe(error):
     except (ValueError,TypeError,AttributeError):pass
     # Never include arbitrary upstream text: providers may echo credentials.
     if reasons & {'API_KEY_INVALID','API_KEY_EXPIRED','invalid_api_key'} or 'api key not valid' in message:
-        detail=f'La chiave {service} non è valida o è scaduta. Verifica la chiave nelle opzioni dell’add-on e riavvia PlantCare.'
+        detail=f'La chiave {service} non è valida o è scaduta. Verifica la chiave nelle opzioni dell’add-on e riavvia Verdant.'
     elif reasons & {'API_KEY_HTTP_REFERRER_BLOCKED','API_KEY_IP_ADDRESS_BLOCKED','API_KEY_SERVICE_BLOCKED'}:
         detail=f'Le restrizioni della chiave impediscono l’accesso a {service} da Home Assistant. Verifica le autorizzazioni della chiave nel provider.'
     elif 'location is not supported' in message or 'not available in your country' in message:

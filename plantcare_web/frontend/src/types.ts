@@ -187,6 +187,7 @@ export type Proposal = {
   provider: string;
   model: string;
 };
+export type ExperienceLevel = "principiante" | "intermedio" | "esperto" | "professionista";
 export type LocationMatch = {
   name: string;
   detail?: string;
@@ -196,6 +197,7 @@ export type LocationMatch = {
 export type Settings = {
   version: string;
   ingress?:boolean;
+  panelSlug?:string;
   services?: {plantnet:boolean;perenual:boolean;openplantbook?:boolean};
   timezone: string;
   location?: LocationMatch | null;
@@ -212,6 +214,7 @@ export type Settings = {
   adaptiveStatus?: {lastRun:string;updated:number;errors:number};
   measurementRetentionDays: number;
   careEngineMode?: "shadow" | "active";
+  experience?: ExperienceLevel;
 };
 export type Mapping = {
   entityID: string;

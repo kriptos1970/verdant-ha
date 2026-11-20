@@ -8,11 +8,23 @@
 
 ## Install the add-on
 
+### From the GitHub add-on repository (recommended)
+
+1. In Home Assistant open **Settings → Add-ons → Add-on store**.
+2. Open the **⋮** menu → **Repositories** and add `https://github.com/kriptos1970/verdant-ha`.
+3. Refresh the store, open **Verdant** and install it.
+4. Start it and open **Web UI**. The add-on uses Ingress; no port is exposed and no port forwarding is needed.
+5. Configure the options, then restart only when Home Assistant asks for it.
+
+Home Assistant reads `plantcare_web/config.yaml`; a higher `version` in the repository is offered as an update in the store.
+
+### From a local folder (offline or development)
+
 1. Download the latest `plantcare-web-<version>.zip` from [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases) and extract it.
 2. Copy the `plantcare_web` folder to `/addons/plantcare_web` on the Home Assistant host (Samba or Terminal & SSH). Do not copy `.venv`, `node_modules`, local databases or personal archives.
-3. In the Home Assistant App store, refresh the local add-ons, install **PlantCare Web** and start it.
-4. Open **Web UI**. The add-on uses Ingress; no port is exposed and no port forwarding is needed.
-5. Configure the options, then restart only when Home Assistant asks for it.
+3. In the Home Assistant App store, refresh the local add-ons, install **Verdant** and start it.
+
+> A repository install is registered with a repository-prefixed slug (for example `309d34f7_plantcare_web`); a local install uses `local_plantcare_web`. Their data volumes are separate. To move a local install to the repository add-on, export the ZIP backup, install the repository add-on, re-enter its options and import the ZIP on the empty archive.
 
 ## Options
 
@@ -48,7 +60,17 @@ Do not put SQLite on a network share. If you move photos, stop the add-on, copy 
 
 ## Upgrade
 
+### Repository add-on
+
+When a new version is published in the repository, the App store shows **Update**. Updating rebuilds the add-on and preserves `/data` (database, application state) and the options. Photos in `/share/plantcare/photos` are outside the container and are preserved. Create a partial backup of the add-on and the `share` folder first.
+
+### Local add-on
+
 Copy the new `plantcare_web` folder over the old one, refresh the add-on in the App store and update it. Database schema and photo paths are preserved. Keep the previous source folder until the new version starts correctly.
+
+### Moving from the local add-on to the repository add-on
+
+The slug changes from `local_plantcare_web` to a repository-prefixed slug (for example `309d34f7_plantcare_web`), so the data volume and the Ingress/panel URL change. Export the ZIP from **Altro → Archivio e backup**, install the repository add-on, copy the options, then import the ZIP on the empty archive. QR/NFC labels that used the old panel URL must be regenerated.
 
 ## Security notes
 

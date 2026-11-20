@@ -1,20 +1,32 @@
-# PlantCare Web per Home Assistant
+# Verdant per Home Assistant
 
 **Italiano** | [English](README.md)
 
-Versione incrementale **0.11.1**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
+Versione incrementale **0.11.17**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
 
 Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. L’interfaccia è disponibile in italiano e inglese, comprese cure, prodotti, trattamenti, dettaglio iOS, guide e diagnosi. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
 
-La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md).
+La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md). Il motore di cura è spiegato per esteso in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md): Manuale, Verdant, AI, modalità shadow/operativa, ricalcoli e limiti.
 
 ## Installazione su Home Assistant OS
 
-1. Copiare **la cartella `plantcare_web` completa** in `/addons/plantcare_web` tramite Samba o Terminal & SSH. Non copiare `.venv`, `node_modules` o archivi personali.
-2. Nell’App store di Home Assistant aggiornare l’elenco degli add-on locali e installare **PlantCare Web**.
-3. Configurare fuso orario, eventuali entità consentite e provider AI. L’AI è opzionale e disattivata per impostazione predefinita.
+### Repository add-on (consigliato)
+
+1. In Home Assistant aprire **Impostazioni → Add-on → Add-on store**.
+2. Menu **⋮** → **Repository** e aggiungere `https://github.com/kriptos1970/verdant-ha`.
+3. Aggiornare l’elenco, aprire **Verdant** e installarlo.
 4. Avviare l’add-on e aprire **Interfaccia web**. È disponibile Ingress; non serve esporre porte.
-5. In **Altro → Archivio e backup** caricare il backup esportato da PlantCare macOS. L’importazione avviene su archivio vuoto, dopo l’anteprima. Non altera gli archivi originali.
+5. Configurare fuso orario, entità consentite, cartella foto e le eventuali chiavi AI/Pl@ntNet nelle opzioni dell’add-on.
+6. In **Altro → Archivio e backup** caricare il backup esportato dall’app Verdant. L’importazione avviene su archivio vuoto, dopo l’anteprima.
+
+Home Assistant controlla `plantcare_web/config.yaml` nel repository: una nuova versione compare direttamente nell’App store dopo una release.
+
+### Add-on locale (offline o sviluppo)
+
+1. Copiare **la cartella `plantcare_web` completa** in `/addons/plantcare_web` tramite Samba o Terminal & SSH. Non copiare `.venv`, `node_modules` o archivi personali.
+2. Nell’App store di Home Assistant aggiornare l’elenco degli add-on locali e installare **Verdant**.
+
+> L’installazione da repository crea un add-on con slug prefissato dal repository (ad esempio `309d34f7_plantcare_web`), quella locale è registrata come `local_plantcare_web`: hanno cartelle dati separate. Per passare un’installazione locale al repository, esportare prima il backup ZIP, installare l’add-on da repository, reinserire le opzioni e importare lo ZIP sull’archivio vuoto.
 
 Il container viene costruito localmente durante l’installazione. Sono state verificate le build Docker ARM64 e AMD64. La 0.2.0 è stata installata su Home Assistant il 15 novembre 2026, verificando avvio e dashboard tramite Ingress; la 0.4.2 contiene ora la collezione reale importata e verificata nelle viste principali.
 
@@ -82,7 +94,7 @@ docker build -t plantcare-web:0.2.0 plantcare_web
 
 ## Pianificazione intelligente (0.3.0)
 
-Dalla scheda della pianta aprire **Configura piano intelligente**: esposizione, località e clima manuale o meteo Open-Meteo opzionale. Il sistema mostra un’anteprima prima di cambiare il calendario. I piani importati non avviano richieste meteo automaticamente. Le osservazioni avanzate dei sensori restano consultive (modalità shadow).
+Dalla scheda della pianta aprire **Configura piano intelligente**: esposizione, località e clima manuale o meteo Open-Meteo opzionale. Il sistema mostra un’anteprima prima di cambiare il calendario. I piani importati non avviano richieste meteo automaticamente. Dalla 0.11.4 il motore operativo si imposta nelle opzioni dell’add-on ed è **operativo per default**; dettagli in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md).
 
 La 0.3.0 è installata su Home Assistant e la dashboard Ingress è stata verificata in Safari.
 
@@ -137,4 +149,4 @@ La CI GitHub esegue gli stessi controlli a ogni push e pull request. Non include
 
 Distribuito con licenza [MIT](LICENSE). Copyright © 2026 Maurizio Antonio Sicoli.
 
-Verdant/PlantCare è un progetto indipendente: non è affiliato a Home Assistant, Pl@ntNet, Perenual, Open Plantbook, iNaturalist, Google o OpenAI. I marchi citati appartengono ai rispettivi proprietari.
+Verdant è un progetto indipendente: non è affiliato a Home Assistant, Pl@ntNet, Perenual, Open Plantbook, iNaturalist, Google o OpenAI. I marchi citati appartengono ai rispettivi proprietari.

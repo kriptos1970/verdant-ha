@@ -212,6 +212,104 @@ function App() {
     } | null>(null),
     [tool, setTool] = useState<string | null>(null);
   const phoneLayout=useIOSLayout();
+  const DETAIL_MIN=320, DETAIL_MAX=720, MAIN_MIN=420;
+  const clampDetailWidth=(value:number)=>{
+    const sidebar=document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??238;
+    const max=Math.max(DETAIL_MIN,Math.min(DETAIL_MAX,window.innerWidth-sidebar-MAIN_MIN));
+    return Math.max(DETAIL_MIN,Math.min(max,value));
+  };
+  const [detailWidth,setDetailWidth]=useState<number|null>(()=>{
+    try{
+      const value=Number(localStorage.getItem("verdant.detailWidth"));
+      return Number.isFinite(value)&&value>=DETAIL_MIN?clampDetailWidth(value):null;
+    }catch{return null}
+  });
+  const detailDrag=useRef<{x:number;width:number}|null>(null);
+  useEffect(()=>{
+    try{
+      if(detailWidth==null)localStorage.removeItem("verdant.detailWidth");
+      else localStorage.setItem("verdant.detailWidth",String(detailWidth));
+    }catch{}
+  },[detailWidth]);
+  useEffect(()=>{
+    if(detailWidth==null)return;
+    const onResize=()=>setDetailWidth(value=>value==null?value:clampDetailWidth(value));
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[detailWidth]);
+  const startDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(window.matchMedia("(max-width: 1000px)").matches)return;
+    const detail=document.querySelector<HTMLElement>(".detail");
+    if(!detail)return;
+    detailDrag.current={x:event.clientX,width:detail.getBoundingClientRect().width};
+    event.currentTarget.setPointerCapture(event.pointerId);
+    document.body.classList.add("resizing-pane");
+    event.preventDefault();
+  };
+  const moveDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    const drag=detailDrag.current;
+    if(!drag)return;
+    setDetailWidth(clampDetailWidth(drag.width+drag.x-event.clientX));
+  };
+  const endDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(!detailDrag.current)return;
+    detailDrag.current=null;
+    try{event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+    document.body.classList.remove("resizing-pane");
+  };
+  const nudgeDetailWidth=(delta:number)=>{
+    const current=detailWidth??document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??390;
+    setDetailWidth(clampDetailWidth(current+delta));
+  };
+  const SIDEBAR_MIN=190, SIDEBAR_MAX=420;
+  const clampSidebarWidth=(value:number)=>{
+    const detail=document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??0;
+    const max=Math.max(SIDEBAR_MIN,Math.min(SIDEBAR_MAX,window.innerWidth-detail-MAIN_MIN));
+    return Math.max(SIDEBAR_MIN,Math.min(max,value));
+  };
+  const [sidebarWidth,setSidebarWidth]=useState<number|null>(()=>{
+    try{
+      const value=Number(localStorage.getItem("verdant.sidebarWidth"));
+      return Number.isFinite(value)&&value>=SIDEBAR_MIN?clampSidebarWidth(value):null;
+    }catch{return null}
+  });
+  const sidebarDrag=useRef<{x:number;width:number}|null>(null);
+  useEffect(()=>{
+    try{
+      if(sidebarWidth==null)localStorage.removeItem("verdant.sidebarWidth");
+      else localStorage.setItem("verdant.sidebarWidth",String(sidebarWidth));
+    }catch{}
+  },[sidebarWidth]);
+  useEffect(()=>{
+    if(sidebarWidth==null)return;
+    const onResize=()=>setSidebarWidth(value=>value==null?value:clampSidebarWidth(value));
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[sidebarWidth]);
+  const startSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(window.matchMedia("(max-width: 760px)").matches)return;
+    const sidebar=document.querySelector<HTMLElement>(".sidebar");
+    if(!sidebar)return;
+    sidebarDrag.current={x:event.clientX,width:sidebar.getBoundingClientRect().width};
+    event.currentTarget.setPointerCapture(event.pointerId);
+    document.body.classList.add("resizing-pane");
+    event.preventDefault();
+  };
+  const moveSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    const drag=sidebarDrag.current;
+    if(!drag)return;
+    setSidebarWidth(clampSidebarWidth(drag.width+event.clientX-drag.x));
+  };
+  const endSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(!sidebarDrag.current)return;
+    sidebarDrag.current=null;
+    try{event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+    document.body.classList.remove("resizing-pane");
+  };
+  const nudgeSidebarWidth=(delta:number)=>{
+    const current=sidebarWidth??document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??238;
+    setSidebarWidth(clampSidebarWidth(current+delta));
+  };
   const [phoneCollectionMode,setPhoneCollectionMode]=useState("Piante");
   const [plantSeed,setPlantSeed]=useState<PlantSeed>();
   const preparePlant=(seed:PlantSeed)=>{setPlantSeed(seed);setPlantEditor("new")};
@@ -271,7 +369,14 @@ function App() {
       await reload();
       if (message) setNotice(message);
     } catch (e) {
-      setError((e as Error).message);
+      const message = (e as Error).message;
+      const code = (e as Error & { code?: string }).code;
+      const generic = /^(Controlla i dati inseriti\.|Check the data and try again\.)$/.test(message);
+      if (code === "validation" && (document.querySelector("dialog[open]") || generic)) {
+        console.warn("Errore di validazione gestito dal form:", message);
+      } else {
+        setError(message);
+      }
       throw e;
     } finally {
       setBusy(false);
@@ -394,6 +499,22 @@ function App() {
     return()=>{current=false};
   },[selectedSummary?.id,selectedSummary?._version,detailRetry]);
   const selectedPlant=detailPlant?.id===selectedSummary?.id&&detailPlant?._version===selectedSummary?._version?detailPlant:undefined;
+  useEffect(()=>{
+    if(detailWidth==null&&sidebarWidth==null)return;
+    const sidebar=sidebarWidth??document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??0;
+    const detail=detailWidth??document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??0;
+    if(!detail)return;
+    const overflow=sidebar+detail+MAIN_MIN-window.innerWidth;
+    if(overflow<=0)return;
+    if(detailWidth!=null){
+      const nextDetail=Math.max(DETAIL_MIN,detail-overflow);
+      setDetailWidth(nextDetail);
+      const remaining=overflow-(detail-nextDetail);
+      if(remaining>0&&sidebarWidth!=null)setSidebarWidth(Math.max(SIDEBAR_MIN,sidebar-remaining));
+    }else if(sidebarWidth!=null){
+      setSidebarWidth(Math.max(SIDEBAR_MIN,sidebar-overflow));
+    }
+  },[detailWidth,sidebarWidth,selectedSummary]);
   const openPlant = (id: string | null) => {
     setSelected(id);
     history.replaceState(
@@ -420,6 +541,10 @@ function App() {
   return (
     <div
       className={`app ${settings?.ingress && window.parent!==window ? "in-ha" : ""} ${selectedSummary ? "has-detail" : ""} ${["today", "plants", "care"].includes(page) ? "native-split" : ""}`}
+      style={({
+        ...(sidebarWidth!=null&&!phoneLayout?{"--sidebar":`${sidebarWidth}px`}:{}),
+        ...(detailWidth!=null?{"--detail":`${detailWidth}px`}:{}),
+      } as React.CSSProperties)}
     >
       <aside className={`sidebar ${menu ? "open" : ""}`}>
         <a
@@ -434,7 +559,7 @@ function App() {
             <Leaf size={24} />
           </div>
           <span>
-            PlantCare<small>{t("app.brandTagline")}</small>
+            Verdant<small>{t("app.brandTagline")}</small>
           </span>
         </a>
         <div className="sidebar-label">{t("app.collection")}</div>
@@ -1160,6 +1285,48 @@ function App() {
           )}
         </div>
       </main>
+      {!phoneLayout && <div
+        className="sidebar-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("app.resizeSidebar")}
+        aria-valuenow={Math.round(sidebarWidth??238)}
+        aria-valuemin={190}
+        aria-valuemax={420}
+        title={t("app.resizeSidebarHint")}
+        tabIndex={0}
+        onPointerDown={startSidebarResize}
+        onPointerMove={moveSidebarResize}
+        onPointerUp={endSidebarResize}
+        onPointerCancel={endSidebarResize}
+        onDoubleClick={()=>setSidebarWidth(null)}
+        onKeyDown={event=>{
+          if(event.key==="ArrowRight"){event.preventDefault();nudgeSidebarWidth(16)}
+          else if(event.key==="ArrowLeft"){event.preventDefault();nudgeSidebarWidth(-16)}
+          else if(event.key==="Home"){event.preventDefault();setSidebarWidth(null)}
+        }}
+      />}
+      {!phoneLayout && (selectedSummary || ["today","plants","care"].includes(page)) && <div
+        className="detail-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("detail.resizePanel")}
+        aria-valuenow={Math.round(detailWidth??390)}
+        aria-valuemin={320}
+        aria-valuemax={720}
+        title={t("detail.resizePanelHint")}
+        tabIndex={0}
+        onPointerDown={startDetailResize}
+        onPointerMove={moveDetailResize}
+        onPointerUp={endDetailResize}
+        onPointerCancel={endDetailResize}
+        onDoubleClick={()=>setDetailWidth(null)}
+        onKeyDown={event=>{
+          if(event.key==="ArrowLeft"){event.preventDefault();nudgeDetailWidth(16)}
+          else if(event.key==="ArrowRight"){event.preventDefault();nudgeDetailWidth(-16)}
+          else if(event.key==="Home"){event.preventDefault();setDetailWidth(null)}
+        }}
+      />}
       {selectedSummary && !selectedPlant && <aside className="detail">{detailError?<><p role="alert">{detailError}</p><button className="button primary" onClick={()=>setDetailRetry(v=>v+1)}>{t("common.retry")}</button></>:<p role="status">{t("app.detailOpening")}</p>}<button className="button secondary" onClick={()=>openPlant(null)}>{t("app.closeDetail")}</button></aside>}
       {!selectedSummary && ["today", "plants", "care"].includes(page) && (
         <aside className="detail empty-native-detail">
@@ -1621,6 +1788,24 @@ function EmptyCollection({
     </section>
   );
 }
+function ProductThumb({ product }: { product: Product }) {
+  const src = photoURL(product.photoPath);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+  return (
+    <span className="fertilizer-thumb">
+      {src && !failed ? (
+        <img
+          src={photoURL(product.photoPath, true)}
+          alt=""
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <FlaskConical size={20} />
+      )}
+    </span>
+  );
+}
 function PlantEditor({
   plant,
   seed,
@@ -1642,6 +1827,7 @@ function PlantEditor({
 }) {
   const { t } = useI18n();
   const { categoryLabel, lightLabel, potLabel, planModeLabel, placementLabel } = useDomainLabels();
+  const { categoryLabel: productCategoryLabel } = useProductLabels();
   const { kindLabel } = useCareLabels();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
@@ -1795,6 +1981,22 @@ function PlantEditor({
     setCandidates(undefined);
     setIdentifyError("");
   };
+  const chooseFertilizer = (product?: Product) => {
+    setDraft((current) => ({
+      ...current,
+      fertilizerProductID: product?.id ?? null,
+      fertilizerType: product?.name ?? null,
+      fertilizerDose: product ? current.fertilizerDose || "Dose intera" : "",
+    }));
+  };
+  const fertilizerProducts = products.filter(
+    (p) =>
+      p.id === draft.fertilizerProductID ||
+      !p.category ||
+      ["Fertilizzante", "Biostimolante", "Ammendante", "Radicante"].includes(
+        p.category,
+      ),
+  );
   const inputDate = (value: string) =>
     new Date(value).toLocaleDateString("en-CA");
   const buildSetup = (value: Plant): PlantSetup => {
@@ -1872,9 +2074,25 @@ function PlantEditor({
     >
       <form
         className="plant-editor-form"
+        noValidate
         onSubmit={async(e) => {
-          e.preventDefault();setError("");setUploading(true);
-          try{let value=draft;if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...draft,photoPath:photo.path};setDraft(value)}if(value.carePlanMode==="Intelligente"){value={...value,adaptivePlan:{...(value.adaptivePlan||{}),placement}} as Plant}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
+          e.preventDefault();
+          const form = e.currentTarget;
+          if (!form.checkValidity()) {
+            const invalid = form.querySelector<HTMLElement>(":invalid");
+            if (invalid) {
+              const group = invalid.closest("details");
+              if (group) group.open = true;
+              invalid.scrollIntoView({ block: "center" });
+              requestAnimationFrame(() => {
+                invalid.focus({ preventScroll: true });
+                (invalid as HTMLInputElement).reportValidity();
+              });
+            }
+            return;
+          }
+          setError("");setUploading(true);
+          try{let value=draft;const linkedFertilizer=products.find(p=>p.id===value.fertilizerProductID);if(linkedFertilizer){value={...value,fertilizerType:linkedFertilizer.name,fertilizerDose:value.fertilizerDose||"Dose intera"}}if(seed?.file&&!draft.photoPath){const form=new FormData();form.append("file",seed.file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});value={...value,photoPath:photo.path};setDraft(value)}if(value.carePlanMode==="Intelligente"){value={...value,adaptivePlan:{...(value.adaptivePlan||{}),placement}} as Plant}await onSave({...value,setup:buildSetup(value)})}catch(e){setError((e as Error).message)}finally{setUploading(false)}
         }}
       >
         <p className="editor-subtitle">{t("plantEditor.subtitle")}</p>
@@ -1883,16 +2101,6 @@ function PlantEditor({
             {error}
           </p>
         )}
-        <div className="editor-top-actions">
-          <button type="button" className="button secondary" onClick={onClose}>
-            {t("common.cancel")}
-          </button>
-          <button className="button primary" type="submit" disabled={busy || uploading || !draft.name.trim()}>
-            {busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
-            {t("plantEditor.save")}
-          </button>
-        </div>
-
         <section className="editor-section">
           <h3>{t("plantEditor.photo")}</h3>
           <label className="photo-upload">
@@ -1905,7 +2113,11 @@ function PlantEditor({
               <Camera size={28} />
             )}
             <span>
-              {uploading ? t("common.loading") : t("plantEditor.choosePhoto")}
+              {uploading
+                ? t("common.loading")
+                : photoURL(draft.photoPath) || seedPhoto
+                  ? t("plantEditor.changePhoto")
+                  : t("plantEditor.choosePhoto")}
               <small>{t("plantEditor.photoFormats")}</small>
             </span>
             <input
@@ -1993,10 +2205,10 @@ function PlantEditor({
           </div>
         </section>
 
-        <section className="editor-section">
+        <section className="editor-section editor-essentials">
           <h3>{t("plantEditor.identity")}</h3>
-          <div className="form-grid">
-            <label>
+          <div className="form-grid two-col">
+            <label className="full">
               {t("plantEditor.name")}
               <input
                 autoFocus
@@ -2007,10 +2219,11 @@ function PlantEditor({
                 onChange={(e) => set("name", e.target.value)}
               />
             </label>
-            <label>
+            <label className="full">
               {t("plantEditor.species")}
               <input
                 value={draft.species}
+                maxLength={300}
                 placeholder={t("plantEditor.speciesPlaceholder")}
                 onChange={(e) => set("species", e.target.value)}
               />
@@ -2035,17 +2248,12 @@ function PlantEditor({
                 ))}
               </select>
             </label>
-          </div>
-        </section>
-
-        <section className="editor-section">
-          <h3>{t("plantEditor.position")}</h3>
-          <div className="form-grid">
             <label>
               {t("plantEditor.room")}
               <input
                 required
                 list="rooms"
+                maxLength={200}
                 value={draft.room}
                 onChange={(e) => set("room", e.target.value)}
               />
@@ -2054,17 +2262,6 @@ function PlantEditor({
                   <option key={r} value={r} />
                 ))}
               </datalist>
-            </label>
-            <label>
-              {t("plantEditor.placement")}
-              <select
-                value={placement}
-                onChange={(e) => setPlacement(e.target.value)}
-              >
-                {placements.map((p) => (
-                  <option key={p} value={p}>{placementLabel(p)}</option>
-                ))}
-              </select>
             </label>
             <label>
               {t("plantEditor.exposure")}
@@ -2083,161 +2280,8 @@ function PlantEditor({
               </select>
             </label>
           </div>
-        </section>
-
-        <section className="editor-section">
-          <h3>{t("plantEditor.profile")}</h3>
-          <div className="form-grid">
+          <div className="form-grid two-col editor-essentials-care">
             <label>
-              {t("plantEditor.height")}
-              <input
-                type="number"
-                min={0}
-                max={10000}
-                step={1}
-                value={draft.heightCM ?? ""}
-                onChange={(e) =>
-                  set("heightCM", e.target.value ? Number(e.target.value) : null)
-                }
-              />
-            </label>
-            <label>
-              {t("plantEditor.plantingMethod")}
-              <select
-                value={draft.plantingMethod || "In vaso"}
-                onChange={(e) => set("plantingMethod", e.target.value)}
-              >
-                <option value="In vaso">{t("plantEditor.method.pot")}</option>
-                <option value="In piena terra">{t("plantEditor.method.ground")}</option>
-                <option value="Idroponica">{t("plantEditor.method.hydroponic")}</option>
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <section className="editor-section">
-          <h3>{t("plantEditor.potSubstrate")}</h3>
-          <div className="form-grid">
-            <label>
-              {t("plantEditor.potMaterial")}
-              <select
-                value={draft.potMaterial || ""}
-                onChange={(e) => set("potMaterial", e.target.value || null)}
-              >
-                <option value="">{t("plantEditor.notIndicated")}</option>
-                {[
-                  "Plastica",
-                  "Terracotta",
-                  "Ceramica",
-                  "Ceramica smaltata",
-                  "Ceramica non smaltata",
-                  "Tessuto",
-                  "Auto-irrigante",
-                  "Altro",
-                ].map((m) => (
-                  <option key={m} value={m}>{potLabel(m)}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {t("plantEditor.potDiameter")}
-              <input
-                type="number"
-                min={1}
-                max={500}
-                value={draft.potDiameterCM ?? ""}
-                onChange={(e) =>
-                  set("potDiameterCM", e.target.value ? Number(e.target.value) : null)
-                }
-              />
-            </label>
-            <label>
-              {t("plantEditor.drainageQuality")}
-              <select
-                value={drainageQuality}
-                onChange={(e) => setDrainageQuality(e.target.value as DrainageQuality)}
-              >
-                <option value="unknown">{t("plantEditor.drainage.unknown")}</option>
-                <option value="poor">{t("plantEditor.drainage.poor")}</option>
-                <option value="moderate">{t("plantEditor.drainage.moderate")}</option>
-                <option value="good">{t("plantEditor.drainage.good")}</option>
-                <option value="excellent">{t("plantEditor.drainage.excellent")}</option>
-              </select>
-            </label>
-            <label>
-              {t("plantEditor.potHeight")}
-              <input
-                type="number"
-                min={0}
-                max={500}
-                value={potHeight || ""}
-                onChange={(e) => setPotHeight(Number(e.target.value) || 0)}
-              />
-            </label>
-            <label>
-              {t("plantEditor.potVolume")}
-              <input
-                type="number"
-                min={0}
-                max={2000}
-                value={potVolume || ""}
-                onChange={(e) => setPotVolume(Number(e.target.value) || 0)}
-              />
-            </label>
-          </div>
-          <label className="check-label">
-            <input
-              type="checkbox"
-              checked={draft.potHasDrainage === true}
-              onChange={(e) => set("potHasDrainage", e.target.checked)}
-            />
-            {t("plantEditor.drainage")}
-          </label>
-          <label className="check-label">
-            <input type="checkbox" checked={hasCachepot} onChange={(e) => setHasCachepot(e.target.checked)} />
-            {t("plantEditor.cachepot")}
-          </label>
-          <label className="check-label">
-            <input type="checkbox" checked={hasSaucer} onChange={(e) => setHasSaucer(e.target.checked)} />
-            {t("plantEditor.saucer")}
-          </label>
-          <div className="form-grid">
-            <label className="full">
-              {t("plantEditor.substrate")}
-              <input
-                value={substrateName}
-                onChange={(e) => setSubstrateName(e.target.value)}
-                placeholder={t("plantEditor.substratePlaceholder")}
-              />
-            </label>
-            {[
-              ["retention", "plantEditor.substrateRetention", retention, setRetention],
-              ["drainage", "plantEditor.substrateDrainage", substrateDrainage, setSubstrateDrainage],
-              ["aeration", "plantEditor.substrateAeration", aeration, setAeration],
-            ].map(([id, key, value, setter]) => (
-              <label key={id as string}>
-                {t(key as never)}
-                <select
-                  value={value as string}
-                  onChange={(e) => (setter as (v: PropertyLevel) => void)(e.target.value as PropertyLevel)}
-                >
-                  <option value="unknown">{t("plantEditor.level.unknown")}</option>
-                  <option value="veryLow">{t("plantEditor.level.veryLow")}</option>
-                  <option value="low">{t("plantEditor.level.low")}</option>
-                  <option value="moderate">{t("plantEditor.level.moderate")}</option>
-                  <option value="high">{t("plantEditor.level.high")}</option>
-                  <option value="veryHigh">{t("plantEditor.level.veryHigh")}</option>
-                </select>
-              </label>
-            ))}
-          </div>
-          <p className="muted small-text">{t("plantEditor.substrateHint")}</p>
-        </section>
-
-        <section className="editor-section">
-          <h3>{t("plantEditor.planSection")}</h3>
-          <div className="form-grid">
-            <label className="full">
               {t("plantEditor.plan")}
               <select
                 value={draft.carePlanMode || "Manuale"}
@@ -2246,24 +2290,6 @@ function PlantEditor({
                 <option value="Manuale">{t("detail.planMode.manual")}</option>
                 <option value="Intelligente">{t("detail.planMode.smart")}</option>
                 <option value="AI">{t("detail.planMode.ai")}</option>
-              </select>
-            </label>
-            <p className="muted small-text full">
-              {draft.carePlanMode === "Intelligente"
-                ? t("plantEditor.smartHint")
-                : draft.carePlanMode === "AI"
-                  ? t("plantEditor.aiHint")
-                  : t("plantEditor.smartUnavailable")}
-            </p>
-            <label>
-              {t("plantEditor.frequency")}
-              <select
-                value={draft.careFrequencyPreference || "Normale"}
-                onChange={(e) => changeFrequency(e.target.value)}
-              >
-                {frequencies.map((f) => (
-                  <option key={f.value} value={f.value}>{t(f.key)}</option>
-                ))}
               </select>
             </label>
             <label>
@@ -2277,23 +2303,7 @@ function PlantEditor({
                 onChange={(e) => set("wateringInterval", Number(e.target.value))}
               />
             </label>
-            <label>
-              {t("plantEditor.fertilizing")}
-              <input
-                type="number"
-                min={1}
-                max={365}
-                placeholder={t("plantEditor.notScheduled")}
-                value={draft.fertilizingInterval ?? ""}
-                onChange={(e) =>
-                  set(
-                    "fertilizingInterval",
-                    e.target.value ? Number(e.target.value) : null,
-                  )
-                }
-              />
-            </label>
-            <label>
+            <label className="full">
               {t("plantEditor.lastWatered")}
               <input
                 type="date"
@@ -2308,133 +2318,454 @@ function PlantEditor({
                 }}
               />
             </label>
-            <label>
-              {t("plantEditor.lastFertilized")}
-              <input
-                type="date"
-                value={draft.lastFertilized ? inputDate(draft.lastFertilized) : ""}
-                onChange={(e) =>
-                  set(
-                    "lastFertilized",
-                    e.target.value
-                      ? new Date(e.target.value + "T12:00:00").toISOString()
-                      : null,
-                  )
-                }
-              />
-            </label>
-            <label>
-              {t("plantEditor.fertilizerType")}
-              <input
-                value={draft.fertilizerType || ""}
-                onChange={(e) => set("fertilizerType", e.target.value)}
-                placeholder={t("plantEditor.fertilizerTypePlaceholder")}
-              />
-            </label>
-            <label>
-              {t("plantEditor.fertilizer")}
-              <select
-                value={draft.fertilizerProductID || ""}
-                onChange={(e) =>
-                  set("fertilizerProductID", e.target.value || null)
-                }
-              >
-                <option value="">{t("plantEditor.none")}</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {draft.fertilizerProductID && (
-              <label>
-                {t("plantEditor.fertilizerDose")}
-                <select
-                  value={draft.fertilizerDose || "Dose intera"}
-                  onChange={(e) => set("fertilizerDose", e.target.value)}
-                >
-                  <option value="Dose intera">{t("plantEditor.dose.full")}</option>
-                  <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
-                  <option value="½ dose">{t("plantEditor.dose.half")}</option>
-                  <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
-                  <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
-                </select>
-              </label>
-            )}
           </div>
+          <p className="muted small-text editor-essentials-hint">
+            {t("plantEditor.essentialsHint")}
+          </p>
         </section>
 
-        <section className="editor-section">
-          <h3>{t("plantEditor.activities")}</h3>
-          <div className="form-grid">
-            {[
-              ["rotationInterval", "Rotazione", 7],
-              ["inspectionInterval", "Controllo salute", 7],
-              ["progressInterval", "Diario di crescita", 30],
-              ["pruningInterval", "Potatura", 90],
-              ["repottingInterval", "Rinvaso", 365],
-            ].map(([key, label, fallback]) => {
-              const value = (draft as unknown as Record<string, number | null>)[key as string];
-              return (
-                <div key={key as string} className="activity-field">
-                  <label className="check-label">
-                    <input
-                      type="checkbox"
-                      checked={value != null}
-                      onChange={(e) => set(key as string, e.target.checked ? fallback : null)}
-                    />
-                    {kindLabel(label as string)}
-                  </label>
+        <div className="editor-details">
+          <p className="editor-details-heading">
+            {t("plantEditor.moreDetails")}
+          </p>
+
+          <details className="editor-disclosure">
+            <summary>
+              <span>{t("plantEditor.details.positionProfile")}</span>
+              <em>
+                {placementLabel(placement)}
+                {draft.heightCM ? ` · ${draft.heightCM} cm` : ""}
+              </em>
+            </summary>
+            <div className="editor-disclosure-body">
+              <div className="form-grid two-col">
+                <label>
+                  {t("plantEditor.placement")}
+                  <select
+                    value={placement}
+                    onChange={(e) => setPlacement(e.target.value)}
+                  >
+                    {placements.map((p) => (
+                      <option key={p} value={p}>{placementLabel(p)}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {t("plantEditor.height")}
+                  <input
+                    type="number"
+                    min={0}
+                    max={10000}
+                    step={1}
+                    value={draft.heightCM ?? ""}
+                    onChange={(e) =>
+                      set("heightCM", e.target.value ? Number(e.target.value) : null)
+                    }
+                  />
+                </label>
+                <label className="full">
+                  {t("plantEditor.plantingMethod")}
+                  <select
+                    value={draft.plantingMethod || "In vaso"}
+                    onChange={(e) => set("plantingMethod", e.target.value)}
+                  >
+                    <option value="In vaso">{t("plantEditor.method.pot")}</option>
+                    <option value="In piena terra">{t("plantEditor.method.ground")}</option>
+                    <option value="Idroponica">{t("plantEditor.method.hydroponic")}</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <details className="editor-disclosure">
+            <summary>
+              <span>{t("plantEditor.potSubstrate")}</span>
+              <em>
+                {draft.potMaterial
+                  ? potLabel(draft.potMaterial)
+                  : t("plantEditor.notIndicated")}
+                {draft.potDiameterCM ? ` · ${draft.potDiameterCM} cm` : ""}
+              </em>
+            </summary>
+            <div className="editor-disclosure-body">
+              <div className="form-grid two-col">
+                <label>
+                  {t("plantEditor.potMaterial")}
+                  <select
+                    value={draft.potMaterial || ""}
+                    onChange={(e) => set("potMaterial", e.target.value || null)}
+                  >
+                    <option value="">{t("plantEditor.notIndicated")}</option>
+                    {[
+                      "Plastica",
+                      "Terracotta",
+                      "Ceramica",
+                      "Ceramica smaltata",
+                      "Ceramica non smaltata",
+                      "Tessuto",
+                      "Auto-irrigante",
+                      "Altro",
+                    ].map((m) => (
+                      <option key={m} value={m}>{potLabel(m)}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {t("plantEditor.potDiameter")}
                   <input
                     type="number"
                     min={1}
-                    max={3650}
-                    aria-label={`${kindLabel(label as string)} · ${t("plantEditor.everyDays")}`}
-                    disabled={value == null}
-                    value={value ?? ""}
+                    max={500}
+                    value={draft.potDiameterCM ?? ""}
                     onChange={(e) =>
-                      set(key as string, e.target.value ? Number(e.target.value) : null)
+                      set("potDiameterCM", e.target.value ? Number(e.target.value) : null)
                     }
                   />
+                </label>
+                <label>
+                  {t("plantEditor.potHeight")}
+                  <input
+                    type="number"
+                    min={0}
+                    max={500}
+                    value={potHeight || ""}
+                    onChange={(e) => setPotHeight(Number(e.target.value) || 0)}
+                  />
+                </label>
+                <label>
+                  {t("plantEditor.potVolume")}
+                  <input
+                    type="number"
+                    min={0}
+                    max={2000}
+                    value={potVolume || ""}
+                    onChange={(e) => setPotVolume(Number(e.target.value) || 0)}
+                  />
+                </label>
+                <label className="full">
+                  {t("plantEditor.drainageQuality")}
+                  <select
+                    value={drainageQuality}
+                    onChange={(e) => setDrainageQuality(e.target.value as DrainageQuality)}
+                  >
+                    <option value="unknown">{t("plantEditor.drainage.unknown")}</option>
+                    <option value="poor">{t("plantEditor.drainage.poor")}</option>
+                    <option value="moderate">{t("plantEditor.drainage.moderate")}</option>
+                    <option value="good">{t("plantEditor.drainage.good")}</option>
+                    <option value="excellent">{t("plantEditor.drainage.excellent")}</option>
+                  </select>
+                </label>
+              </div>
+              <div className="editor-switches">
+                <label className="check-label">
+                  <input
+                    type="checkbox"
+                    checked={draft.potHasDrainage === true}
+                    onChange={(e) => set("potHasDrainage", e.target.checked)}
+                  />
+                  {t("plantEditor.drainage")}
+                </label>
+                <label className="check-label">
+                  <input type="checkbox" checked={hasCachepot} onChange={(e) => setHasCachepot(e.target.checked)} />
+                  {t("plantEditor.cachepot")}
+                </label>
+                <label className="check-label">
+                  <input type="checkbox" checked={hasSaucer} onChange={(e) => setHasSaucer(e.target.checked)} />
+                  {t("plantEditor.saucer")}
+                </label>
+              </div>
+              <div className="form-grid two-col">
+                <label className="full">
+                  {t("plantEditor.substrate")}
+                  <input
+                    value={substrateName}
+                    onChange={(e) => setSubstrateName(e.target.value)}
+                    placeholder={t("plantEditor.substratePlaceholder")}
+                  />
+                </label>
+                {[
+                  ["retention", "plantEditor.substrateRetention", retention, setRetention],
+                  ["drainage", "plantEditor.substrateDrainage", substrateDrainage, setSubstrateDrainage],
+                  ["aeration", "plantEditor.substrateAeration", aeration, setAeration],
+                ].map(([id, key, value, setter]) => (
+                  <label key={id as string}>
+                    {t(key as never)}
+                    <select
+                      value={value as string}
+                      onChange={(e) => (setter as (v: PropertyLevel) => void)(e.target.value as PropertyLevel)}
+                    >
+                      <option value="unknown">{t("plantEditor.level.unknown")}</option>
+                      <option value="veryLow">{t("plantEditor.level.veryLow")}</option>
+                      <option value="low">{t("plantEditor.level.low")}</option>
+                      <option value="moderate">{t("plantEditor.level.moderate")}</option>
+                      <option value="high">{t("plantEditor.level.high")}</option>
+                      <option value="veryHigh">{t("plantEditor.level.veryHigh")}</option>
+                    </select>
+                  </label>
+                ))}
+              </div>
+              <p className="muted small-text">{t("plantEditor.substrateHint")}</p>
+            </div>
+          </details>
+
+          <details className="editor-disclosure">
+            <summary>
+              <span>{t("plantEditor.details.care")}</span>
+              <em>
+                {t("plantEditor.summaryWater", {
+                  days: draft.wateringInterval,
+                })}
+                {" · "}
+                {draft.fertilizingInterval
+                  ? t("plantEditor.summaryFertilizer", {
+                      days: draft.fertilizingInterval,
+                    })
+                  : t("plantEditor.summaryNoFertilizer")}
+              </em>
+            </summary>
+            <div className="editor-disclosure-body">
+              <div className="form-grid two-col">
+                <label className="full">
+                  {t("plantEditor.frequency")}
+                  <select
+                    value={draft.careFrequencyPreference || "Normale"}
+                    onChange={(e) => changeFrequency(e.target.value)}
+                  >
+                    {frequencies.map((f) => (
+                      <option key={f.value} value={f.value}>{t(f.key)}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {t("plantEditor.fertilizing")}
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    placeholder={t("plantEditor.notScheduled")}
+                    value={draft.fertilizingInterval ?? ""}
+                    onChange={(e) =>
+                      set(
+                        "fertilizingInterval",
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                  />
+                </label>
+                <label>
+                  {t("plantEditor.lastFertilized")}
+                  <input
+                    type="date"
+                    value={draft.lastFertilized ? inputDate(draft.lastFertilized) : ""}
+                    onChange={(e) =>
+                      set(
+                        "lastFertilized",
+                        e.target.value
+                          ? new Date(e.target.value + "T12:00:00").toISOString()
+                          : null,
+                      )
+                    }
+                  />
+                </label>
+                <div className="fertilizer-picker full">
+                  <div className="fertilizer-picker-head">
+                    <strong>{t("plantEditor.fertilizerPickTitle")}</strong>
+                    <small>{t("plantEditor.fertilizerPickHint")}</small>
+                  </div>
+                  <div
+                    className="fertilizer-options"
+                    role="radiogroup"
+                    aria-label={t("plantEditor.fertilizerPickTitle")}
+                  >
+                    <label
+                      className={`fertilizer-option${!draft.fertilizerProductID ? " selected" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="fertilizer-product"
+                        value=""
+                        checked={!draft.fertilizerProductID}
+                        onChange={() => chooseFertilizer(undefined)}
+                      />
+                      <span className="fertilizer-thumb empty">
+                        <Leaf size={20} />
+                      </span>
+                      <span className="fertilizer-copy">
+                        <strong>{t("plantEditor.fertilizerNone")}</strong>
+                        <small>{t("plantEditor.fertilizerNoneHint")}</small>
+                      </span>
+                      <Check size={17} className="fertilizer-check" />
+                    </label>
+                    {fertilizerProducts.map((p) => (
+                      <label
+                        key={p.id}
+                        className={`fertilizer-option${draft.fertilizerProductID === p.id ? " selected" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          name="fertilizer-product"
+                          value={p.id}
+                          checked={draft.fertilizerProductID === p.id}
+                          onChange={() => chooseFertilizer(p)}
+                        />
+                        <ProductThumb product={p} />
+                        <span className="fertilizer-copy">
+                          <strong>{p.name}</strong>
+                          <small>
+                            {[
+                              p.brand,
+                              p.category ? productCategoryLabel(p.category) : "",
+                              p.form,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </small>
+                        </span>
+                        <Check size={17} className="fertilizer-check" />
+                      </label>
+                    ))}
+                  </div>
+                  {!fertilizerProducts.length && (
+                    <p className="muted small-text">
+                      {t("plantEditor.fertilizerEmpty")}
+                    </p>
+                  )}
+                  {draft.fertilizerProductID && (
+                    <label>
+                      {t("plantEditor.fertilizerDose")}
+                      <select
+                        value={draft.fertilizerDose || "Dose intera"}
+                        onChange={(e) => set("fertilizerDose", e.target.value)}
+                      >
+                        <option value="Dose intera">{t("plantEditor.dose.full")}</option>
+                        <option value="¾ di dose">{t("plantEditor.dose.threeQuarters")}</option>
+                        <option value="½ dose">{t("plantEditor.dose.half")}</option>
+                        <option value="⅓ di dose">{t("plantEditor.dose.third")}</option>
+                        <option value="¼ di dose">{t("plantEditor.dose.quarter")}</option>
+                      </select>
+                    </label>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-          <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
-        </section>
+              </div>
+              <p className="muted small-text">
+                {draft.carePlanMode === "Intelligente"
+                  ? t("plantEditor.smartHint")
+                  : draft.carePlanMode === "AI"
+                    ? t("plantEditor.aiHint")
+                    : t("plantEditor.smartUnavailable")}
+              </p>
+            </div>
+          </details>
 
-        <section className="editor-section">
-          <h3>{t("plantEditor.otherInfo")}</h3>
-          <div className="form-grid">
-            <label>
-              {t("plantEditor.acquired")}
-              <input
-                type="date"
-                required
-                value={inputDate(draft.acquiredOn)}
-                onChange={(e) => {
-                  if (e.target.value)
-                    set(
-                      "acquiredOn",
-                      new Date(e.target.value + "T12:00:00").toISOString(),
-                    );
-                }}
-              />
-            </label>
-            <label className="full">
-              {t("event.note")}
-              <textarea
-                rows={3}
-                value={draft.notes}
-                onChange={(e) => set("notes", e.target.value)}
-                placeholder={t("plantEditor.notesPlaceholder")}
-              />
-            </label>
-          </div>
-        </section>
+          <details className="editor-disclosure">
+            <summary>
+              <span>{t("plantEditor.activities")}</span>
+              <em>
+                {(() => {
+                  const keys = [
+                    "rotationInterval",
+                    "inspectionInterval",
+                    "progressInterval",
+                    "pruningInterval",
+                    "repottingInterval",
+                  ];
+                  const active = keys.filter(
+                    (key) =>
+                      (draft as unknown as Record<string, number | null>)[key] != null,
+                  ).length;
+                  return active
+                    ? t("plantEditor.summaryActivities", { count: active })
+                    : t("plantEditor.summaryNoActivities");
+                })()}
+              </em>
+            </summary>
+            <div className="editor-disclosure-body">
+              <div className="form-grid two-col">
+                {[
+                  ["rotationInterval", "Rotazione", 7],
+                  ["inspectionInterval", "Controllo salute", 7],
+                  ["progressInterval", "Diario di crescita", 30],
+                  ["pruningInterval", "Potatura", 90],
+                  ["repottingInterval", "Rinvaso", 365],
+                ].map(([key, label, fallback]) => {
+                  const value = (draft as unknown as Record<string, number | null>)[key as string];
+                  return (
+                    <div key={key as string} className="activity-field">
+                      <label className="check-label">
+                        <input
+                          type="checkbox"
+                          checked={value != null}
+                          onChange={(e) => set(key as string, e.target.checked ? fallback : null)}
+                        />
+                        {kindLabel(label as string)}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={3650}
+                        aria-label={`${kindLabel(label as string)} · ${t("plantEditor.everyDays")}`}
+                        disabled={value == null}
+                        value={value ?? ""}
+                        onChange={(e) =>
+                          set(key as string, e.target.value ? Number(e.target.value) : null)
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="muted small-text">{t("plantEditor.activitiesHint")}</p>
+            </div>
+          </details>
 
-        <div className="modal-actions">
+          <details className="editor-disclosure">
+            <summary>
+              <span>{t("plantEditor.otherInfo")}</span>
+              <em>
+                {draft.notes.trim()
+                  ? draft.notes.trim()
+                  : t("plantEditor.summaryAcquired", {
+                      date: new Date(draft.acquiredOn).toLocaleDateString(
+                        undefined,
+                        { day: "numeric", month: "short", year: "numeric" },
+                      ),
+                    })}
+              </em>
+            </summary>
+            <div className="editor-disclosure-body">
+              <div className="form-grid two-col">
+                <label className="full">
+                  {t("plantEditor.acquired")}
+                  <input
+                    type="date"
+                    required
+                    value={inputDate(draft.acquiredOn)}
+                    onChange={(e) => {
+                      if (e.target.value)
+                        set(
+                          "acquiredOn",
+                          new Date(e.target.value + "T12:00:00").toISOString(),
+                        );
+                    }}
+                  />
+                </label>
+                <label className="full">
+                  {t("event.note")}
+                  <textarea
+                    rows={3}
+                    maxLength={20000}
+                    value={draft.notes}
+                    onChange={(e) => set("notes", e.target.value)}
+                    placeholder={t("plantEditor.notesPlaceholder")}
+                  />
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div className="modal-actions editor-actions">
           <button type="button" className="button secondary" onClick={onClose}>
             {t("common.cancel")}
           </button>
@@ -2764,6 +3095,7 @@ function ProductEditor({
           {t("product.notes")}
           <textarea
             rows={4}
+            maxLength={20000}
             value={p.notes}
             onChange={(e) => set({ ...p, notes: e.target.value })}
           />
@@ -3713,6 +4045,7 @@ function GrowthEditor({
           {t("growth.note")}
           <textarea
             rows={4}
+            maxLength={20000}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
@@ -3849,12 +4182,12 @@ function BackupTool({
     <section className="panel">
       <h2>Le tue piante, al sicuro.</h2>
       <p className="muted">
-        Importa una volta il backup PlantCare nativo o ripristina un backup web
+        Importa una volta il backup Verdant nativo o ripristina un backup web
         su un archivio vuoto.
       </p>
       <label className="import-drop">
         <Upload size={27} />
-        <strong>{file?.name || "Scegli un backup PlantCare"}</strong>
+        <strong>{file?.name || "Scegli un backup Verdant"}</strong>
         <small>JSON nativo fino a 150 MB o ZIP web fino a 2 GB</small>
         <input
           type="file"
@@ -4271,27 +4604,45 @@ function SettingsTool({
           <div>
             <dt>{t("settings.careEngine")}</dt>
             <dd>
-              <select
-                aria-label={t("settings.careEngine")}
-                value={settings.careEngineMode}
-                onChange={(e) => {
-                  void run(
-                    () =>
-                      api("preferences/care-engine", {
-                        method: "PUT",
-                        body: JSON.stringify({ mode: e.target.value }),
-                      }),
-                    t("settings.careEngineSaved"),
-                  );
-                }}
-              >
-                <option value="shadow">{t("settings.careEngineShadow")}</option>
-                <option value="active">{t("settings.careEngineActive")}</option>
-              </select>
-              <small className="muted">{t("settings.careEngineHint")}</small>
+              <strong>
+                {settings.careEngineMode === "active"
+                  ? t("settings.careEngineActive")
+                  : t("settings.careEngineShadow")}
+              </strong>
+              <small className="muted">
+                {t("settings.careEngineModes")}
+              </small>
+              <small className="muted">
+                {t("settings.careEngineAddon")}
+              </small>
             </dd>
           </div>
         )}
+        <div>
+          <dt>{t("settings.experience")}</dt>
+          <dd>
+            <select
+              aria-label={t("settings.experience")}
+              value={settings.experience || "intermedio"}
+              onChange={(e) => {
+                void run(
+                  () =>
+                    api("preferences", {
+                      method: "PUT",
+                      body: JSON.stringify({ experience: e.target.value }),
+                    }),
+                  t("settings.experienceSaved"),
+                );
+              }}
+            >
+              <option value="principiante">{t("settings.experience.beginner")}</option>
+              <option value="intermedio">{t("settings.experience.intermediate")}</option>
+              <option value="esperto">{t("settings.experience.expert")}</option>
+              <option value="professionista">{t("settings.experience.professional")}</option>
+            </select>
+            <small className="muted">{t("settings.experienceHint")}</small>
+          </dd>
+        </div>
         {settings.adaptiveStatus && <div><dt>{t("settings.weather")}</dt><dd>{settings.adaptiveStatus.errors ? plural("settings.weatherErrors", settings.adaptiveStatus.errors) : t("settings.lastRun", { date: formatDate(settings.adaptiveStatus.lastRun, { dateStyle: "short", timeStyle: "short" }) })}</dd></div>}
         {storage && (
           <>

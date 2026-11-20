@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.2
+# Stato dell’incremento 0.11.17
 
 ## Stato rispetto agli otto step
 
@@ -8,10 +8,111 @@
 | 2 — Add-on e interfaccia | Installata e aggiornata alla 0.10.3 su Home Assistant il 16 novembre 2026; avvio e interfaccia Ingress verificati in Safari. |
 | 3 — Archivio e importazione | Archivio personale importato su Home Assistant: 18 piante, 7 prodotti e 124 fotografie; collezione, diario, prodotti e scadenze verificati in Ingress. |
 | 4 — Cure e calendario | Completato per questo incremento: giro guidato, calendario settimana/mese, cronologia filtrabile, registrazioni e cicli di trattamento. |
-| 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e Care Engine avanzato in shadow. Attivazione operativa delle raccomandazioni esclusa da questo incremento. |
+| 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.2 installata e verificata via Ingress su Home Assistant con archivio reale; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.17 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.17 (20 novembre 2026)
+
+- Il banner generico “Controlla i dati inseriti.” non viene più mostrato per errori senza dettaglio o durante un form modale; il messaggio di validazione indica campo e motivo e resta inline nel form.
+- Limiti `maxLength` sui testi lunghi per evitare validazioni evitabili.
+- 223 test backend, build frontend.
+
+## Rilascio 0.11.16 (20 novembre 2026)
+
+- Motore di cura, passo 1.3: profilo di esperienza **principiante / intermedio / esperto / professionista** in Impostazioni, con passo massimo 1/2/3/4 giorni.
+- L’apprendimento usa il numero di rinvii onorati o anticipati, fino al massimo del profilo; ritardi senza rinvio e dati insufficienti restano a 1 giorno.
+- AI giornaliera e assistente ricevono `experienceLevel`; `contextVersion` 4.
+- 222 test backend, 1012 chiavi i18n, build frontend.
+
+## Rilascio 0.11.15 (20 novembre 2026)
+
+- Motore di cura, passo 1.2: apprendimento adattivo ai rinvii. Passo di 1 giorno per default; 2 giorni con almeno due rinvii onorati (o due rinvii anticipati nella direzione opposta).
+- I ritardi senza rinvio non accelerano l’apprendimento; restano il limite ±30% e il target.
+- `careLearning` espone il passo e i conteggi di rinvii/ritardi usati.
+- 220 test backend, build frontend.
+
+## Rilascio 0.11.14 (20 novembre 2026)
+
+- Motore di cura, passo 1.1: l’analisi AI riceve **località** e `careTiming` (intervalli osservati, rinvii con nota, ritardi senza rinvio); il prompt distingue rinvii intenzionali e ritardi.
+- Anche l’assistente della scheda pianta riceve località e rinvii recenti; `contextVersion` aggiornato a 3.
+- 217 test backend, build frontend.
+
+## Rilascio 0.11.13 (20 novembre 2026)
+
+- Card Attività desktop: pulsante **Completa** largo 200 px (massimo 100% della card) e alto 44 px, non più a tutta riga.
+- Su telefono resta a tutta larghezza.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.12 (20 novembre 2026)
+
+- Finestra **Completa** su telefono: solo scorrimento verticale; overflow orizzontale nascosto, overscroll disattivato e `touch-action: pan-y pinch-zoom`.
+- Testi lunghi a capo; campi e pulsanti contenuti nella larghezza del pannello.
+- Verifica a 320/390 px con nome pianta molto lungo, nessun overflow orizzontale.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.11 (20 novembre 2026)
+
+- Maniglia del pannello dettaglio disponibile anche nello stato vuoto, non solo con una pianta aperta; la colonna destra si ridimensiona subito.
+- Z-index delle maniglie alzato per evitare sovrapposizioni con il contenuto.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.10 (20 novembre 2026)
+
+- Desktop: **colonna sinistra** e **pannello dettaglio** ridimensionabili trascinando il bordo, con larghezza persistente e ripristino con doppio clic.
+- Frecce da tastiera, limiti 190–420 px (colonna) e 320–720 px (dettaglio), almeno 420 px per il contenuto.
+- Maniglie solo sopra 1000 px; layout telefono/tablet invariato.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.9 (19 novembre 2026)
+
+- Nome visibile di add-on e web app cambiato in **Verdant**: nome add-on, pannello, brand, titolo pagina, notifiche e messaggi.
+- Slug `plantcare_web`, `/data`, database, foto, formato backup e identificatori interni invariati per preservare dati e aggiornamenti.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.8 (19 novembre 2026)
+
+- Risposte AI formattate come Markdown nel riquadro verde: titoli, paragrafi, grassetto/corsivo, elenchi, citazioni, codice e tabelle.
+- Renderer caricato su richiesta in un chunk separato; nessuna interpretazione di HTML grezzo.
+- Gemini e OpenAI usano lo stesso campo `summaryMarkdown` e lo stesso rendering.
+- 215 test backend, build frontend.
+
+## Rilascio 0.11.7 (19 novembre 2026)
+
+- Etichette QR/NFC con lo slug dell’add-on corrente, ricavato dall’hostname del container; le etichette già stampate restano leggibili.
+- Migrazione reale al repository add-on completata: `309d34f7_plantcare_web` 0.11.7, archivio e opzioni copiati, 124 foto; il vecchio `local_plantcare_web` resta fermo per rollback.
+- Documentazione del motore di cura nelle tre modalità: `docs/CARE_ENGINE.md` e `docs/en/CARE_ENGINE.md`.
+- 215 test backend.
+
+## Rilascio 0.11.6 (19 novembre 2026)
+
+- Migrazione assistita locale → repository add-on: import del database da `/share/plantcare/migrate/plantcare.sqlite` quando `/data` è vuoto ed esiste `import-request`.
+- Validazione dell’intestazione SQLite, sostituzione atomica, richiesta consumata una sola volta; il file resta per il rollback.
+- 215 test backend.
+
+## Rilascio 0.11.5 (19 novembre 2026)
+
+- Associazione del fertilizzante ripensata nell’editor pianta: elenco visuale con miniatura, nome, marca, categoria e forma, più “Nessun fertilizzante”.
+- Rimosso il campo libero “Tipo di fertilizzante”; il tipo è derivato dal prodotto scelto anche lato backend.
+- Filtro ai prodotti fertilizzanti (Fertilizzante, Biostimolante, Ammendante, Radicante) con l’eventuale prodotto già associato; dose visibile solo con un prodotto.
+- Verifica: 213 test backend, 1001 chiavi i18n, build frontend, nessun overflow a 320/390 px.
+
+## Rilascio 0.11.4 (19 novembre 2026)
+
+- Motore di cura con **una sola fonte di configurazione**: `care_engine_mode` nelle opzioni dell’add-on, default **Operativo**. Rimosso l’override salvato dalla web UI che causava la divergenza shadow/active.
+- In **Impostazioni → Motore di cura** compaiono la modalità effettiva, la spiegazione di shadow e operativo e l’indicazione di dove cambiarla; nessun selettore che possa divergere.
+- Verifica: 212 test backend, 1000 chiavi i18n, build frontend.
+
+## Rilascio 0.11.3 (19 novembre 2026)
+
+- Editor pianta **web-first** con divulgazione progressiva: foto e riconoscimento Pl@ntNet, identità, ambiente, piano, annaffiatura e ultima annaffiatura sempre visibili.
+- Cinque sezioni facoltative richiudibili con riepilogo (Posizione e profilo, Vaso e substrato, Frequenze e concimazione, Attività aggiuntive, Altre informazioni).
+- Una sola barra Annulla/Salva sticky in fondo, safe area inclusa; rimossa la doppia barra superiore.
+- Griglie a due colonne per i campi brevi, colonna singola sotto 360 px. Contenuto a 390 px: da ~4.038 px a ~1.392 px (2.975 px con tutte le sezioni aperte).
+- Validazione: i campi obbligatori restano visibili; un controllo non valido in una sezione chiusa la apre e riceve il focus.
+- Riquadri verde tenue (`--vc-mint-soft` / `--vc-mint-line`) per crescita, cronologia, linea del tempo, andamento, sezioni dell’editor e riconoscimento Pl@ntNet.
+- Verifica: 320/390/430 px senza overflow, 212 test backend, 999 chiavi i18n, build frontend.
 
 ## Rilascio 0.11.2 (19 novembre 2026)
 
@@ -21,12 +122,10 @@
 - Motore di cura operativo e pulizia foto non utilizzate.
 - 212 test backend, 988 chiavi i18n, build frontend.
 
-## Prossima versione (0.11.3)
+## Prossima versione (0.11.18)
 
-- Luxmetro dalla fotocamera del telefono.
-- Campanella notifiche “Attive” e notifiche web, se richieste.
-- Prova reale Pl@ntNet nell’editor e prova AI con Gemini, ora raggiungibile.
-- Collaudi rinviati: iPhone fisico/Companion, QR/NFC reale, ripristino su HA isolata, sensori e meteo reali, archivio molto grande.
+- Luxmetro dalla fotocamera, campanella “Attive”/notifiche web se richieste, ripristino in-place dei backup.
+- Collaudi rinviati: iPhone fisico/Companion, QR/NFC reale, Pl@ntNet reale, Gemini reale, ripristino su HA isolata, sensori e meteo reali, archivio molto grande.
 
 ## Grafici — fase 1 (17 novembre 2026)
 
@@ -143,7 +242,7 @@ Add-on Ingress senza porta pubblicata; SQLite locale; piante, prodotti, stanze, 
 
 ## Limiti ancora presenti
 
-- I piani importati mantengono gli intervalli finché non vengono ricalcolati esplicitamente. Il meteo automatico richiede attivazione esplicita per pianta. Le misure dei sensori non cambiano il calendario: il Care Engine resta shadow, come previsto dal piano.
+- I piani importati mantengono gli intervalli finché non vengono ricalcolati esplicitamente. Il meteo automatico richiede attivazione esplicita per pianta. Le misure dei sensori non cambiano il calendario: alla 0.3.0 il Care Engine restava shadow, come previsto dal piano.
 - Il motore legge i profili botanici e i dati di vaso/substrato dell’archivio importato. Catalogo e collegamento guidato sono disponibili dalla 0.8.0; la configurazione avanzata dei profili fisiologici resta da approfondire. Senza un profilo affidabile non vengono presunti requisiti idrici/nutrizionali.
 - L’adattatore dati web e gli identificativi delle raccomandazioni usano una rappresentazione locale Python; i confronti Swift verificano gli esiti del pianificatore/evaluatori, non la parità binaria dell’intera app nativa.
 - Le valutazioni usano al massimo le 10.000 letture SQL più recenti per pianta, oltre alle letture native conservate. Archivi molto grandi richiedono ancora il collaudo dello step 8.
@@ -431,18 +530,18 @@ Restano separati gli step originari 5/6 (collaudo sensori e applicazione AI su d
 
 ## Motore di cura operativo (18 novembre 2026)
 
-- In **Impostazioni → Motore di cura** si sceglie **Solo osservazione (shadow)** o **Operativo**; la preferenza è salvata nello stato dell’app e prevale sull’opzione dell’add-on.
+- La modalità si sceglie nella configurazione dell’add-on (`care_engine_mode`, default **Operativo**) e la web UI la mostra in sola lettura; non esiste più un override nel database.
 - In modalità operativa, dopo una misura manuale o un campionamento dei sensori, il motore può **solo rinviare** l’annaffiatura quando il terreno è ancora umido e la misura è fresca e affidabile. Non anticipa mai una cura e non la registra.
 - Regole di sicurezza: misura con affidabilità ≥ 65%, gate non `restricted`, confidenza ≥ 35% per umidità ≥ 70% (≥ 55% negli altri casi), un solo rinvio per ciclo di annaffiatura, massimo 14 giorni. Il rinvio è scritto in `nextWateringOverride`, con nota nel diario (`Aggiornamento piano`) e riepilogo `careEngineApplied` visibile nel piano.
-- Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **212 test backend**.
-- Su Home Assistant il motore è stato portato in modalità **Operativa** dalle Impostazioni; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
+- Verifica su archivio sintetico: terreno all’82% con annaffiatura prevista domani → rinvio al giorno successivo, diario aggiornato e nessun secondo rinvio con la stessa lettura; terreno al 18% non anticipa nulla; in shadow nessuna modifica. **215 test backend**. Dettagli delle tre modalità in [CARE_ENGINE.md](CARE_ENGINE.md).
+- Su Home Assistant la modalità effettiva è quella dell’opzione dell’add-on; i sensori reali sono configurati e le letture attuali non superano la soglia di rinvio, quindi nessun calendario reale è stato modificato.
 
 ## Prova AI con provider reale (18 novembre 2026)
 
 - Provider **Gemini** configurato su Home Assistant (`gemini-3.5-flash-lite`), 18 piante in modalità AI, `auto_apply_ai` disattivato. L’analisi giornaliera precedente aveva già girato con successo senza proposte.
 - La prova manuale di oggi (`POST /api/ai/analyze`) è stata rifiutata da Gemini con **“non disponibile per la località della connessione Home Assistant”** (HTTP 422, codice `remote`). Non sono state create proposte né modificati piani; la chiave OpenAI non è configurata.
-- La pipeline AI resta verificata con trasporto simulato e la prova reale è bloccata dalla geografia del provider, non dal codice. Per completarla serve una chiave OpenAI (o un provider raggiungibile dalla posizione dell’istanza).
-- **Diagnosi della risposta Gemini**: la richiesta grezza restituisce `400 FAILED_PRECONDITION — User location is not supported for the API use`. L’IP pubblico dell’istanza è `95.235.2.120` (Telecom Italia, AS3269, Puglia); più database geografici lo indicano in Italia e Scamalytics lo classifica a basso rischio. Non ci sono proxy/VPN, IPv6 non è disponibile e Cloudflare protegge solo l’ingresso di `sicoli.ovh`, non il traffico uscente verso Google. Il problema è quindi la **classificazione dell’IP pubblico da parte di Google**, coerente con il fatto che riavviare il router (nuovo IP) lo risolve temporaneamente e che succede anche ad altre integrazioni Google. Segnalazione consigliata: `https://support.google.com/websearch/workflow/9308722`. Workaround: nuovo IP dal router, IP statico/aziendale, oppure provider AI diverso (OpenAI).
+- La pipeline AI resta verificata con trasporto simulato. Aggiornamento successivo: il provider Gemini è tornato raggiungibile e configurato; la prova reale giornaliera resta rinviata e va ripetuta su richiesta.
+- **Nota storica sulla risposta Gemini (18 novembre 2026)**: la richiesta grezza restituisce `400 FAILED_PRECONDITION — User location is not supported for the API use`. L’IP pubblico dell’istanza è `95.235.2.120` (Telecom Italia, AS3269, Puglia); più database geografici lo indicano in Italia e Scamalytics lo classifica a basso rischio. Non ci sono proxy/VPN, IPv6 non è disponibile e Cloudflare protegge solo l’ingresso di `sicoli.ovh`, non il traffico uscente verso Google. Il problema è quindi la **classificazione dell’IP pubblico da parte di Google**, coerente con il fatto che riavviare il router (nuovo IP) lo risolve temporaneamente e che succede anche ad altre integrazioni Google. Segnalazione consigliata: `https://support.google.com/websearch/workflow/9308722`. Workaround: nuovo IP dal router, IP statico/aziendale, oppure provider AI diverso (OpenAI).
 
 ## Archivio — pulizia fotografie (18 novembre 2026)
 

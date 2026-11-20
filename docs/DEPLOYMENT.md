@@ -113,3 +113,10 @@ Prove: [scheda botanica](screenshots/0.7.0/home-assistant-botanical.jpg), [etich
 - Add-on **in esecuzione**, versione **0.11.1**; opzioni, archivio e fotografie invariati.
 - Verifica Ingress: pagina Piante con 12 schede e intervallo “1–12 di 18”, seconda pagina con 6 schede “13–18 di 18”, nessun overflow a 686 px.
 - Nessuna cura registrata, nessun dato reale modificato, nessun backup creato.
+
+## Repository add-on GitHub — 19 novembre 2026
+
+- Aggiunto `repository.yaml` alla radice del repository; il repository è stato registrato nel Supervisor come **309d34f7 — Verdant HA Add-ons** (`https://github.com/kriptos1970/verdant-ha`).
+- L’App store mostra **PlantCare Web 0.11.5** come `309d34f7_plantcare_web`, non installato; l’add-on locale esistente resta `local_plantcare_web`.
+- I due add-on hanno slug, cartella `/data` e URL Ingress diversi: l’installazione da repository è separata. Per migrare un’installazione locale servono il backup ZIP dell’app, il reinserimento delle opzioni e l’importazione su archivio vuoto; le etichette QR/NFC con il vecchio URL del pannello vanno rigenerate.
+- Nessuna installazione del nuovo add-on eseguita e nessun dato reale modificato.

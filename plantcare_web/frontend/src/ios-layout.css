@@ -737,3 +737,19 @@
 @media(max-width:760px){
  .plant-editor-form .photo-upload > img{width:96px;height:96px;border-radius:14px}
 }
+
+@media(max-width:760px){
+ .plant-editor-form .form-grid.two-col{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
+ .plant-editor-form .editor-section{padding:12px 12px 14px}
+ .plant-editor-form .editor-section h3{font-size:12px;margin-bottom:10px}
+ .editor-disclosure>summary{min-height:52px;padding:11px 12px}
+ .editor-disclosure>summary>span{font-size:15px}
+ .editor-disclosure>summary>em{font-size:13px}
+ .editor-disclosure-body{padding:12px}
+ .editor-details-heading{font-size:13px}
+ .plant-editor-form>.editor-actions{margin-left:-18px;margin-right:-18px;padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+ .plant-editor-form>.editor-actions .button{min-height:46px}
+}
+@media(max-width:359px){
+ .plant-editor-form .form-grid.two-col{grid-template-columns:1fr}
+}

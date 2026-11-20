@@ -108,23 +108,25 @@ function TimelineContent({ plantId }: { plantId: string }) {
                   }}
                   aria-hidden="true"
                 />
-                <time dateTime={item.date}>{date}</time>
-                <strong>
-                  {measurement
-                    ? t(MEASURE_KEYS[item.kind] ?? "detail.timeline.measure")
-                    : kindLabel(item.kind)}
-                  {item.status === "postponed"
-                    ? ` · ${t("calendar.postponed")}`
-                    : ""}
-                  {health ? ` · ${t(HEALTH_LABEL_KEYS[health])}` : ""}
-                </strong>
-                {measurement ? (
-                  <p className="plant-timeline-value">
-                    {formatNumber(item.value ?? 0)} {item.unit}
-                  </p>
-                ) : item.note ? (
-                  <p>{item.note}</p>
-                ) : null}
+                <div className="plant-timeline-card">
+                  <time dateTime={item.date}>{date}</time>
+                  <strong>
+                    {measurement
+                      ? t(MEASURE_KEYS[item.kind] ?? "detail.timeline.measure")
+                      : kindLabel(item.kind)}
+                    {item.status === "postponed"
+                      ? ` · ${t("calendar.postponed")}`
+                      : ""}
+                    {health ? ` · ${HEALTH_LABEL_KEYS[health]}` : ""}
+                  </strong>
+                  {measurement ? (
+                    <p className="plant-timeline-value">
+                      {formatNumber(item.value ?? 0)} {item.unit}
+                    </p>
+                  ) : item.note ? (
+                    <p>{item.note}</p>
+                  ) : null}
+                </div>
               </li>
             );
           })}
