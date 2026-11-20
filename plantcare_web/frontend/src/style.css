@@ -978,6 +978,47 @@ main {
   max-width: 65%;
   overflow-wrap: anywhere;
 }
+.care-engine-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+}
+.care-engine-state::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--vc-moss);
+}
+.care-engine-state[data-mode="shadow"]::before {
+  background: var(--vc-text-secondary);
+}
+.care-engine-modes {
+  list-style: none;
+  margin: 8px 0 4px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.care-engine-modes li {
+  display: grid;
+  gap: 1px;
+  padding: 7px 9px;
+  border: 1px solid var(--vc-line);
+  border-radius: 9px;
+  color: var(--vc-text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.care-engine-modes li[data-current="true"] {
+  border-color: var(--vc-mint-line);
+  background: var(--vc-mint-soft);
+  color: var(--vc-text);
+}
+.care-engine-modes li strong {
+  font-size: 11px;
+}
 .info-note {
   background: #f3f5ed;
   padding: 16px;

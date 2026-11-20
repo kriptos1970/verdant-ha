@@ -1,3 +1,10 @@
+# 0.11.21 — modalità del motore di cura più chiara
+
+- In **Impostazioni → Motore di cura** la modalità attiva è ora indicata da un pallino e dalla dicitura “Modalità attiva nell’add-on”; le due modalità sono elencate separatamente e quella corrente è evidenziata.
+- La descrizione non inizia più con “Solo osservazione (shadow)” quando è attiva la modalità operativa: il valore mostrato e la spiegazione non si confondono.
+- Dopo una modifica dell’opzione `care_engine_mode` nell’add-on, riavviare l’add-on; la web UI aggiorna il valore entro un minuto o al ritorno sulla scheda.
+- 224 test backend, 1014 chiavi i18n, build frontend.
+
 # 0.11.20 — sfondo verde tenue
 
 - Lo sfondo della pagina usa un verde tenue (`--vc-canvas`); pannelli, schede e finestre restano bianchi, così le sezioni si separano visivamente come nell’app nativa.

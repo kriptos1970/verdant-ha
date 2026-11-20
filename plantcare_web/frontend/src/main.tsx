@@ -4678,17 +4678,23 @@ function SettingsTool({
           <div>
             <dt>{t("settings.careEngine")}</dt>
             <dd>
-              <strong>
+              <span className="care-engine-state" data-mode={settings.careEngineMode}>
                 {settings.careEngineMode === "active"
                   ? t("settings.careEngineActive")
                   : t("settings.careEngineShadow")}
-              </strong>
-              <small className="muted">
-                {t("settings.careEngineModes")}
-              </small>
-              <small className="muted">
-                {t("settings.careEngineAddon")}
-              </small>
+              </span>
+              <small className="muted">{t("settings.careEngineNow")}</small>
+              <ul className="care-engine-modes">
+                <li data-current={settings.careEngineMode === "active"}>
+                  <strong>{t("settings.careEngineActive")}</strong>
+                  <span>{t("settings.careEngineActiveHint")}</span>
+                </li>
+                <li data-current={settings.careEngineMode === "shadow"}>
+                  <strong>{t("settings.careEngineShadow")}</strong>
+                  <span>{t("settings.careEngineShadowHint")}</span>
+                </li>
+              </ul>
+              <small className="muted">{t("settings.careEngineAddon")}</small>
             </dd>
           </div>
         )}
