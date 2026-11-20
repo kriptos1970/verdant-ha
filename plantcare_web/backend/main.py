@@ -360,6 +360,8 @@ def calendar():
 
 @app.post('/api/plants/{plant_id}/events')
 def add_event(plant_id:str,body:EventRequest):
+    if any(not isinstance(p,str) or '/' in p or not (store.photos/p).is_file() for p in body.photoPaths):
+        raise HTTPException(422,'Fotografia non disponibile.')
     with store.connection() as db:
         plant,version=store.get('plants',plant_id,db)
         changed=care.record(plant,body,settings.zone,linked_product(plant,db),preference_experience())

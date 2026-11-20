@@ -75,6 +75,24 @@ def test_validation_error_detail_names_the_field(client):
     assert 'Campo obbligatorio' in payload['detail'] or 'name' in payload['detail']
 
 
+def test_progress_event_with_photo_creates_a_growth_entry(client):
+    p=create(client)
+    image=Image.new('RGB',(32,32),'green')
+    data=io.BytesIO();image.save(data,'JPEG')
+    uploaded=client.post('/api/photos',files={'file':('growth.jpg',data.getvalue(),'image/jpeg')})
+    assert uploaded.status_code==201,uploaded.text
+    path=uploaded.json()['path']
+    response=client.post(f"/api/plants/{p['id']}/events",json={
+        'kind':'Aggiorna progressi','status':'completed','date':'2026-11-20T12:00:00Z',
+        'health':'Buona','note':'Nuova foglia','photoPaths':[path],
+    })
+    assert response.status_code==200,response.text
+    growth=response.json()['growthEntries'][-1]
+    assert growth['photoPaths']==[path]
+    assert growth['note']=='Nuova foglia'
+    assert response.json()['history'][-1]['kind']=='Aggiorna progressi'
+
+
 def test_error_responses_expose_stable_codes(client):
     assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
     p=create(client)

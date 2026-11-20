@@ -2,6 +2,7 @@
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from .domain import active_history, care_state, iso, now, parse, pending_actions, schedule, uses_watering
+from .care_kinds import canonical_health
 from .storage import Conflict
 from .treatments import pin_baselines, treatment_view, update_counts
 
@@ -65,6 +66,15 @@ def record(plant, body, zone, product=None, experience='intermedio'):
             description += ' · ' + plan['dose']
         event['note'] = ' · '.join(p for p in [description, body.note] if p)
     plant['history'].append(event)
+    if body.status == 'completed' and body.kind == 'progress':
+        plant['growthEntries']=(plant.get('growthEntries') or [])+[{
+            'id':str(uuid4()).upper(),
+            'date':body.date,
+            'health':canonical_health(body.health) if body.health else None,
+            'heightCM':None,
+            'note':body.note,
+            'photoPaths':list(body.photoPaths),
+        }]
     if body.status == 'completed' and body.kind == 'water':
         plant['lastWatered'] = body.date
         plant['nextWateringOverride'] = None

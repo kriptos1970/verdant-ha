@@ -81,6 +81,7 @@ class EventRequest(BaseModel):
     status: Literal['completed','postponed'] = 'completed'
     postponedUntil: str | None = None
     note: str = Field(default='',max_length=20000)
+    photoPaths: list[str] = Field(default_factory=list,max_length=50)
     includingFertilizing: bool = False
     treatmentPlanID: str | None = None
     productID: str | None = None

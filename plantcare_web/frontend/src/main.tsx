@@ -204,7 +204,6 @@ function App() {
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
     [useProduct, setUseProduct] = useState<Product | null>(null),
     [action, setAction] = useState<CareSelection | null>(null),
-    [growthAction, setGrowthAction] = useState<CareSelection | null>(null),
     [roundOpen, setRoundOpen] = useState(false),
     [cycleProduct, setCycleProduct] = useState<Product | null>(null),
     [confirm, setConfirm] = useState<{
@@ -533,13 +532,6 @@ function App() {
     setSearch("");
     setRoom("Tutte");
   };
-  const openCareAction = (value: CareSelection) => {
-    if (value.kind === "Aggiorna progressi" && !value.event && !value.postponed) {
-      setGrowthAction(value);
-      return;
-    }
-    setAction(value);
-  };
   const activeTool = tool ? toolDefinitions.find((item) => item.id === tool) : undefined;
   const pageTitle = page === "plants"
     ? (room === "Tutte" ? t("page.allPlants") : room)
@@ -829,7 +821,7 @@ function App() {
                           plant={plant}
                           onOpen={() => openPlant(plant.id)}
                           onAction={() =>
-                            openCareAction({ plant, kind: action.kind, scheduled: action })
+                            setAction({ plant, kind: action.kind, scheduled: action })
                           }
                         />
                       ))}
@@ -987,7 +979,7 @@ function App() {
                     onAction={(a) => {
                       const plant = plants.find((p) => p.id === a.plantID);
                       if (plant)
-                        openCareAction({ plant, kind: a.kind, scheduled: a });
+                        setAction({ plant, kind: a.kind, scheduled: a });
                     }}
                     onPostpone={(a) => {
                       const plant = plants.find((p) => p.id === a.plantID);
@@ -1352,7 +1344,7 @@ function App() {
           onClose={() => openPlant(null)}
           onEdit={() => setPlantEditor(selectedPlant)}
           onAction={(kind, scheduled) =>
-            openCareAction({ plant: selectedPlant, kind, scheduled })
+            setAction({ plant: selectedPlant, kind, scheduled })
           }
           onEditEvent={(event) =>
             setAction({ plant: selectedPlant, kind: event.kind, event })
@@ -1517,23 +1509,6 @@ function App() {
               "Ciclo pianificato",
             );
             setCycleProduct(null);
-          }}
-        />
-      )}
-      {growthAction && (
-        <GrowthEditor
-          busy={busy}
-          onClose={() => setGrowthAction(null)}
-          onSave={async (value) => {
-            await run(
-              () =>
-                api(`plants/${growthAction.plant.id}/growth`, {
-                  method: "POST",
-                  body: JSON.stringify(value),
-                }),
-              "Diario aggiornato",
-            );
-            setGrowthAction(null);
           }}
         />
       )}
@@ -3158,9 +3133,22 @@ function EventEditor({
   };
   const [health, setHealth] = useState(action.event?.health || "Buona");
   const [symptoms,setSymptoms]=useState<string[]>([]),[areas,setAreas]=useState<string[]>([]),[problem,setProblem]=useState(''),[nextAction,setNextAction]=useState('');
+  const [photoPaths,setPhotoPaths]=useState<string[]>([]);
+  const [uploading,setUploading]=useState(false);
   const requiresHealth=['Controlla salute','Aggiorna progressi'].includes(action.kind);
   const isNewInspection=action.kind==='Controlla salute'&&!action.event;
+  const isGrowth=action.kind==='Aggiorna progressi'&&!action.event;
   const toggleHealthOption=(value:string,values:string[],setValues:(items:string[])=>void)=>setValues(values.includes(value)?values.filter(v=>v!==value):[...values,value]);
+  const uploadFiles=async(files:File[])=>{
+    setUploading(true);
+    try{
+      for(const file of files){
+        const form=new FormData();form.append("file",file);
+        const uploaded=await api<{path:string}>("photos",{method:"POST",body:form});
+        setPhotoPaths(old=>[...old,uploaded.path]);
+      }
+    }catch(e){setError((e as Error).message)}finally{setUploading(false)}
+  };
   const [id] = useState(action.event?.id || uid()),
     [date, setDate] = useState(localDate(action.event?.date || todayISO())),
     [note, setNote] = useState(action.event?.note || ""),
@@ -3193,6 +3181,7 @@ function EventEditor({
               requiresHealth
                 ? health
                 : action.event?.health,
+            photoPaths,
             includingFertilizing: feeding,
             treatmentPlanID:
               action.event?.treatmentPlanID ||
@@ -3267,10 +3256,50 @@ function EventEditor({
           )}
         {requiresHealth&&<fieldset className="care-health-options"><legend>{t("event.healthState")}</legend><div>{healthStates.map(h=><button type="button" key={h} aria-pressed={health===h} onClick={()=>setHealth(h)}><IOSIcon name={h==='Eccellente'?'sparkles':'health'} size={22}/>{t(healthStateKeys[h])}</button>)}</div></fieldset>}
         {isNewInspection&&<section className="care-health-details"><fieldset className="care-health-options"><legend>{t("event.observed")}</legend><div>{healthSymptoms.map(value=><button type="button" key={value} aria-pressed={symptoms.includes(value)} onClick={()=>toggleHealthOption(value,symptoms,setSymptoms)}>{symptoms.includes(value)&&<Check size={16}/>} {t(symptomKeys[value] ?? "event.observed")}</button>)}</div></fieldset><fieldset className="care-health-options"><legend>{t("event.areas")}</legend><div>{healthAreas.map(value=><button type="button" key={value} aria-pressed={areas.includes(value)} onClick={()=>toggleHealthOption(value,areas,setAreas)}>{areas.includes(value)&&<Check size={16}/>} {t(areaKeys[value] ?? "event.areas")}</button>)}</div></fieldset><label>{t("event.problem")}<textarea rows={2} value={problem} onChange={e=>setProblem(e.target.value)}/></label><label>{t("event.nextAction")}<textarea rows={2} value={nextAction} onChange={e=>setNextAction(e.target.value)}/></label></section>}
+        {isGrowth && !postponed && (
+          <>
+            <div className="growth-photo-actions">
+              <label className="file-label">
+                <Camera size={20} />
+                {uploading ? t("common.loading") : t("growth.camera")}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    void uploadFiles(Array.from(e.target.files || []));
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <label className="file-label">
+                <ImagePlus size={20} />
+                {uploading ? t("common.loading") : t("growth.photos")}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp"
+                  disabled={uploading}
+                  onChange={(e) => {
+                    void uploadFiles(Array.from(e.target.files || []));
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            <div className="growth-photos">
+              {photoPaths.map((p) => (
+                <img key={p} src={photoURL(p, true)} alt={t("growth.photoAlt")} />
+              ))}
+            </div>
+          </>
+        )}
         <label>
           {t("event.note")}
           <textarea
             rows={3}
+            maxLength={20000}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder={t("event.notePlaceholder")}

@@ -1,3 +1,9 @@
+# 0.11.19 — foto nel layout precedente dell’attività
+
+- L’attività **Diario di crescita** torna al layout di conferma precedente — data, rinvio, stato di salute e note — con l’aggiunta di **Scatta una foto** e **Scegli fotografie**.
+- Le foto vengono salvate nella voce di crescita; l’evento “Aggiorna progressi” resta registrato nella cronologia. Corregge il percorso introdotto nella 0.11.18.
+- 224 test backend, 1013 chiavi i18n, build frontend.
+
 # 0.11.18 — foto nel diario di crescita e dipendenze sicure
 
 - Dalla sezione **Attività**, l’attività **Diario di crescita** apre ora l’editor del diario invece del form generico della cura: “Scatta una foto” usa la fotocamera, “Scegli fotografie” apre la libreria; le immagini vengono salvate nella voce di crescita e l’attività viene registrata.
