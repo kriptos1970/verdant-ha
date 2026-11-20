@@ -2,7 +2,7 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **0.11.15** (20 November 2026).
+Current release: **0.11.16** (20 November 2026).
 
 ## Done recently
 
@@ -16,13 +16,13 @@ Current release: **0.11.15** (20 November 2026).
 - [x] Visible name changed to **Verdant**; internal slug, data paths and backup format preserved.
 - [x] Desktop resizable sidebar and detail panel; phone care sheet scrolls vertically only; compact Complete button on desktop.
 
-## Now — care engine, one step at a time
+## Care engine — requested steps complete
 
-These are the remaining care-engine items explicitly requested. Each step is released separately, with tests and documentation.
+The three requested steps are released. The next work is field validation and the optional features below.
 
 - [x] **1.1 — AI context**: the daily analysis now receives the location and a structured `careTiming` summary (observed gaps, intentional postponements with notes, late gaps without a postponement). The assistant receives the same context. Released in 0.11.14.
 - [x] **1.2 — Adaptive learning**: the step is 1 day by default and 2 days with at least two honoured postponements (or two early postponements in the opposite direction); late gaps without a postponement stay at 1. The ±30% safety bound remains. Released in 0.11.15.
-- [ ] **1.3 — Grower experience**: add a profile (beginner, intermediate, expert, professional) and use it to calibrate the learning step and the weight of postponements. The wording and thresholds must be documented and visible in the UI.
+- [x] **1.3 — Grower experience**: beginner/intermediate/expert/professional profile in Settings; the learning step is capped at 1/2/3/4 days and the AI receives `experienceLevel`. Released in 0.11.16.
 
 No automatic plan changes are introduced by these steps: proposals remain reviewable and the operational engine still only postpones watering.
 

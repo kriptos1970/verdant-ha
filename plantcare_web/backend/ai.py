@@ -8,7 +8,7 @@ from uuid import uuid4
 import httpx
 from zoneinfo import ZoneInfo
 from .care_kinds import canonical_kind, legacy_kind
-from .domain import active_history, parse, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now
+from .domain import active_history, parse, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now, normalize_experience
 from .storage import Conflict
 from .ai_support import effective_settings, advice_values, climate_context, ADVICE_CONTEXT_VERSION
 
@@ -105,7 +105,7 @@ def care_timing_text(plant,zone='Europe/Rome',language='it'):
         return f"{label}: onorati {data['honoredPostponements']}, in attesa {data['pendingPostponements']}, anticipati {data['earlyPostponements']}, ritardi senza rinvio {data['lateGapsWithoutPostponement']}; intervalli recenti {data['recentCompletedGapsDays']} giorni; {detail}."
     return line('water','Annaffiatura' if language!='en' else 'Watering')+' '+line('fertilize','Concimazione' if language!='en' else 'Feeding')
 
-def daily_context(plant,products,location=None,zone='Europe/Rome'):
+def daily_context(plant,products,location=None,zone='Europe/Rome',experience='intermedio'):
     water=stable_water(plant)
     item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage'),'recentCare':[{'kind':legacy_kind(e['kind']),'date':e['date']} for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]]}
     product=next((p for p in products if p['id']==plant.get('fertilizerProductID')),None)
@@ -113,6 +113,7 @@ def daily_context(plant,products,location=None,zone='Europe/Rome'):
         item.update(fertilizerProduct=product['name'],fertilizerManufacturerDays=product.get('applicationIntervalDays'))
     plan=plant.get('adaptivePlan') or {}
     item['locationName']=plan.get('locationName') or (location or {}).get('name') or 'Località non indicata'
+    item['experienceLevel']=normalize_experience(experience)
     item['careTiming']=care_timing(plant,zone)
     for dest,source in [('season','seasonName'),('temperatureC','averageTemperature'),('humidityPercent','relativeHumidity'),('rainNext7DaysMM','precipitationNextWeek'),('placement','placement')]:
         if source in plan: item[dest]=plan[source]
@@ -128,7 +129,8 @@ async def analyze(store,settings):
         plants=[(p,v) for p,v in store.list('plants') if p.get('carePlanMode')=='AI']
         if not plants: return {'summary':'No plants with an AI plan.' if language=='en' else 'Nessuna pianta con piano AI.','proposals':0,'skipped':True}
         products=[p for p,_ in store.list('fertilizers')]
-        context=[daily_context(p,products,store.state('location') or {},settings.zone) for p,_ in plants]
+        experience=normalize_experience((store.state('preferences') or {}).get('experience'))
+        context=[daily_context(p,products,store.state('location') or {},settings.zone,experience) for p,_ in plants]
         prompt=Path(__file__).with_name('daily_prompt.txt').read_text().replace('{plants}',json.dumps(context,ensure_ascii=False))
         prompt+='\nData della richiesta: '+iso(now())+'\nI dati climatici sono istantanee del piano salvato: cita climateContext.generatedAt, oppure specifica data sconosciuta. Non presentarli come meteo attuale, stagione attuale o previsioni attuali; non giustificare modifiche con quei dati storici.'
         if language=='en': prompt+='\nWrite summary and every explanatory text in English.'
@@ -209,6 +211,9 @@ async def _advice(store,settings,plant_id,question):
     language=message_language(store,settings)
     location_name=plan.get('locationName') or (store.state('location') or {}).get('name') or ('non indicata' if language!='en' else 'not specified')
     prompt+='\n\nLOCALITÀ: '+str(location_name)
+    experience=normalize_experience((store.state('preferences') or {}).get('experience'))
+    prompt+='\nESPERIENZA DEL COLTATORE: '+experience
+    prompt+=('\nPer un principiante spiega e resta conservativo; per un professionista puoi dare più peso a rinvii ripetuti e coerenti, senza superare mai le soglie di sicurezza.' if language!='en' else '\nFor a beginner, explain and stay conservative; for a professional, you may give more weight to repeated, consistent postponements without ever exceeding safety thresholds.')
     prompt+='\nRINVII RECENTI (scelte intenzionali del coltivatore, non ritardi; non sono cure completate): '+care_timing_text(plant,settings.zone,language)
     prompt+='\n\nDATA DELLA RICHIESTA: '+iso(now())[:10]
     if climate:

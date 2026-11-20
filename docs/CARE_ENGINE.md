@@ -15,7 +15,7 @@ Non sono la stessa cosa. Una pianta Manuale può ricevere un rinvio automatico d
 |---|---|---|---|
 | Intervalli | quelli impostati dall’utente | calcolati dal pianificatore | proposti dal provider |
 | Meteo e stagione | no | sì, ricalcolo giornaliero | come contesto della proposta |
-| Apprendimento dalle cure | no | sì, passo adattivo 1–2 giorni | no, decide il modello |
+| Apprendimento dalle cure | no | sì, passo adattivo 1–4 giorni secondo esperienza | no, decide il modello |
 | Località predefinita | non necessaria | obbligatoria | non necessaria |
 | Quando cambia | solo se si modificano gli intervalli | creazione, ricalcolo, spostamento, refresh giornaliero, annaffiatura completata | analisi giornaliera o manuale, poi applicazione della proposta |
 | Controllo | totale | automatico ma prudente | proposta con anteprima |
@@ -72,10 +72,23 @@ Dopo almeno **3 annaffiature completate** e **2 intervalli**:
 - si calcola la mediana dei giorni tra un’annaffiatura e la successiva;
 - il valore viene contenuto entro ±30% rispetto alla base Verdant;
 - l’intervallo corrente si muove verso quel valore con un passo di **1 giorno**;
-- il passo sale a **2 giorni** quando almeno **2 rinvii onorati** (con almeno un giorno di rinvio) confermano un ritmo più lungo, oppure quando almeno **2 rinvii anticipati** indicano un ritmo più corto;
+- con almeno **2 rinvii onorati** (con almeno un giorno di rinvio) il passo è pari al numero di rinvii, fino al massimo del profilo; con almeno **2 rinvii anticipati** vale lo stesso nella direzione opposta;
 - i **ritardi senza rinvio** non aumentano il passo: restano evidenza debole e il passo resta 1;
 - il valore resta entro ±30% e non supera il target;
 - la confidenza cresce con il numero di intervalli osservati.
+
+### Profilo di esperienza
+
+In **Impostazioni → Esperienza del coltivatore** si sceglie il livello globale:
+
+| Livello | Passo massimo |
+|---|---:|
+| Principiante | 1 giorno |
+| Intermedio | 2 giorni |
+| Esperto | 3 giorni |
+| Professionista | 4 giorni |
+
+Con almeno due rinvii onorati (o due anticipati nella direzione opposta), il passo è pari al numero di rinvii, fino al massimo del profilo. I rinvii senza una direzione coerente, i ritardi senza rinvio e i dati insufficienti lasciano il passo a 1 giorno. Il profilo non modifica le soglie di sicurezza né il limite ±30%.
 
 L’apprendimento si applica:
 
@@ -106,7 +119,7 @@ Il pianificatore usa **Posizione reale**, non il campo **Esposizione** (Luce bas
 
 - L’analisi giornaliera considera **solo le piante in modalità AI**.
 - Parte una volta al giorno all’orario `ai_update_time` (predefinito **03:00**) oppure su richiesta con “Analizza ora”.
-- Il provider riceve: intervalli correnti, base Verdant, ritmo delle cure scelto, ambiente, luce, stagione e clima salvato, **località**, ultime cure, prodotto fertilizzante e dati del vaso.
+- Il provider riceve: intervalli correnti, base Verdant, ritmo delle cure scelto, ambiente, luce, stagione e clima salvato, **località**, **livello di esperienza**, ultime cure, prodotto fertilizzante e dati del vaso.
 - `careTiming` riassume, per acqua e concime, gli intervalli osservati, i rinvii intenzionali con data, nuova data e nota, e i ritardi senza rinvio. Il prompt distingue esplicitamente rinvii e ritardi.
 - Le proposte sono validate:
   - devono dichiarare sufficiente evidenza e una motivazione concreta;
@@ -168,7 +181,7 @@ La **località predefinita** non è un’opzione dell’add-on: si imposta in **
 
 ## Limiti attuali
 
-- L’apprendimento usa un passo adattivo di **1–2 giorni**; il profilo di esperienza del coltivatore non è ancora implementato.
+- L’apprendimento usa un passo adattivo limitato dal profilo scelto; il profilo non cambia le soglie di sicurezza né il limite ±30%.
 - L’analisi AI riceve località, rinvii e ritardi come contesto, ma non applica automaticamente il piano: le proposte attendono approvazione, salvo `auto_apply_ai`.
 - Il pianificatore usa la Posizione reale, non il campo Esposizione.
 - La modalità Manuale non è stagionale e non usa il meteo.

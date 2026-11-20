@@ -24,6 +24,7 @@ def test_daily_preserves_native_prompt_and_clamps_results(tmp_path,monkeypatch):
     assert 'RINVII E RITARDI' in captured[0]
     assert 'locationName' in captured[0]
     assert 'careTiming' in captured[0]
+    assert 'experienceLevel' in captured[0]
     applied,_=ai.apply(store,p['id'])
     assert applied['wateringInterval']==30
     assert applied['history'][-1]['kind']=='planUpdate'
@@ -62,8 +63,9 @@ def test_care_timing_distinguishes_postponements_and_delays():
 
 def test_daily_context_includes_location_and_timing():
     plant={'id':'P2','name':'Test','species':'Monstera','category':'Tropicale','room':'Salotto','light':'Luce indiretta','wateringInterval':7,'fertilizingInterval':21,'lastWatered':'2026-11-01T12:00:00Z','history':[],'adaptivePlan':{'locationName':'Roma'}}
-    item=ai.daily_context(plant,[],{'name':'Italia'},'Europe/Rome')
+    item=ai.daily_context(plant,[],{'name':'Italia'},'Europe/Rome','esperto')
     assert item['locationName']=='Roma'
+    assert item['experienceLevel']=='esperto'
     assert item['careTiming']['water']['postponements']==[]
     assert 'recentCompletedGapsDays' in item['careTiming']['water']
 
@@ -85,3 +87,4 @@ def test_advice_uses_native_instructions_and_no_unresolved_placeholders(tmp_path
     assert result['fertilizingDays']==21
     assert 'RINVII RECENTI' in captured_advice[0]
     assert 'LOCALITÀ' in captured_advice[0]
+    assert 'ESPERIENZA DEL COLTATORE' in captured_advice[0]

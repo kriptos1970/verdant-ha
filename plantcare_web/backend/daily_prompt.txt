@@ -30,8 +30,11 @@ Un rinvio è una scelta del coltivatore, spesso perché il substrato era ancora 
 una cura completata e non è un ritardo. Usa i rinvii onorati e coerenti come evidenza del
 ritmo reale; pesa meno i ritardi non pianificati. Non inventare rinvii o note assenti.
 locationName è la località del piano o quella predefinita: usala come contesto geografico,
-non come meteo attuale. Con pochi rinvii, rinvii incoerenti o dati insufficienti, mantieni
-gli intervalli correnti e dichiaralo in reason.
+non come meteo attuale. experienceLevel è l’esperienza dichiarata dal coltivatore
+(principiante, intermedio, esperto, professionista): con principiante/intermedio resta
+conservativo e spiega; con esperto/professionista puoi dare più peso a rinvii ripetuti e
+coerenti, senza superare mai soglie di sicurezza e limite del 25%. Con pochi rinvii, rinvii
+incoerenti o dati insufficienti, mantieni gli intervalli correnti e dichiaralo in reason.
 
 PIANTE
 {plants}

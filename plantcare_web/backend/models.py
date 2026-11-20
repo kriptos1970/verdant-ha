@@ -114,7 +114,8 @@ class Question(BaseModel):
         return value.strip()
 
 class LanguagePreference(BaseModel):
-    language: Literal['auto','it','en']
+    language: Literal['auto','it','en'] | None = None
+    experience: Literal['principiante','intermedio','esperto','professionista'] | None = None
 
 class Mapping(BaseModel):
     entityID: str = Field(min_length=1,max_length=200)

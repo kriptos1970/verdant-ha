@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.15**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.16**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,13 @@ Current release: **0.11.15**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.16 (20 November 2026)
+
+- Care engine step 1.3: **beginner / intermediate / expert / professional** grower profile in Settings, with maximum step 1/2/3/4 days.
+- Learning uses the number of honoured or early postponements, up to the profile maximum; late gaps without a postponement and insufficient data stay at 1 day.
+- Daily AI and assistant receive `experienceLevel`; `contextVersion` 4.
+- 222 backend tests, 1,012 i18n keys, frontend build.
 
 ## Release 0.11.15 (20 November 2026)
 
@@ -147,9 +154,8 @@ Current release: **0.11.15**, published on [GitHub Releases](https://github.com/
 - Operational care engine and unreferenced photo cleanup.
 - 212 backend tests, 988 i18n keys, frontend build.
 
-## Next release (0.11.16)
+## Next release (0.11.17)
 
-- Care engine step 1.3: grower experience profile (beginner, intermediate, expert, professional) to calibrate the step and postponement weight.
 - Phone camera light meter, “Active” notification bell/web notifications if requested, in-place backup restore.
 - Deferred field checks: physical iPhone/Companion, real QR/NFC, real Pl@ntNet, real Gemini, isolated HA restore, real sensors/weather, very large archive.
 

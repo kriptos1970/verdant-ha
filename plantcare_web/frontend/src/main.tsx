@@ -4606,6 +4606,31 @@ function SettingsTool({
             </dd>
           </div>
         )}
+        <div>
+          <dt>{t("settings.experience")}</dt>
+          <dd>
+            <select
+              aria-label={t("settings.experience")}
+              value={settings.experience || "intermedio"}
+              onChange={(e) => {
+                void run(
+                  () =>
+                    api("preferences", {
+                      method: "PUT",
+                      body: JSON.stringify({ experience: e.target.value }),
+                    }),
+                  t("settings.experienceSaved"),
+                );
+              }}
+            >
+              <option value="principiante">{t("settings.experience.beginner")}</option>
+              <option value="intermedio">{t("settings.experience.intermediate")}</option>
+              <option value="esperto">{t("settings.experience.expert")}</option>
+              <option value="professionista">{t("settings.experience.professional")}</option>
+            </select>
+            <small className="muted">{t("settings.experienceHint")}</small>
+          </dd>
+        </div>
         {settings.adaptiveStatus && <div><dt>{t("settings.weather")}</dt><dd>{settings.adaptiveStatus.errors ? plural("settings.weatherErrors", settings.adaptiveStatus.errors) : t("settings.lastRun", { date: formatDate(settings.adaptiveStatus.lastRun, { dateStyle: "short", timeStyle: "short" }) })}</dd></div>}
         {storage && (
           <>

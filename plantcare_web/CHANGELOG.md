@@ -1,3 +1,11 @@
+# 0.11.16 — profilo di esperienza del coltivatore
+
+- Nuova impostazione **Esperienza del coltivatore**: principiante, intermedio, esperto, professionista (default intermedio), salvata nelle preferenze dell’app e visibile in Impostazioni.
+- Apprendimento Verdant: il passo massimo è 1, 2, 3 o 4 giorni secondo il profilo; con almeno due rinvii onorati (o due anticipati) il passo è pari al numero di rinvii, fino al massimo. I ritardi senza rinvio non accelerano; restano il limite ±30% e il target.
+- L’analisi AI giornaliera e l’assistente ricevono `experienceLevel`; il prompt calibra prudenza e peso dei rinvii. `contextVersion` portato a 4.
+- Il PUT delle preferenze unisce lingua ed esperienza senza sovrascriversi.
+- 222 test backend, 1012 chiavi i18n.
+
 # 0.11.15 — apprendimento adattivo ai rinvii
 
 - L’apprendimento Verdant non usa più un passo fisso di ±1 giorno: parte da 1 e sale a **2 giorni** quando almeno **2 rinvii onorati** (con almeno un giorno di rinvio) confermano un ritmo più lungo, oppure quando almeno **2 rinvii anticipati** indicano un ritmo più corto.

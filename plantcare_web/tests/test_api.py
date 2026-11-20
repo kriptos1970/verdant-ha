@@ -57,6 +57,16 @@ def test_fertilizer_type_is_derived_from_the_linked_product(client):
     assert r.json()['fertilizerType']=='Concime A'
 
 
+def test_experience_preference_merges_with_language(client):
+    assert client.get('/api/settings').json()['experience']=='intermedio'
+    assert client.put('/api/preferences',json={'experience':'esperto'}).status_code==200
+    assert client.get('/api/preferences').json()['experience']=='esperto'
+    assert client.put('/api/preferences',json={'language':'en'}).status_code==200
+    assert client.get('/api/preferences').json()['experience']=='esperto'
+    assert client.get('/api/settings').json()['experience']=='esperto'
+    assert client.put('/api/preferences',json={'experience':'invalid'}).status_code==422
+
+
 def test_error_responses_expose_stable_codes(client):
     assert client.get('/api/plants/does-not-exist').json()['code']=='not_found'
     p=create(client)

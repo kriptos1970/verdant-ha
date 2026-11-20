@@ -15,7 +15,7 @@ They are not the same thing. A Manual plant can be postponed by the operational 
 |---|---|---|---|
 | Intervals | set by the user | calculated by the planner | proposed by the provider |
 | Weather and season | no | yes, daily refresh | as context for the proposal |
-| Learning from care | no | yes, adaptive 1–2 day step | no, the model decides |
+| Learning from care | no | yes, adaptive 1–4 day step by experience | no, the model decides |
 | Default location | not required | required | not required |
 | When it changes | only when intervals are edited | creation, recalculation, move, daily refresh, completed watering | daily or manual analysis, then proposal approval |
 | Control | full | automatic but cautious | proposal with preview |
@@ -72,10 +72,23 @@ After at least **3 completed waterings** and **2 intervals**:
 - the median gap in days is calculated;
 - the value is kept within ±30% of the Verdant baseline;
 - the current interval moves towards that value by **1 day**;
-- the step rises to **2 days** when at least **2 honoured postponements** (with at least one day of deferral) confirm a longer rhythm, or when at least **2 early postponements** point to a shorter rhythm;
+- with at least **2 honoured postponements** (with at least one day of deferral) the step equals the number of postponements, up to the profile maximum; at least **2 early postponements** work the same way in the opposite direction;
 - **late gaps without a postponement** never increase the step: they remain weak evidence and the step stays 1;
 - the value stays within ±30% and never overshoots the target;
 - confidence grows with the number of observed intervals.
+
+### Grower experience
+
+In **Settings → Grower experience** you choose the global level:
+
+| Level | Maximum step |
+|---|---:|
+| Beginner | 1 day |
+| Intermediate | 2 days |
+| Expert | 3 days |
+| Professional | 4 days |
+
+With at least two honoured postponements (or two early ones in the opposite direction), the step equals the number of postponements, up to the profile maximum. Inconsistent postponements, late gaps without a postponement and insufficient data leave the step at 1 day. The profile does not change safety thresholds or the ±30% bound.
 
 Learning applies:
 
@@ -106,7 +119,7 @@ The planner uses the **real position**, not the **Exposure** field (low/indirect
 
 - The daily analysis considers **only plants in AI mode**.
 - It runs once a day at `ai_update_time` (default **03:00**) or on demand with “Analyse now”.
-- The provider receives: current intervals, Verdant baseline, care rhythm, room, light, saved season and climate, **location**, recent care, the linked fertilizer product and pot data.
+- The provider receives: current intervals, Verdant baseline, care rhythm, room, light, saved season and climate, **location**, **experience level**, recent care, the linked fertilizer product and pot data.
 - `careTiming` summarises, for water and feeding, observed gaps, intentional postponements with date, new date and note, and late gaps without a postponement. The prompt explicitly separates postponements from delays.
 - Proposals are validated:
   - they must declare sufficient evidence and a concrete reason;
@@ -168,7 +181,7 @@ The **default location** is not an add-on option: it is set in **Settings → De
 
 ## Current limits
 
-- Learning uses an adaptive **1–2 day** step; the grower experience profile is not implemented yet.
+- Learning uses an adaptive step capped by the chosen profile; the profile does not change safety thresholds or the ±30% bound.
 - The daily AI analysis receives location, postponements and delays as context, but never applies the plan automatically: proposals need approval unless `auto_apply_ai` is enabled.
 - The planner uses the real position, not the Exposure field.
 - Manual mode is not seasonal and does not use weather.

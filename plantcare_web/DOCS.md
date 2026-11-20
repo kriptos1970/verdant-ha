@@ -32,7 +32,7 @@ Import supports web ZIP archives and native JSON envelopes v1–v3. Import runs 
 Each plant uses one of three plan modes:
 
 - **Manual**: the intervals you set are used as they are; no weather, season or learning.
-- **Verdant (Intelligent)**: the plan is calculated from species, real position, the default location, the Open-Meteo forecast and the season, then refreshed once a day. Completed waterings allow cautious learning with an adaptive 1–2 day step. Manual and AI revisions stay protected.
+- **Verdant (Intelligent)**: the plan is calculated from species, real position, the default location, the Open-Meteo forecast and the season, then refreshed once a day. Completed waterings allow cautious learning with an adaptive step: 1 day for a beginner up to 4 for a professional, set in **Settings → Grower experience**. Manual and AI revisions stay protected.
 - **AI**: only plants in AI mode are analysed; the provider proposes new intervals with a reason and a preview. Automatic application is off by default.
 
 Separately, the `care_engine_mode` add-on option controls the operational engine:

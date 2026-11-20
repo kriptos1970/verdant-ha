@@ -16,7 +16,7 @@ def validate_postponement(body):
         raise ValueError('Il rinvio deve essere successivo alla data della cura.')
 
 
-def record(plant, body, zone, product=None):
+def record(plant, body, zone, product=None, experience='intermedio'):
     validate_postponement(body)
     if any(e['id'] == body.id for e in plant['history']):
         return False
@@ -69,7 +69,7 @@ def record(plant, body, zone, product=None):
         plant['lastWatered'] = body.date
         plant['nextWateringOverride'] = None
         from .adaptive import learn_after_watering
-        learn_after_watering(plant,zone,parse(body.date))
+        learn_after_watering(plant,zone,parse(body.date),experience)
         feed = next((a for a in before if a['kind'] == 'fertilize'), None)
         water = next((a for a in before if a['kind'] == 'water'), None)
         due = uses_watering(product) and feed and (

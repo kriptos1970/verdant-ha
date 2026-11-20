@@ -3,7 +3,7 @@ from copy import deepcopy
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 import httpx
-from .domain import iso, now, parse, swift_round, feed_days, learning, evidence
+from .domain import iso, now, parse, swift_round, feed_days, learning, evidence, normalize_experience
 
 PLACEMENTS = ['Balcone riparato', 'Pieno sole', 'Ombra', 'Mezza ombra · balcone', 'Patio', 'Pianerottolo', 'Interno luminoso', 'Interno poco luminoso']
 OUTDOOR = set(PLACEMENTS[:5])
@@ -99,7 +99,7 @@ def make_plan(species, family, placement, location, climate, at=None, zone='Euro
     return dict(placement=placement, locationName=name or 'Località non indicata', latitude=location['latitude'], longitude=location['longitude'], **climate, seasonName=season, wateringDays=water_days, fertilizingDays=fertilizer, inspectionDays=5 if placement in OUTDOOR else 7, generatedAt=iso(at), rationale=reasons, botanicalWateringDays=botanical['wateringDays'] if botanical else None, botanicalSource=botanical['source'] if botanical else None, botanicalSummary=botanical.get('summary') if botanical else None, verdantWateringDays=water_days, verdantFertilizingDays=fertilizer, revisionSource='Verdant', revisedAt=None, wateringAdjustmentDays=None, careLearning=None, standardWateringDays=standard_water, standardFertilizingDays=standard_feed, adjustments=adjustments, climateRevisionHistory=None)
 
 
-def apply_plan(plant, plan, zone, previous=None, at=None):
+def apply_plan(plant, plan, zone, previous=None, at=None, experience='intermedio'):
     """Native refresh semantics: preserve manual/AI intervals, learn only otherwise."""
     at = at or now()
     plan = deepcopy(plan)
@@ -108,7 +108,7 @@ def apply_plan(plant, plan, zone, previous=None, at=None):
         plan.update(wateringDays=plant['wateringInterval'], fertilizingDays=plant.get('fertilizingInterval') or plan['fertilizingDays'], inspectionDays=plant.get('inspectionInterval') or plan['inspectionDays'])
         for key in ['revisionSource','revisedAt','revisionProvider','revisionReason','revisionChangedIntervals']: plan[key] = previous.get(key)
     else:
-        summary = learning(plant, plan['verdantWateringDays'], zone)
+        summary = learning(plant, plan['verdantWateringDays'], zone, experience=experience)
         if summary:
             summary['updatedAt'] = iso(at)
             plan.update(wateringDays=summary['learnedIntervalDays'],careLearning=summary,revisionSource='Apprendimento dalle cure',revisedAt=iso(at))
@@ -146,6 +146,7 @@ async def fetch_climate(location):
 async def refresh_all(store, settings, force=False):
     """Fetch outside transactions, then recheck version to avoid overwriting user edits."""
     at, cache, updated, errors = now(), {}, 0, 0
+    experience=normalize_experience((store.state('preferences') or {}).get('experience'))
     for plant, version in store.list('plants'):
         previous = plant.get('adaptivePlan')
         if plant.get('carePlanMode') not in ['Intelligente','AI'] or not previous or not previous.get('weatherEnabled'): continue
@@ -156,7 +157,7 @@ async def refresh_all(store, settings, force=False):
             if key not in cache: cache[key] = await fetch_climate(location)
             plan = make_plan(plant['species'],plant.get('family') or '',previous['placement'],location,cache[key],at,settings.zone,saved_botanical(previous))
             plan['weatherEnabled'] = True
-            apply_plan(plant,plan,settings.zone,previous,at)
+            apply_plan(plant,plan,settings.zone,previous,at,experience)
             with store.connection() as db:
                 store.put('plants',plant,version,db)
             updated += 1
@@ -167,10 +168,10 @@ async def refresh_all(store, settings, force=False):
     return result
 
 
-def learn_after_watering(plant, zone, at):
+def learn_after_watering(plant, zone, at, experience='intermedio'):
     plan = plant.get('adaptivePlan')
     if plant.get('carePlanMode')!='Intelligente' or not plan or plan.get('revisionSource') in ['AI','Modifica manuale']: return
-    summary = learning(plant,plan.get('verdantWateringDays') or plan['wateringDays'],zone)
+    summary = learning(plant,plan.get('verdantWateringDays') or plan['wateringDays'],zone,experience=experience)
     plan['careLearning'] = summary
     if summary:
         summary['updatedAt'] = iso(at)

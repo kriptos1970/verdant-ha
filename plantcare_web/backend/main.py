@@ -21,7 +21,7 @@ from .settings import Settings
 from . import __version__
 from .storage import Store, Conflict
 from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
-from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions
+from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions, normalize_experience
 from .care_kinds import legacy_view, legacy_action, canonical_health
 from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
 from . import services, ai, care, adaptive
@@ -82,7 +82,7 @@ async def remote_error(request,error):
 @app.get('/health')
 def health(): return {'status':'ok','version':__version__}
 @app.get('/api/settings')
-def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':settings.options.get('care_engine_mode','active'),'adaptiveStatus':store.state('adaptive-status')}
+def public_settings(): return {**ai.effective_settings(store,settings).public(),'sensorStatus':store.state('sensor-status'),'aiStatus':store.state('ai-status'),'location':store.state('location'),'careEngineMode':settings.options.get('care_engine_mode','active'),'experience':preference_experience(),'adaptiveStatus':store.state('adaptive-status')}
 
 def linked_product(plant, db=None):
     if not plant.get('fertilizerProductID'):
@@ -93,9 +93,12 @@ def linked_product(plant, db=None):
         return None
 
 
+def preference_experience():
+    return normalize_experience((store.state('preferences') or {}).get('experience'))
+
 def render_plant(plant, version, db=None):
     from .services import message_language
-    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db),language=message_language(store,settings)))
+    return legacy_view(plant_view(plant,settings.zone,version,product=linked_product(plant,db),language=message_language(store,settings),experience=preference_experience()))
 
 @app.get('/api/plants')
 def list_plants(summary:bool=False):
@@ -138,7 +141,7 @@ async def smart_plan_value(value,previous=None):
     plan=adaptive.make_plan(value.get('species',''),value.get('family') or '',placement,location,climate,zone=settings.zone,botanical=adaptive.saved_botanical(previous))
     plan['weatherEnabled']=True
     value['carePlanMode']='Intelligente'
-    adaptive.apply_plan(value,plan,settings.zone,previous or None)
+    adaptive.apply_plan(value,plan,settings.zone,previous or None,experience=preference_experience())
     return value
 
 @app.post('/api/plants',status_code=201)
@@ -189,7 +192,7 @@ def move_plant(plant_id:str,body:MoveRequest):
                 climate={k:plan[k] for k in ['averageTemperature','relativeHumidity','precipitationNextWeek']}
                 refreshed=adaptive.make_plan(plant['species'],plant.get('family') or '',body.placement,location,climate,parse(body.date),settings.zone,adaptive.saved_botanical(plan))
                 refreshed['weatherEnabled']=plan.get('weatherEnabled',False)
-                adaptive.apply_plan(plant,refreshed,settings.zone,plan,parse(body.date))
+                adaptive.apply_plan(plant,refreshed,settings.zone,plan,parse(body.date),experience=preference_experience())
         route=f"{previous_room} → {plant['room']}" if previous_room!=plant['room'] else f"{previous_placement or previous_room} → {body.placement}"
         note=' · '.join(value for value in [route,body.note.strip()] if value)
         plant.setdefault('history',[]).append({'id':str(uuid4()).upper(),'kind':'move','date':iso(parse(body.date)),'status':'completed','note':note,'origin':'user','schemaVersion':2})
@@ -258,7 +261,7 @@ async def proposed_plan(plant, body, version=None):
         plan.update(botanicalScientificName=botanical['scientificName'],botanicalFetchedAt=botanical['fetchedAt'],botanicalExactMatch=botanical['exactMatch'])
     plan['weatherEnabled'] = body.weatherEnabled
     candidate = {**plant,'carePlanMode':'Intelligente'}
-    adaptive.apply_plan(candidate,plan,settings.zone,previous or None)
+    adaptive.apply_plan(candidate,plan,settings.zone,previous or None,experience=preference_experience())
     return candidate
 
 @app.post('/api/plants/{plant_id}/adaptive/preview')
@@ -288,11 +291,15 @@ def apply_adaptive(plant_id:str,previewID:str=Query(min_length=1,max_length=100)
     return render_plant(p,v)
 
 @app.get('/api/preferences')
-def preferences(): return store.state('preferences',{'language':settings.options.get('language','auto')})
+def preferences():
+    current=store.state('preferences',{})
+    return {'language':current.get('language',settings.options.get('language','auto')),'experience':normalize_experience(current.get('experience'))}
 @app.put('/api/preferences')
 def save_preferences(body:LanguagePreference):
-    store.set_state('preferences',body.model_dump())
-    return body
+    current=store.state('preferences',{})
+    current.update(body.model_dump(exclude_unset=True,exclude_none=True))
+    store.set_state('preferences',current)
+    return {'language':current.get('language',settings.options.get('language','auto')),'experience':normalize_experience(current.get('experience'))}
 @app.get('/api/preferences/location')
 def default_location(): return store.state('location')
 @app.get('/api/preferences/care-engine')
@@ -348,7 +355,7 @@ def calendar():
 def add_event(plant_id:str,body:EventRequest):
     with store.connection() as db:
         plant,version=store.get('plants',plant_id,db)
-        changed=care.record(plant,body,settings.zone,linked_product(plant,db))
+        changed=care.record(plant,body,settings.zone,linked_product(plant,db),preference_experience())
         p,v=store.put('plants',plant,version,db) if changed else (plant,version)
         return render_plant(p,v,db)
 
@@ -411,7 +418,7 @@ def round_action(body:RoundCommand):
             note=body.note,includingFertilizing=body.includingFertilizing,
             treatmentPlanID=action.get('treatmentPlanID'),productID=action.get('productID'),
             expectedApplicationNumber=action.get('applicationNumber'),scheduledDueDate=action['dueDate'])
-        care.record(plant,event,settings.zone,product)
+        care.record(plant,event,settings.zone,product,preference_experience())
         record=next(e for e in plant['history'] if e['id']==body.eventID)
         record['sourceActionID']=body.expectedActionID
         completed=0 if postponed else 1+int(bool(record.get('pairedFertilizingEventID')))

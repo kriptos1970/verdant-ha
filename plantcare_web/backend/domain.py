@@ -111,6 +111,12 @@ def stable_water(plant):
         return min(120, max(minimum, swift_round(max(minimum, baseline) * multiplier)))
     return min(120, max(minimum, plant['wateringInterval']))
 
+EXPERIENCE_LEVELS = ('principiante', 'intermedio', 'esperto', 'professionista')
+EXPERIENCE_MAX_STEP = {'principiante': 1, 'intermedio': 2, 'esperto': 3, 'professionista': 4}
+
+def normalize_experience(value):
+    return value if value in EXPERIENCE_LEVELS else 'intermedio'
+
 def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
     """Honoured postponements are intentional evidence; late gaps without one are weaker."""
     tz = ZoneInfo(zone)
@@ -146,8 +152,10 @@ def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
             late += 1
     return {'honoredPostponements': len(honoured), 'earlyPostponements': early, 'medianDeferredDays': median_deferred, 'lateGapsWithoutPostponement': late}
 
-def learning(plant, baseline, zone, language='it'):
+def learning(plant, baseline, zone, language='it', experience='intermedio'):
     plant = canonical_plant(plant)
+    experience = normalize_experience(experience)
+    max_step = EXPERIENCE_MAX_STEP[experience]
     dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed')
     if len(dates) < 3:
         return None
@@ -167,9 +175,9 @@ def learning(plant, baseline, zone, language='it'):
     late = evidence['lateGapsWithoutPostponement']
     step = 1
     if target > current and honoured >= 2 and early == 0 and evidence['medianDeferredDays'] >= 1:
-        step = 2
+        step = min(max_step, honoured)
     elif target < current and early >= 2 and honoured == 0:
-        step = 2
+        step = min(max_step, early)
     step = min(step, abs(target-current)) if target != current else 0
     learned = current + (step if target > current else -step if target < current else 0)
     if language == 'en':
@@ -192,7 +200,7 @@ def learning(plant, baseline, zone, language='it'):
         else:
             reason = 'Variazione prudente.'
         explanation = f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Rinvii onorati: {honoured}, anticipati: {early}, ritardi senza rinvio: {late}. {reason} Variazione: {learned-current:+d} giorni.'
-    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'adaptiveStepDays': step, 'honoredPostponements': honoured, 'earlyPostponements': early, 'medianDeferredDays': evidence['medianDeferredDays'], 'lateGapsWithoutPostponement': late, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
+    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'adaptiveStepDays': step, 'maxAdaptiveStepDays': max_step, 'experience': experience, 'honoredPostponements': honoured, 'earlyPostponements': early, 'medianDeferredDays': evidence['medianDeferredDays'], 'lateGapsWithoutPostponement': late, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
 
 def evidence(declared, reason):
     signals = ['dati insufficienti', 'non ci sono dati sufficienti', 'non abbiamo dati sufficienti', 'mancano dati', 'mancano informazioni', 'mantengo gli intervalli', 'manteniamo gli intervalli', 'mantenere gli intervalli', 'intervalli attuali', 'continuiamo con gli intervalli']
@@ -203,10 +211,10 @@ def accepted_water(proposed, baseline, minimum):
     upper = max(lower, min(120, math.floor(max(1, baseline)*1.25)))
     return min(upper, max(lower, proposed))
 
-def plant_view(plant, zone, version, product=None, language='it'):
+def plant_view(plant, zone, version, product=None, language='it', experience='intermedio'):
     from .treatments import treatment_view
     from .health import assess
-    return {**plant, '_version': version, '_schedule': schedule(plant, zone, language=language), '_actions': pending_actions(plant,zone,product=product,language=language), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone, language), '_health': assess(plant, zone, language=language)}
+    return {**plant, '_version': version, '_schedule': schedule(plant, zone, language=language), '_actions': pending_actions(plant,zone,product=product,language=language), '_treatments': [treatment_view(plant,p,ZoneInfo(zone)) for p in plant.get('treatmentPlans') or []], '_learning': learning(plant, stable_water(plant), zone, language, experience), '_health': assess(plant, zone, language=language)}
 
 
 def uses_watering(product):
