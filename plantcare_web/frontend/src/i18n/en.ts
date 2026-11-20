@@ -9,6 +9,8 @@ const en: Record<MessageKey, string> = {
   "nav.analytics": "Analytics",
   "nav.main": "Main navigation",
 
+  "app.resizeSidebar": "Resize the sidebar",
+  "app.resizeSidebarHint": "Drag to resize. Double-click to restore the default width.",
   "app.brandTagline": "YOUR GARDEN, AT HOME",
   "app.collection": "YOUR COLLECTION",
   "app.environments": "ROOMS",
@@ -294,6 +296,8 @@ const en: Record<MessageKey, string> = {
   "detail.tabs.treatments": "Treatments",
   "detail.tabs.measures": "Measurements",
   "detail.tabs.ai": "AI",
+  "detail.resizePanel": "Resize the detail panel",
+  "detail.resizePanelHint": "Drag to resize. Double-click to restore the default width.",
   "detail.qr": "QR/NFC label",
   "detail.rhythm": "Its rhythm",
   "detail.home": "Its home",

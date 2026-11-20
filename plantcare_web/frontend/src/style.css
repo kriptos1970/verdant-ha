@@ -5390,3 +5390,83 @@ dialog:has(.plant-editor-form) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Desktop: draggable sidebar and plant-detail panel */
+.detail-resizer,
+.sidebar-resizer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 10px;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+.detail-resizer {
+  right: calc(var(--detail) - 5px);
+}
+.sidebar-resizer {
+  left: calc(var(--sidebar) - 5px);
+}
+.detail-resizer::before,
+.sidebar-resizer::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 6px;
+  height: 34px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--vc-text-secondary) 1px, transparent 1.5px) center / 6px 8px repeat-y;
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+}
+.detail-resizer:hover::before,
+.detail-resizer:focus-visible::before,
+.sidebar-resizer:hover::before,
+.sidebar-resizer:focus-visible::before,
+body.resizing-pane .detail-resizer::before,
+body.resizing-pane .sidebar-resizer::before {
+  opacity: 0.8;
+}
+.detail-resizer::after,
+.sidebar-resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+.detail-resizer:hover::after,
+.detail-resizer:focus-visible::after,
+.sidebar-resizer:hover::after,
+.sidebar-resizer:focus-visible::after,
+body.resizing-pane .detail-resizer::after,
+body.resizing-pane .sidebar-resizer::after {
+  background: var(--vc-moss);
+}
+.detail-resizer:focus-visible,
+.sidebar-resizer:focus-visible {
+  outline: 2px solid var(--vc-moss);
+  outline-offset: 2px;
+}
+body.resizing-pane {
+  cursor: col-resize;
+  user-select: none;
+}
+@media (max-width: 1000px) {
+  .detail-resizer {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .sidebar-resizer {
+    display: none;
+  }
+}

@@ -7,6 +7,8 @@ const it = {
   "nav.analytics": "Analisi",
   "nav.main": "Navigazione principale",
 
+  "app.resizeSidebar": "Ridimensiona la colonna laterale",
+  "app.resizeSidebarHint": "Trascina per ridimensionare. Doppio clic per tornare alla larghezza predefinita.",
   "app.brandTagline": "IL TUO GIARDINO, A CASA",
   "app.collection": "LA TUA COLLEZIONE",
   "app.environments": "AMBIENTI",
@@ -292,6 +294,8 @@ const it = {
   "detail.tabs.treatments": "Trattamenti",
   "detail.tabs.measures": "Misure",
   "detail.tabs.ai": "AI",
+  "detail.resizePanel": "Ridimensiona il pannello del dettaglio",
+  "detail.resizePanelHint": "Trascina per ridimensionare. Doppio clic per tornare alla larghezza predefinita.",
   "detail.qr": "Etichetta QR/NFC",
   "detail.rhythm": "Il suo ritmo",
   "detail.home": "La sua casa",

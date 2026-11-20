@@ -212,6 +212,104 @@ function App() {
     } | null>(null),
     [tool, setTool] = useState<string | null>(null);
   const phoneLayout=useIOSLayout();
+  const DETAIL_MIN=320, DETAIL_MAX=720, MAIN_MIN=420;
+  const clampDetailWidth=(value:number)=>{
+    const sidebar=document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??238;
+    const max=Math.max(DETAIL_MIN,Math.min(DETAIL_MAX,window.innerWidth-sidebar-MAIN_MIN));
+    return Math.max(DETAIL_MIN,Math.min(max,value));
+  };
+  const [detailWidth,setDetailWidth]=useState<number|null>(()=>{
+    try{
+      const value=Number(localStorage.getItem("verdant.detailWidth"));
+      return Number.isFinite(value)&&value>=DETAIL_MIN?clampDetailWidth(value):null;
+    }catch{return null}
+  });
+  const detailDrag=useRef<{x:number;width:number}|null>(null);
+  useEffect(()=>{
+    try{
+      if(detailWidth==null)localStorage.removeItem("verdant.detailWidth");
+      else localStorage.setItem("verdant.detailWidth",String(detailWidth));
+    }catch{}
+  },[detailWidth]);
+  useEffect(()=>{
+    if(detailWidth==null)return;
+    const onResize=()=>setDetailWidth(value=>value==null?value:clampDetailWidth(value));
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[detailWidth]);
+  const startDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(window.matchMedia("(max-width: 1000px)").matches)return;
+    const detail=document.querySelector<HTMLElement>(".detail");
+    if(!detail)return;
+    detailDrag.current={x:event.clientX,width:detail.getBoundingClientRect().width};
+    event.currentTarget.setPointerCapture(event.pointerId);
+    document.body.classList.add("resizing-pane");
+    event.preventDefault();
+  };
+  const moveDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    const drag=detailDrag.current;
+    if(!drag)return;
+    setDetailWidth(clampDetailWidth(drag.width+drag.x-event.clientX));
+  };
+  const endDetailResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(!detailDrag.current)return;
+    detailDrag.current=null;
+    try{event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+    document.body.classList.remove("resizing-pane");
+  };
+  const nudgeDetailWidth=(delta:number)=>{
+    const current=detailWidth??document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??390;
+    setDetailWidth(clampDetailWidth(current+delta));
+  };
+  const SIDEBAR_MIN=190, SIDEBAR_MAX=420;
+  const clampSidebarWidth=(value:number)=>{
+    const detail=document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??0;
+    const max=Math.max(SIDEBAR_MIN,Math.min(SIDEBAR_MAX,window.innerWidth-detail-MAIN_MIN));
+    return Math.max(SIDEBAR_MIN,Math.min(max,value));
+  };
+  const [sidebarWidth,setSidebarWidth]=useState<number|null>(()=>{
+    try{
+      const value=Number(localStorage.getItem("verdant.sidebarWidth"));
+      return Number.isFinite(value)&&value>=SIDEBAR_MIN?clampSidebarWidth(value):null;
+    }catch{return null}
+  });
+  const sidebarDrag=useRef<{x:number;width:number}|null>(null);
+  useEffect(()=>{
+    try{
+      if(sidebarWidth==null)localStorage.removeItem("verdant.sidebarWidth");
+      else localStorage.setItem("verdant.sidebarWidth",String(sidebarWidth));
+    }catch{}
+  },[sidebarWidth]);
+  useEffect(()=>{
+    if(sidebarWidth==null)return;
+    const onResize=()=>setSidebarWidth(value=>value==null?value:clampSidebarWidth(value));
+    window.addEventListener("resize",onResize);
+    return()=>window.removeEventListener("resize",onResize);
+  },[sidebarWidth]);
+  const startSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(window.matchMedia("(max-width: 760px)").matches)return;
+    const sidebar=document.querySelector<HTMLElement>(".sidebar");
+    if(!sidebar)return;
+    sidebarDrag.current={x:event.clientX,width:sidebar.getBoundingClientRect().width};
+    event.currentTarget.setPointerCapture(event.pointerId);
+    document.body.classList.add("resizing-pane");
+    event.preventDefault();
+  };
+  const moveSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    const drag=sidebarDrag.current;
+    if(!drag)return;
+    setSidebarWidth(clampSidebarWidth(drag.width+event.clientX-drag.x));
+  };
+  const endSidebarResize=(event:React.PointerEvent<HTMLDivElement>)=>{
+    if(!sidebarDrag.current)return;
+    sidebarDrag.current=null;
+    try{event.currentTarget.releasePointerCapture(event.pointerId)}catch{}
+    document.body.classList.remove("resizing-pane");
+  };
+  const nudgeSidebarWidth=(delta:number)=>{
+    const current=sidebarWidth??document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??238;
+    setSidebarWidth(clampSidebarWidth(current+delta));
+  };
   const [phoneCollectionMode,setPhoneCollectionMode]=useState("Piante");
   const [plantSeed,setPlantSeed]=useState<PlantSeed>();
   const preparePlant=(seed:PlantSeed)=>{setPlantSeed(seed);setPlantEditor("new")};
@@ -394,6 +492,22 @@ function App() {
     return()=>{current=false};
   },[selectedSummary?.id,selectedSummary?._version,detailRetry]);
   const selectedPlant=detailPlant?.id===selectedSummary?.id&&detailPlant?._version===selectedSummary?._version?detailPlant:undefined;
+  useEffect(()=>{
+    if(detailWidth==null&&sidebarWidth==null)return;
+    const sidebar=sidebarWidth??document.querySelector<HTMLElement>(".sidebar")?.getBoundingClientRect().width??0;
+    const detail=detailWidth??document.querySelector<HTMLElement>(".detail")?.getBoundingClientRect().width??0;
+    if(!detail)return;
+    const overflow=sidebar+detail+MAIN_MIN-window.innerWidth;
+    if(overflow<=0)return;
+    if(detailWidth!=null){
+      const nextDetail=Math.max(DETAIL_MIN,detail-overflow);
+      setDetailWidth(nextDetail);
+      const remaining=overflow-(detail-nextDetail);
+      if(remaining>0&&sidebarWidth!=null)setSidebarWidth(Math.max(SIDEBAR_MIN,sidebar-remaining));
+    }else if(sidebarWidth!=null){
+      setSidebarWidth(Math.max(SIDEBAR_MIN,sidebar-overflow));
+    }
+  },[detailWidth,sidebarWidth,selectedSummary]);
   const openPlant = (id: string | null) => {
     setSelected(id);
     history.replaceState(
@@ -420,6 +534,10 @@ function App() {
   return (
     <div
       className={`app ${settings?.ingress && window.parent!==window ? "in-ha" : ""} ${selectedSummary ? "has-detail" : ""} ${["today", "plants", "care"].includes(page) ? "native-split" : ""}`}
+      style={({
+        ...(sidebarWidth!=null&&!phoneLayout?{"--sidebar":`${sidebarWidth}px`}:{}),
+        ...(detailWidth!=null?{"--detail":`${detailWidth}px`}:{}),
+      } as React.CSSProperties)}
     >
       <aside className={`sidebar ${menu ? "open" : ""}`}>
         <a
@@ -1160,6 +1278,48 @@ function App() {
           )}
         </div>
       </main>
+      {!phoneLayout && <div
+        className="sidebar-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("app.resizeSidebar")}
+        aria-valuenow={Math.round(sidebarWidth??238)}
+        aria-valuemin={190}
+        aria-valuemax={420}
+        title={t("app.resizeSidebarHint")}
+        tabIndex={0}
+        onPointerDown={startSidebarResize}
+        onPointerMove={moveSidebarResize}
+        onPointerUp={endSidebarResize}
+        onPointerCancel={endSidebarResize}
+        onDoubleClick={()=>setSidebarWidth(null)}
+        onKeyDown={event=>{
+          if(event.key==="ArrowRight"){event.preventDefault();nudgeSidebarWidth(16)}
+          else if(event.key==="ArrowLeft"){event.preventDefault();nudgeSidebarWidth(-16)}
+          else if(event.key==="Home"){event.preventDefault();setSidebarWidth(null)}
+        }}
+      />}
+      {selectedSummary && <div
+        className="detail-resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("detail.resizePanel")}
+        aria-valuenow={Math.round(detailWidth??390)}
+        aria-valuemin={320}
+        aria-valuemax={720}
+        title={t("detail.resizePanelHint")}
+        tabIndex={0}
+        onPointerDown={startDetailResize}
+        onPointerMove={moveDetailResize}
+        onPointerUp={endDetailResize}
+        onPointerCancel={endDetailResize}
+        onDoubleClick={()=>setDetailWidth(null)}
+        onKeyDown={event=>{
+          if(event.key==="ArrowLeft"){event.preventDefault();nudgeDetailWidth(16)}
+          else if(event.key==="ArrowRight"){event.preventDefault();nudgeDetailWidth(-16)}
+          else if(event.key==="Home"){event.preventDefault();setDetailWidth(null)}
+        }}
+      />}
       {selectedSummary && !selectedPlant && <aside className="detail">{detailError?<><p role="alert">{detailError}</p><button className="button primary" onClick={()=>setDetailRetry(v=>v+1)}>{t("common.retry")}</button></>:<p role="status">{t("app.detailOpening")}</p>}<button className="button secondary" onClick={()=>openPlant(null)}>{t("app.closeDetail")}</button></aside>}
       {!selectedSummary && ["today", "plants", "care"].includes(page) && (
         <aside className="detail empty-native-detail">

@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.9**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.10**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,13 @@ Current release: **0.11.9**, published on [GitHub Releases](https://github.com/k
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.10 (20 November 2026)
+
+- Desktop: the **left sidebar** and the **detail panel** are resizable by dragging their edge, with persistent width and double-click reset.
+- Keyboard arrows, limits 190–420 px (sidebar) and 320–720 px (detail), at least 420 px for the content.
+- Handles are available above 1000 px only; phone/tablet layout is unchanged.
+- 215 backend tests, frontend build.
 
 ## Release 0.11.9 (19 November 2026)
 

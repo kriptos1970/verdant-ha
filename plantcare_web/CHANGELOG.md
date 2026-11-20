@@ -6,6 +6,13 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.10 — pannelli desktop ridimensionabili
+
+- Nella versione desktop la **colonna sinistra** e il **pannello del dettaglio** si ridimensionano trascinando il bordo; maniglia visibile al passaggio del mouse, doppio clic per tornare alla larghezza predefinita.
+- Larghezza memorizzata per browser, frecce da tastiera, limiti: colonna 190–420 px, dettaglio 320–720 px, almeno 420 px per il contenuto.
+- Le maniglie sono disponibili solo sopra i 1000 px; su telefono e tablet resta il layout esistente.
+- 215 test backend, build frontend.
+
 # 0.11.9 — nome Verdant
 
 - Add-on, pannello laterale, web app, titolo della pagina, notifiche e messaggi visibili ora usano il nome **Verdant**.
