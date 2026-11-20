@@ -6,6 +6,13 @@
 - Nuovo endpoint `/api/plants/{id}/timeline` che unisce eventi e misure, il più recente prima.
 - 180 test backend, con i casi di `HealthScoreTests.swift` come riferimento.
 
+# 0.11.12 — conferma cura senza scorrimento orizzontale
+
+- Su telefono la finestra che si apre con **Completa** accetta solo lo scorrimento verticale: overflow orizzontale nascosto, overscroll orizzontale disattivato e `touch-action` limitata a pan verticale e pinch-zoom.
+- Nomi pianta, passaggi della guida e motivazioni lunghe vanno a capo; campi e pulsanti non superano la larghezza del pannello.
+- Verifica a 320/390 px con un nome pianta molto lungo: nessun overflow orizzontale.
+- 215 test backend, build frontend.
+
 # 0.11.11 — maniglia del pannello destro sempre disponibile
 
 - La maniglia del pannello dettaglio è ora presente anche quando il pannello è nello stato vuoto (prima compariva solo con una pianta aperta), quindi la colonna destra si ridimensiona subito.

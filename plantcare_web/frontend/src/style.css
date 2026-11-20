@@ -5470,3 +5470,49 @@ body.resizing-pane {
     display: none;
   }
 }
+
+/* Care confirmation sheet: vertical scrolling only on phones */
+dialog:has(.care-confirm-heading) {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y pinch-zoom;
+}
+.care-confirm-heading {
+  min-width: 0;
+}
+.care-confirm-heading p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.care-event-form,
+.action-guide,
+.guide-tip,
+.info-note {
+  min-width: 0;
+}
+.care-event-form input,
+.care-event-form textarea,
+.care-event-form select {
+  min-width: 0;
+  max-width: 100%;
+}
+.care-event-form .modal-actions .button {
+  min-width: 0;
+  white-space: normal;
+}
+.action-guide-image {
+  max-width: 100%;
+}
+.action-guide li > div {
+  min-width: 0;
+}
+.action-guide li strong,
+.action-guide li p,
+.guide-tip span,
+.info-note {
+  overflow-wrap: anywhere;
+}
+.care-health-options button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

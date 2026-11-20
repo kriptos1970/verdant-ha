@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.11
+# Stato dell’incremento 0.11.12
 
 ## Stato rispetto agli otto step
 
@@ -12,6 +12,13 @@
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
 | 8 — Consolidamento | 0.11.7 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.12 (20 novembre 2026)
+
+- Finestra **Completa** su telefono: solo scorrimento verticale; overflow orizzontale nascosto, overscroll disattivato e `touch-action: pan-y pinch-zoom`.
+- Testi lunghi a capo; campi e pulsanti contenuti nella larghezza del pannello.
+- Verifica a 320/390 px con nome pianta molto lungo, nessun overflow orizzontale.
+- 215 test backend, build frontend.
 
 ## Rilascio 0.11.11 (20 novembre 2026)
 
