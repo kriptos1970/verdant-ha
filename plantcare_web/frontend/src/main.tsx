@@ -705,7 +705,18 @@ function App() {
         </header>
         <div className="content">
           {page==="more"&&tool&&<button className="ios-tool-back text-button" onClick={()=>setTool(null)}><ArrowLeft size={19}/>{t("app.toolsBack")}</button>}
-          <h1 className="ios-page-title">{pageTitle}</h1>
+          <div className="ios-title-row">
+            <h1 className="ios-page-title">{pageTitle}</h1>
+            {page === "plants" && (
+              <button
+                className="ios-title-action"
+                aria-label={t("trash.open")}
+                onClick={openTrash}
+              >
+                <Trash2 size={21} />
+              </button>
+            )}
+          </div>
           <div aria-live="polite">
             {error && (
               <div className="alert error">

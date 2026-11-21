@@ -1,2 +1,2 @@
 """PlantCare Web: single authoritative local archive."""
-__version__ = "0.11.27"
+__version__ = "0.11.28"

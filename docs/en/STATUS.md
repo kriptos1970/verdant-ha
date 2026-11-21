@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.27**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.28**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.27**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.28 (21 November 2026)
+
+- **Trash on phones**: the command lived inside `.page-heading`, which the phone layout hides (`main:not([data-page=today]) .page-heading{display:none}`), so after a swipe delete there was no way to restore. A round `.ios-title-action` button now sits next to `.ios-page-title` on the Plants page (`main.tsx`, `ios-layout.css`) and is shown only below 760 px.
+- Desktop is unchanged: the command stays in `.collection-heading-actions`, next to the leaf icon.
+- Checked at 320 and 375 px (44 × 44 px, no horizontal overflow, the trash modal opens) and at 813 px (mobile button `display:none`, title row 0 px high).
 
 ## Release 0.11.27 (21 November 2026)
 

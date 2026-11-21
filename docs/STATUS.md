@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.27
+# Stato dell’incremento 0.11.28
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,13 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.27 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.28 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.28 (21 novembre 2026)
+
+- **Cestino su telefono**: il comando era dentro `.page-heading`, che su mobile è nascosto (`main:not([data-page=today]) .page-heading{display:none}`), quindi dopo lo swipe-elimina non era possibile ripristinare. Aggiunto un pulsante tondo `.ios-title-action` accanto a `.ios-page-title` nella pagina Piante (`main.tsx`, `ios-layout.css`), visibile solo sotto 760 px.
+- Desktop invariato: il comando resta in `.collection-heading-actions`, accanto all’icona della foglia.
+- Verificato a 320 e 375 px (44 × 44 px, nessun overflow orizzontale, modale del cestino che si apre) e a 813 px (pulsante mobile `display:none`, riga del titolo alta 0 px).
 
 ## Rilascio 0.11.27 (21 novembre 2026)
 

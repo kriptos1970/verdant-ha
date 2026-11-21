@@ -1,6 +1,6 @@
 /* iPhone layout measured against Verdant iOS 26.5, 16 November 2026.
    Desktop and tablet retain their existing presentation. */
-.ios-detail-more,.ios-products,.ios-control-label,.ios-tool-back,.ios-collection-controls,.ios-rooms,.ios-page-title,.ios-card-room,.ios-tool-group,.ios-plant-overview,.ios-detail-caption,.ios-subsection-heading{display:none}
+.ios-detail-more,.ios-products,.ios-control-label,.ios-tool-back,.ios-collection-controls,.ios-rooms,.ios-page-title,.ios-title-action,.ios-card-room,.ios-tool-group,.ios-plant-overview,.ios-detail-caption,.ios-subsection-heading{display:none}
 @media(max-width:760px){
  :root{font-size:17px;--muted:#68736b}
  body{line-height:1.45;-webkit-text-size-adjust:100%}
@@ -14,6 +14,9 @@
  .topbar-right .button>svg{width:24px;height:24px}
  .mobile-menu,.icon-button{width:44px;height:44px;min-width:44px;border-radius:50%}
  .ios-page-title{display:block;font-size:34px;line-height:1.14;letter-spacing:-1.1px;font-weight:750;color:var(--vc-text);margin:4px 0 26px;overflow-wrap:anywhere}
+ .ios-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 26px}
+ .ios-title-row .ios-page-title{margin:0}
+ .ios-title-action{display:grid;place-items:center;width:44px;height:44px;min-width:44px;border:0;border-radius:50%;background:#f3f6f1;color:var(--forest)}
  .page-heading .eyebrow{display:none}
  main:not([data-page=today]) .page-heading{display:none}
  h1,.has-detail h1{font-size:30px;letter-spacing:-.8px}

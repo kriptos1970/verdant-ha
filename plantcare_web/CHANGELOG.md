@@ -1,3 +1,9 @@
+# 0.11.28 — cestino raggiungibile anche da telefono
+
+- Su telefono il comando **Cestino** stava nell’intestazione della pagina Piante, che il layout mobile nasconde: dopo l’eliminazione con lo swipe non c’era modo di aprire il cestino e ripristinare. Ora accanto al titolo della collezione c’è un pulsante tondo con l’icona del cestino ed etichetta accessibile “Cestino”.
+- Il desktop non cambia: il comando resta nell’intestazione della collezione, accanto all’icona della foglia.
+- Verificato a 320 e 375 px, senza scorrimento orizzontale, e a 813 px con il pulsante mobile nascosto; 225 test backend, 1021 chiavi i18n, build frontend.
+
 # 0.11.27 — swipe per eliminare nell’elenco delle piante
 
 - Su telefono una riga dell’elenco delle piante si scorre verso sinistra e scopre il pulsante **Elimina**: la pianta va nel cestino senza conferma, perché il ripristino entro 30 giorni resta disponibile, e compare l’avviso “Pianta spostata nel cestino”.
