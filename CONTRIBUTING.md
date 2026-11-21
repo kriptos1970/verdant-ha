@@ -54,7 +54,16 @@ CI runs the same checks on every push and pull request. A change is ready when b
 
 ## Releases
 
-Releases are created from a tag. The workflow runs the tests, builds the source package and publishes the ZIP with its SHA256. See `.github/workflows/release.yml`.
+Releases are automatic. Pushing a `v*` tag starts `.github/workflows/release.yml`, which runs the tests, builds the source package and publishes the ZIP with its SHA256 on GitHub Releases. The workflow has its own `contents: write` permission: `gh` and a local GitHub token are not required.
+
+1. Bump the version in `plantcare_web/config.yaml`, `plantcare_web/backend/__init__.py`, `plantcare_web/frontend/package.json` and both `version` fields in `plantcare_web/frontend/package-lock.json`.
+2. Update `plantcare_web/CHANGELOG.md`, `docs/STATUS.md`, `docs/en/STATUS.md`, `README.md`, `README.it.md` and `ROADMAP.md`.
+3. Run the tests, i18n check and frontend build.
+4. Commit, push `main`, create an annotated tag `vX.Y.Z`, push the tag. The tag must match the version in `plantcare_web/config.yaml`.
+5. Wait for both **CI** and **Release** on the tagged commit to be green. `releases/` is gitignored: the ZIP on GitHub is built by the workflow, not uploaded from the Mac.
+6. Verify the published release and its assets with `python3 scripts/verify_release.py vX.Y.Z`. A 404 immediately after the push only means the workflow is still running.
+
+See [AGENTS.md](AGENTS.md) for the same workflow in the form read by coding agents.
 
 ## Commit messages
 
