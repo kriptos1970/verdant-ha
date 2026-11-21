@@ -1,3 +1,10 @@
+# 0.11.22 — saluto della Home su una sola riga
+
+- Su telefono l’intestazione della Home non divide più “Buongiorno 🌿” su due righe: il saluto resta su una riga e la colonna meteo/icona non occupa più metà della testata.
+- Il meteo compatto mostra solo la temperatura; la località resta nell’etichetta accessibile.
+- Sotto i 360 px il saluto usa una scala leggermente ridotta per evitare sovrapposizioni; 390, 375, 360 e 320 px verificati senza ritorno a capo.
+- Nessun cambiamento a contenuti, flussi o dati; build frontend.
+
 # 0.11.21 — modalità del motore di cura più chiara
 
 - In **Impostazioni → Motore di cura** la modalità attiva è ora indicata da un pallino e dalla dicitura “Modalità attiva nell’add-on”; le due modalità sono elencate separatamente e quella corrente è evidenziata.

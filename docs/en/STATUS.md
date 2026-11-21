@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.21**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.22**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,12 @@ Current release: **0.11.21**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.22 (21 November 2026)
+
+- **Home on phones**: “Buongiorno 🌿” stays on one line; the weather/icon column now sizes to its content instead of taking half the heading.
+- The compact phone weather shows the temperature only, with the location kept in the accessible label; below 360 px the greeting uses 26 px.
+- Checked locally at 390, 375, 360 and 320 px with no wrapping or overlap. The fix is ready for the repository update.
 
 ## Release 0.11.21 (20 November 2026)
 

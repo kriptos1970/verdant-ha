@@ -29,7 +29,11 @@
  .button{padding:11px 16px;border-radius:14px}
  .section-heading{gap:12px;flex-wrap:wrap}
  .page-heading{align-items:flex-start;margin-bottom:26px}
- .page-heading>div{min-width:0;flex:1}
+ .page-heading>div:first-child{min-width:0;flex:1}
+ .page-heading>.home-heading-side{flex:0 0 auto;min-width:0;display:flex;align-items:center;gap:10px}
+ .home-heading h1{white-space:nowrap}
+ .home-weather{display:flex;align-items:center;gap:4px}
+ .home-weather small{display:none}
  .page-heading>div>p{font-size:19px;line-height:1.4;margin-top:8px}
  .heading-icon{width:44px;height:44px;background:transparent}
  .native-week{padding:18px 14px;border-radius:22px;background:white}
@@ -676,6 +680,7 @@
  }
 }
 @media(max-width:360px){
+ .home-heading h1{font-size:26px;letter-spacing:-.8px}
  .hero .botanical{display:none}
  .hero,.has-detail .hero{padding:18px 15px;min-height:0}
  .hero h2,.has-detail .hero h2{font-size:20px}
