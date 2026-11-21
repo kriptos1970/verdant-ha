@@ -542,6 +542,17 @@
   min-width:44px;
   border-radius:12px;
  }
+ .global-history-event>.event-avatar{
+  width:44px;
+  height:44px;
+ }
+ .global-history-event>.event-avatar .avatar{
+  display:block;
+  width:44px;
+  height:44px;
+  min-width:44px;
+  border-radius:12px;
+ }
  .global-history-event>div{min-width:0}
  .global-history-event .history-event-kind{
   display:flex;

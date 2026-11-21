@@ -1,3 +1,9 @@
+# 0.11.23 — icona dell’azione sulle immagini degli eventi
+
+- Nelle card delle cure e nella cronologia l’immagine della pianta mostra in basso a destra una piccola icona dell’azione da compiere: annaffiatura, concimazione, rotazione, controllo salute, diario di crescita e le altre cure.
+- L’icona usa il colore della categoria ed è decorativa per l’accessibilità: l’azione resta scritta nella card.
+- 224 test backend, 1014 chiavi i18n, build frontend.
+
 # 0.11.22 — saluto della Home su una sola riga
 
 - Su telefono l’intestazione della Home non divide più “Buongiorno 🌿” su due righe: il saluto resta su una riga e la colonna meteo/icona non occupa più metà della testata.

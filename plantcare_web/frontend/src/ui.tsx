@@ -60,6 +60,27 @@ export function Avatar({
     </div>
   );
 }
+
+/** Plant thumbnail with the care action in its bottom-right corner. */
+export function EventAvatar({
+  plant,
+  kind,
+  small = false,
+}: {
+  plant: Plant;
+  kind: string;
+  small?: boolean;
+}) {
+  const Icon = eventIcon(kind);
+  return (
+    <span className={`event-avatar${small ? " small" : ""}`}>
+      <Avatar plant={plant} />
+      <span className="event-avatar-badge" data-kind={kind} aria-hidden="true">
+        <Icon size={small ? 10 : 13} />
+      </span>
+    </span>
+  );
+}
 export function ProductPhoto({product}:{product:Product}) {
   const [failed,setFailed]=useState(false);
   const src=photoURL(product.photoPath);

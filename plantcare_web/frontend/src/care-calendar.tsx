@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { Action, Plant, CareEvent } from "./types";
 import { api } from "./api";
-import { Avatar, eventIcon } from "./ui";
+import { EventAvatar } from "./ui";
 import { useI18n } from "./i18n";
 import { IOSIcon, careIconName } from "./ios-icons";
 import { useCareLabels } from "./care-labels";
@@ -204,8 +204,8 @@ export function CareCalendar({
       <article className={`care-card ${a.daysUntil < 0 ? "late" : ""}`} key={a.id}>
         <div className="care-card-top">
           <button className="care-card-identity" onClick={() => onOpenPlant(plant.id)}>
-            <Avatar plant={plant} />
-            <span>
+            <EventAvatar plant={plant} kind={a.kind} />
+            <span className="care-card-copy">
               <strong>{plant.name}</strong>
               <small className="care-card-kind">{a.includesFertilizing ? t("care.waterFertilize") : verbLabel(a.kind)}</small>
               <small>{plant.room}</small>
@@ -484,7 +484,7 @@ export function CareCalendar({
               {group.items.map(({ plant, event }) => {
             return (
               <div className="global-history-event" key={plant.id + event.id}>
-                <Avatar plant={plant} />
+                <EventAvatar plant={plant} kind={event.kind} small />
                 <div>
                   <strong className="history-event-kind" data-kind={event.kind}>
                     <IOSIcon name={careIconName(event.kind)} size={17} />

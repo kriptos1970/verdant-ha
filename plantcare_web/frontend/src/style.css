@@ -566,6 +566,48 @@ main {
   border-radius: 9px;
   flex-shrink: 0;
 }
+.event-avatar {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  line-height: 0;
+}
+.event-avatar > .avatar {
+  display: block;
+}
+.event-avatar-badge {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border: 2px solid var(--vc-surface, #fff);
+  border-radius: 50%;
+  background: var(--event-color, var(--vc-moss, #194330));
+  color: #fff;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgb(23 37 29 / 0.18);
+}
+.event-avatar-badge svg {
+  stroke-width: 2.4;
+}
+.event-avatar.small .event-avatar-badge {
+  width: 19px;
+  height: 19px;
+  right: -2px;
+  bottom: -2px;
+}
+.event-avatar-badge[data-kind="Annaffia"] { --event-color: #3486f7; }
+.event-avatar-badge[data-kind="Concima"] { --event-color: #f58c31; }
+.event-avatar-badge[data-kind="Aggiorna progressi"] { --event-color: #b33ed0; }
+.event-avatar-badge[data-kind="Pota"] { --event-color: #4b8b5d; }
+.event-avatar-badge[data-kind="Rinvasa"] { --event-color: #9a6c4e; }
+.event-avatar-badge[data-kind="Ruota"] { --event-color: #5c7f52; }
+.event-avatar-badge[data-kind="Controlla salute"] { --event-color: #3c7d62; }
+.event-avatar-badge[data-kind="Trattamento"] { --event-color: #6469ae; }
+.event-avatar-badge[data-kind="Spostamento"] { --event-color: #846bb3; }
 .placeholder {
   display: grid;
   place-items: center;
@@ -4532,7 +4574,7 @@ dialog:has(.plant-editor-form) {
   flex: 0 0 72px;
   border-radius: 14px;
 }
-.care-card-identity > span {
+.care-card-identity > .care-card-copy {
   display: grid;
   gap: 2px;
   min-width: 0;
