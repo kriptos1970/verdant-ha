@@ -310,9 +310,10 @@
 
 @media(max-width:760px){
  .home-insights-heading .text-button{display:none}
- .calendar-week{display:flex;overflow-x:auto;gap:8px;padding:0 0 4px;scroll-snap-type:x mandatory;scrollbar-width:none}
- .calendar-week::-webkit-scrollbar{display:none}
- .calendar-week .calendar-day{flex:0 0 68px;min-height:82px;scroll-snap-align:center}
+ .calendar-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;overflow:visible;padding:0}
+ .calendar-week .calendar-day{min-height:78px;padding:8px 2px}
+ .calendar-week .calendar-day strong{font-size:19px}
+ .calendar-week .calendar-day small{font-size:12px}
 }
 
 @media(max-width:760px){
@@ -322,8 +323,14 @@
  .native-week .section-heading .button{font-size:13px;min-height:34px;padding:7px 10px}
  .native-week{padding:14px 12px;border-radius:22px}
  .hero .botanical{display:block;position:absolute;right:-34px;bottom:-18px;width:160px;height:160px;opacity:.12;transform:rotate(-8deg);pointer-events:none}
- main[data-page=care] .calendar-panel .section-heading{display:none}
- main[data-page=care] .calendar-navigation{display:none}
+ main[data-page=care] .calendar-panel .section-heading{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-bottom:12px;text-align:left}
+ main[data-page=care] .calendar-panel .section-heading p{display:none}
+ main[data-page=care] .calendar-panel .section-heading h2{font-size:20px;line-height:1.2}
+ main[data-page=care] .calendar-panel .section-heading .button-row{gap:8px;justify-content:flex-end;margin-left:auto}
+ main[data-page=care] .calendar-panel .section-heading .text-button,
+ main[data-page=care] .calendar-panel .section-heading .icon-button{min-height:38px;padding:7px 12px;font-size:15px}
+ main[data-page=care] .calendar-navigation{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;font-size:13px}
+ main[data-page=care] .calendar-navigation span{font-size:13px;font-weight:600}
  main[data-page=care] .chips{display:none}
  .care-kind-title{font-size:21px;margin:20px 0 12px}
  .care-card{padding:16px;border-radius:20px}
@@ -336,6 +343,11 @@
  .care-card-reason{font-size:15px}
  .care-card-complete{min-height:52px;font-size:18px}
  .calendar-panel{padding:14px 12px;border-radius:22px}
+}
+
+@media(max-width:430px){
+ main[data-page=care] .calendar-panel .section-heading .ios-control-label{display:none}
+ main[data-page=care] .calendar-panel .section-heading h2{font-size:18px}
 }
 
 /* Final iPhone scale: keep the native hierarchy without oversized web text. */

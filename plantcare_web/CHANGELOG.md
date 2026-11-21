@@ -1,3 +1,10 @@
+# 0.11.25 — calendario delle cure completo su telefono
+
+- Su telefono il calendario delle cure torna a mostrare il mese, il pulsante **Oggi**, le frecce di navigazione e il passaggio settimana/mese: erano stati nascosti nell’allineamento grafico della 0.11.19 e non era più possibile spostarsi oltre la domenica.
+- L’intestazione sta su una riga (mese a sinistra, Oggi e calendario a destra); sotto 430 px l’etichetta “Vista mensile” resta disponibile come etichetta accessibile dell’icona.
+- La striscia dei giorni è ora una griglia a sette colonne: da lunedì a domenica entra nello schermo senza scorrimento orizzontale a 320, 375 e 390 px, e il giorno selezionato resta sempre visibile.
+- 225 test backend, 1014 chiavi i18n, build frontend.
+
 # 0.11.24 — caricamento foto più rapido
 
 - Nel **Diario di crescita** (attività “Aggiorna progressi” e editor del diario) la fotografia viene ora ridotta nel browser a 2400 px e ricodificata in JPEG prima dell’invio: il telefono trasferisce circa un terzo dei byte e la miniatura compare molto prima, anche da remoto.

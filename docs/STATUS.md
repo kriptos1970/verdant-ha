@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.24
+# Stato dell’incremento 0.11.25
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,14 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.24 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.25 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.25 (21 novembre 2026)
+
+- **Calendario su telefono**: le regole `main[data-page=care] .calendar-panel .section-heading{display:none}` e `main[data-page=care] .calendar-navigation{display:none}` introdotte nella 0.11.19 nascondevano mese, pulsante **Oggi**, frecce e passaggio settimana/mese; sono state sostituite da una testata compatta (`plantcare_web/frontend/src/ios-layout.css`).
+- Sotto 430 px l’etichetta “Vista mensile” resta solo come `aria-label` dell’icona; i pulsanti mantengono 38 px di altezza.
+- La striscia settimanale è passata da carosello orizzontale a griglia a sette colonne: `scrollWidth == clientWidth` a 320, 375 e 390 px e giorno selezionato sempre visibile.
+- Verifica nel browser a 320, 375, 390 e 500 px: frecce 16–22 → 23–29 novembre, vista mensile con 42 celle (26 ottobre – 6 dicembre), **Oggi** che riporta selezione e mese correnti. I chip delle stanze restano nascosti su telefono.
 
 ## Rilascio 0.11.24 (21 novembre 2026)
 
