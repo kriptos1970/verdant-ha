@@ -1,3 +1,10 @@
+# 0.11.26 — giorni a scorrimento continuo nel calendario su telefono
+
+- Su telefono le frecce settimanali lasciano il posto a una striscia di giorni a scorrimento orizzontale continuo: da 14 giorni prima di oggi a un anno avanti, con aggancio morbido e senza barra di scorrimento.
+- Il giorno selezionato resta centrato all’apertura, quando si tocca un giorno e quando si preme **Oggi**; il tocco seleziona il giorno e aggiorna l’elenco delle attività sottostante.
+- Il desktop non cambia: sette giorni in griglia con le frecce. In vista mensile su telefono le frecce restano, perché spostano il mese.
+- 225 test backend, 1014 chiavi i18n, build frontend.
+
 # 0.11.25 — calendario delle cure completo su telefono
 
 - Su telefono il calendario delle cure torna a mostrare il mese, il pulsante **Oggi**, le frecce di navigazione e il passaggio settimana/mese: erano stati nascosti nell’allineamento grafico della 0.11.19 e non era più possibile spostarsi oltre la domenica.

@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.25
+# Stato dell’incremento 0.11.26
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,13 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.25 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.26 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.26 (21 novembre 2026)
+
+- **Calendario su telefono**: la vista settimanale non usa più le frecce; la striscia dei giorni scorre in orizzontale in modo continuo (380 giorni, da 14 giorni prima di oggi a un anno avanti) con `scroll-snap-type: x proximity` e scrollbar nascosta (`plantcare_web/frontend/src/care-calendar.tsx`, `ios-layout.css`).
+- Il giorno selezionato viene centrato all’apertura, al tocco e con **Oggi** solo se non è già interamente visibile; il tocco seleziona il giorno e aggiorna l’elenco sottostante.
+- Il desktop resta invariato (griglia a 7 giorni con frecce); in vista mensile le frecce restano anche su telefono. Verificato a 320, 375, 390 px e 800 px, incluso il passaggio dinamico tra i due layout senza ricaricare.
 
 ## Rilascio 0.11.25 (21 novembre 2026)
 

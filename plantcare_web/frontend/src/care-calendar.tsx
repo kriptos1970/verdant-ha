@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CalendarDays,
   ChevronLeft,
@@ -32,6 +32,20 @@ const shift = (day: string, days: number) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
+const PHONE_LAYOUT = "(max-width: 760px)";
+function usePhoneLayout() {
+  const [phone, setPhone] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(PHONE_LAYOUT).matches,
+  );
+  useEffect(() => {
+    const query = window.matchMedia(PHONE_LAYOUT);
+    const sync = () => setPhone(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  return phone;
+}
 const display = (day: string, options: Intl.DateTimeFormatOptions, locale = "it") =>
   new Date(day + "T12:00:00Z").toLocaleDateString(locale, {
     ...options,
@@ -168,6 +182,30 @@ export function CareCalendar({
       setSelected(date.toISOString().slice(0, 10));
     } else setSelected(shift(selected, direction * 7));
   };
+  const phone = usePhoneLayout();
+  const strip = phone && !month;
+  const stripRef = useRef<HTMLDivElement | null>(null);
+  // Striscia continua del telefono: due settimane indietro e un anno avanti.
+  const stripDays = strip
+    ? Array.from({ length: 380 }, (_, i) => shift(today, i - 14))
+    : [];
+  const byDay = new Map<string, Action[]>();
+  for (const action of filtered) {
+    const key = dayKey(action.dueDate, zone);
+    const list = byDay.get(key);
+    if (list) list.push(action);
+    else byDay.set(key, [action]);
+  }
+  const actionsFor = (day: string) => byDay.get(day) ?? [];
+  useEffect(() => {
+    const box = stripRef.current;
+    const cell = box?.querySelector<HTMLElement>(".calendar-day.selected");
+    if (!box || !cell) return;
+    const bounds = box.getBoundingClientRect();
+    const own = cell.getBoundingClientRect();
+    if (own.left < bounds.left + 8 || own.right > bounds.right - 8)
+      cell.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [strip, selected]);
   const selectedActions = filtered.filter(
     (a) => dayKey(a.dueDate, zone) === selected,
   );
@@ -306,7 +344,7 @@ export function CareCalendar({
                 </button>
               </div>
             </div>
-            <div className="calendar-navigation">
+            <div className={"calendar-navigation" + (month ? "" : " is-week")}>
               <button
                 className="icon-button"
                 aria-label={month ? t("calendar.prevMonth") : t("calendar.prevWeek")}
@@ -323,16 +361,23 @@ export function CareCalendar({
                 <ChevronRight size={18} />
               </button>
             </div>
-            <div className={month ? "calendar-month" : "calendar-week"}>
-              {days.map((day) => (
+            <div
+              ref={strip ? stripRef : undefined}
+              className={
+                month
+                  ? "calendar-month"
+                  : strip
+                    ? "calendar-week calendar-strip"
+                    : "calendar-week"
+              }
+            >
+              {(strip ? stripDays : days).map((day) => (
                 <DayButton
                   key={day}
                   day={day}
                   today={today}
                   selected={day === selected}
-                  actions={filtered.filter(
-                    (a) => dayKey(a.dueDate, zone) === day,
-                  )}
+                  actions={actionsFor(day)}
                   onClick={() => setSelected(day)}
                 />
               ))}

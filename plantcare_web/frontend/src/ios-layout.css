@@ -314,6 +314,9 @@
  .calendar-week .calendar-day{min-height:78px;padding:8px 2px}
  .calendar-week .calendar-day strong{font-size:19px}
  .calendar-week .calendar-day small{font-size:12px}
+ .calendar-week.calendar-strip{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:0 0 6px;scroll-snap-type:x proximity;scrollbar-width:none}
+ .calendar-week.calendar-strip::-webkit-scrollbar{display:none}
+ .calendar-week.calendar-strip .calendar-day{flex:0 0 62px;scroll-snap-align:center}
 }
 
 @media(max-width:760px){
@@ -330,6 +333,7 @@
  main[data-page=care] .calendar-panel .section-heading .text-button,
  main[data-page=care] .calendar-panel .section-heading .icon-button{min-height:38px;padding:7px 12px;font-size:15px}
  main[data-page=care] .calendar-navigation{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;font-size:13px}
+ main[data-page=care] .calendar-navigation.is-week{display:none}
  main[data-page=care] .calendar-navigation span{font-size:13px;font-weight:600}
  main[data-page=care] .chips{display:none}
  .care-kind-title{font-size:21px;margin:20px 0 12px}
