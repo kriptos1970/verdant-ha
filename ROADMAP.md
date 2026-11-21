@@ -2,7 +2,7 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **0.11.26** (21 November 2026).
+Current release: **0.11.27** (21 November 2026).
 
 ## Done recently
 
@@ -23,6 +23,7 @@ Current release: **0.11.26** (21 November 2026).
 - [x] The Home greeting keeps “Buongiorno 🌿” on one line on phones; the weather/icon column sizes to its content and the compact phone weather shows the temperature only.
 - [x] The phone care calendar keeps the month title, Today button, week/month switch and arrows, and its seven-day strip fits the width without horizontal scrolling.
 - [x] On phones the week arrows are replaced by a continuously swipeable day strip (14 days back, one year ahead); desktop keeps the seven-day grid and arrows.
+- [x] Phone plant rows swipe left to reveal Delete and move the plant to the trash (30-day restore); the trash can be emptied on demand behind a confirmation.
 
 ## Care engine — requested steps complete
 

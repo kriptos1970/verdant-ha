@@ -690,6 +690,17 @@ main {
   transform: translateY(-3px);
   box-shadow: 0 8px 22px #283d2010;
 }
+.plant-swipe {
+  display: block;
+  min-width: 0;
+}
+.plant-swipe-surface {
+  position: relative;
+  z-index: 1;
+}
+.plant-swipe-delete {
+  display: none;
+}
 .card-image {
   position: relative;
 }

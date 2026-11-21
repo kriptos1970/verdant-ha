@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.26
+# Stato dell’incremento 0.11.27
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,14 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.26 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | 0.11.27 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 0.11.27 (21 novembre 2026)
+
+- **Elenco piante su telefono**: swipe verso sinistra sulla riga, pulsante rosso **Elimina** scoperto sotto la card e pianta spostata nel cestino (nuovo componente `SwipeRow` in `plantcare_web/frontend/src/main.tsx`, stili in `ios-layout.css`). Nessuna conferma: il ripristino entro 30 giorni è la rete di sicurezza e l’avviso “Pianta spostata nel cestino” conferma l’esito.
+- Il gesto usa `touch-action: pan-y`, si attiva solo con `pointerType` touch, apre una riga alla volta e chiude con un tocco sulla riga o altrove; il desktop mantiene il menu ⋯ con la conferma.
+- **Cestino**: nuovo pulsante **Svuota cestino** con conferma `trash.emptyConfirm` (una o più piante) e avviso “Cestino svuotato”. La finestra di conferma generica usa ora `common.confirmTitle`, `common.cancel` e `common.delete` invece di testi italiani fissi.
+- Verificato a 320/375 px: swipe, chiusura al tocco, eliminazione, ripristino, svuotamento con conferma e annullamento; a 1000 px il pulsante resta `display:none` e la griglia non cambia.
 
 ## Rilascio 0.11.26 (21 novembre 2026)
 

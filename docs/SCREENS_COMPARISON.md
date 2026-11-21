@@ -25,7 +25,7 @@ Confronto funzionale delle schermate oltre a Home e form pianta, letto dai sorge
 | Piante / Ambienti | segmentato | presente |
 | Filtro sicurezza | menu | chip “Rischio animali” |
 | Ordine | per nome, sezioni | alfabetico su telefono, ordine archivio su desktop |
-| Azioni riga | menu contestuale e swipe: modifica, annaffia, elimina | menu per card: registra annaffiatura, modifica, sposta nel cestino |
+| Azioni riga | menu contestuale e swipe: modifica, annaffia, elimina | menu per card: registra annaffiatura, modifica, sposta nel cestino; su telefono swipe verso sinistra con **Elimina** |
 | Cestino | eliminazione con **ripristino entro 30 giorni** | eliminazione definitiva con conferma |
 | Paginazione | nessuna | 12 per pagina |
 

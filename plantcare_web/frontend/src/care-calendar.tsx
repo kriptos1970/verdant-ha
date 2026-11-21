@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import type { Action, Plant, CareEvent } from "./types";
 import { api } from "./api";
-import { EventAvatar } from "./ui";
+import { EventAvatar, usePhoneLayout } from "./ui";
 import { useI18n } from "./i18n";
 import { IOSIcon, careIconName } from "./ios-icons";
 import { useCareLabels } from "./care-labels";
@@ -32,20 +32,6 @@ const shift = (day: string, days: number) => {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
-const PHONE_LAYOUT = "(max-width: 760px)";
-function usePhoneLayout() {
-  const [phone, setPhone] = useState(
-    () => typeof window !== "undefined" && window.matchMedia(PHONE_LAYOUT).matches,
-  );
-  useEffect(() => {
-    const query = window.matchMedia(PHONE_LAYOUT);
-    const sync = () => setPhone(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
-  return phone;
-}
 const display = (day: string, options: Intl.DateTimeFormatOptions, locale = "it") =>
   new Date(day + "T12:00:00Z").toLocaleDateString(locale, {
     ...options,

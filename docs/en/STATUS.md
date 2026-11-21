@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.26**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.27**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,13 @@ Current release: **0.11.26**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.27 (21 November 2026)
+
+- **Plant list on phones**: swipe a row to the left, the red **Delete** button is revealed and the plant moves to the trash (new `SwipeRow` component in `plantcare_web/frontend/src/main.tsx`, styles in `ios-layout.css`). No confirmation: restoring within 30 days is the safety net and the “Plant moved to the trash” notice confirms the outcome.
+- The gesture uses `touch-action: pan-y`, only starts for touch pointer types, opens one row at a time and closes on a tap on the row or elsewhere; desktop keeps the ⋯ menu with its confirmation.
+- **Trash**: the new **Empty trash** button asks for confirmation through `trash.emptyConfirm` (one or many plants) and reports “Trash emptied”. The generic confirm dialog now uses `common.confirmTitle`, `common.cancel` and `common.delete` instead of hard-coded Italian text.
+- Checked at 320/375 px: swipe, tap to close, delete, restore, empty with confirmation and cancel; at 1000 px the button stays `display:none` and the grid is unchanged.
 
 ## Release 0.11.26 (21 November 2026)
 

@@ -16,6 +16,20 @@ import {
 import type { Plant, Product, Action } from "./types";
 import { photoURL } from "./api";
 import { useI18n } from "./i18n";
+const PHONE_LAYOUT = "(max-width: 760px)";
+export function usePhoneLayout() {
+  const [phone, setPhone] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(PHONE_LAYOUT).matches,
+  );
+  useEffect(() => {
+    const query = window.matchMedia(PHONE_LAYOUT);
+    const sync = () => setPhone(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  return phone;
+}
 const careIcons = {
  water: adaptiveIcon('water', Droplets),
  feed: adaptiveIcon('sparkles', FlaskConical),

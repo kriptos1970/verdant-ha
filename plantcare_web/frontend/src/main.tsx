@@ -70,7 +70,7 @@ import "./ios-layout.css";
 import {IOSProducts,IOSPlantOverview,useIOSLayout} from "./ios-layout";
 import { PlantAssistant, AIModelCatalog } from "./ai-assistant";
 import { AdaptiveEditor, CareInsights, placements } from "./adaptive";
-import { Avatar, ProductPhoto, Modal, eventIcon } from "./ui";
+import { Avatar, ProductPhoto, Modal, eventIcon, usePhoneLayout } from "./ui";
 import { CareRound } from "./care-round";
 import { TreatmentEditor, TreatmentPanel } from "./treatments";
 import { HealthAlbum, HealthPhotoEditor } from "./health-album";
@@ -200,7 +200,8 @@ function App() {
     [menu, setMenu] = useState(false),
     [trashOpen, setTrashOpen] = useState(false),
     [trashItems, setTrashItems] = useState<TrashItem[]>([]),
-    [trashBusy, setTrashBusy] = useState(false);
+    [trashBusy, setTrashBusy] = useState(false),
+    [swipeOpen, setSwipeOpen] = useState<string | null>(null);
   const [plantEditor, setPlantEditor] = useState<Plant | "new" | null>(null),
     [productEditor, setProductEditor] = useState<Product | "new" | null>(null),
     [useProduct, setUseProduct] = useState<Product | null>(null),
@@ -526,9 +527,41 @@ function App() {
         : location.pathname + location.search,
     );
   };
+  const moveToTrash = (plant: Plant) => {
+    setSwipeOpen(null);
+    if (selected === plant.id) openPlant(null);
+    safeRun(
+      () =>
+        api(`plants/${plant.id}?version=${plant._version}`, {
+          method: "DELETE",
+        }),
+      t("trash.moved"),
+    );
+  };
+  useEffect(() => {
+    if (!swipeOpen) return;
+    const close = (event: PointerEvent) => {
+      const current =
+        event.target instanceof Element
+          ? event.target.closest(".plant-swipe.is-open")
+          : null;
+      if (!current) setSwipeOpen(null);
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [swipeOpen]);
+  const emptyTrash = () =>
+    setConfirm({
+      title: plural("trash.emptyConfirm", trashItems.length),
+      run: async () => {
+        await run(() => api("trash", { method: "DELETE" }), t("trash.emptied"));
+        await loadTrash();
+        setTrashOpen(false);
+        setConfirm(null);
+      },
+    });
   const navigate = (p: Page) => {
-    setPage(p);
-    openPlant(null);
+    setPage(p);    openPlant(null);
     setMenu(false);
     setSearch("");
     setRoom("Tutte");
@@ -909,29 +942,44 @@ function App() {
                     <>
                       <div className="plant-grid">
                         {visiblePlants.map((p) => (
-                          <PlantCard
+                          <SwipeRow
                             key={p.id}
-                            plant={p}
-                            onClick={() => openPlant(p.id)}
-                            onWater={(plant) => setAction({ plant, kind: "Annaffia" })}
-                            onEdit={(plant) => setPlantEditor(plant)}
-                            onDelete={(plant) =>
-                              setConfirm({
-                                title: t("trash.moveConfirm", { name: plant.name }),
-                                run: async () => {
-                                  await run(
-                                    () =>
-                                      api(
-                                        `plants/${plant.id}?version=${plant._version}`,
-                                        { method: "DELETE" },
-                                      ),
-                                    t("trash.moved"),
-                                  );
-                                  if (selected === plant.id) openPlant(null);
-                                },
-                              })
+                            open={swipeOpen === p.id}
+                            onOpen={() => setSwipeOpen(p.id)}
+                            onClose={() =>
+                              setSwipeOpen((current) =>
+                                current === p.id ? null : current,
+                              )
                             }
-                          />
+                            onDelete={() => moveToTrash(p)}
+                            deleteLabel={t("plants.swipeDelete")}
+                            deleteAria={t("plants.swipeDeleteAria", {
+                              name: p.name,
+                            })}
+                          >
+                            <PlantCard
+                              plant={p}
+                              onClick={() => openPlant(p.id)}
+                              onWater={(plant) => setAction({ plant, kind: "Annaffia" })}
+                              onEdit={(plant) => setPlantEditor(plant)}
+                              onDelete={(plant) =>
+                                setConfirm({
+                                  title: t("trash.moveConfirm", { name: plant.name }),
+                                  run: async () => {
+                                    await run(
+                                      () =>
+                                        api(
+                                          `plants/${plant.id}?version=${plant._version}`,
+                                          { method: "DELETE" },
+                                        ),
+                                      t("trash.moved"),
+                                    );
+                                    if (selected === plant.id) openPlant(null);
+                                  },
+                                })
+                              }
+                            />
+                          </SwipeRow>
                         ))}
                       </div>
                       <ArchivePagination
@@ -1596,17 +1644,29 @@ function App() {
               </div>
             </div>
           )}
+          {trashItems.length > 0 && (
+            <div className="modal-actions">
+              <button
+                className="button destructive"
+                disabled={busy}
+                onClick={emptyTrash}
+              >
+                <Trash2 size={15} />
+                {t("trash.emptyAction")}
+              </button>
+            </div>
+          )}
         </Modal>
       )}
       {confirm && (
-        <Modal title="Conferma eliminazione" onClose={() => setConfirm(null)}>
+        <Modal title={t("common.confirmTitle")} onClose={() => setConfirm(null)}>
           <p>{confirm.title}</p>
           <div className="modal-actions">
             <button
               className="button secondary"
               onClick={() => setConfirm(null)}
             >
-              Annulla
+              {t("common.cancel")}
             </button>
             <button
               className="button destructive"
@@ -1618,7 +1678,7 @@ function App() {
                   .catch(() => setConfirm(null));
               }}
             >
-              Elimina
+              {t("common.delete")}
             </button>
           </div>
         </Modal>
@@ -1629,6 +1689,122 @@ function App() {
           {notice}
         </div>
       )}
+    </div>
+  );
+}
+function SwipeRow({
+  open,
+  onOpen,
+  onClose,
+  onDelete,
+  deleteLabel,
+  deleteAria,
+  children,
+}: {
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onDelete: () => void;
+  deleteLabel: string;
+  deleteAria: string;
+  children: React.ReactNode;
+}) {
+  const phone = usePhoneLayout();
+  const [drag, setDrag] = useState<number | null>(null);
+  const gesture = useRef({
+    x: 0,
+    y: 0,
+    base: 0,
+    active: false,
+    moved: false,
+    horizontal: false,
+  });
+  const width = 96;
+  const offset = drag ?? (open ? -width : 0);
+  const suppress = useRef(false);
+  const down = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!phone || event.pointerType === "mouse") return;
+    suppress.current = false;
+    gesture.current = {
+      x: event.clientX,
+      y: event.clientY,
+      base: open ? -width : 0,
+      active: true,
+      moved: false,
+      horizontal: false,
+    };
+  };
+  const move = (event: React.PointerEvent<HTMLDivElement>) => {
+    const state = gesture.current;
+    if (!state.active) return;
+    const dx = event.clientX - state.x;
+    const dy = event.clientY - state.y;
+    if (!state.horizontal) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
+        state.active = false;
+        setDrag(null);
+        return;
+      }
+      if (Math.abs(dx) < 8) return;
+      state.horizontal = true;
+      state.moved = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    setDrag(Math.max(-width, Math.min(0, state.base + dx)));
+  };
+  const up = () => {
+    const state = gesture.current;
+    if (!state.active) return;
+    state.active = false;
+    suppress.current = state.moved;
+    const value = drag ?? (open ? -width : 0);
+    setDrag(null);
+    if (value < -width / 2) onOpen();
+    else onClose();
+  };
+  const surfaceClick = (event: React.MouseEvent) => {
+    if (suppress.current) {
+      suppress.current = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    if (open) {
+      event.preventDefault();
+      event.stopPropagation();
+      onClose();
+    }
+  };
+  return (
+    <div className={`plant-swipe${open ? " is-open" : ""}`}>
+      <button
+        type="button"
+        className="plant-swipe-delete"
+        aria-label={deleteAria}
+        aria-hidden={!open}
+        tabIndex={open ? 0 : -1}
+        onClick={(event) => {
+          event.stopPropagation();
+          onDelete();
+        }}
+      >
+        <Trash2 size={19} />
+        {deleteLabel}
+      </button>
+      <div
+        className="plant-swipe-surface"
+        style={{
+          transform: `translateX(${offset}px)`,
+          transition: drag === null ? undefined : "none",
+        }}
+        onPointerDown={down}
+        onPointerMove={move}
+        onPointerUp={up}
+        onPointerCancel={up}
+        onClickCapture={surfaceClick}
+      >
+        {children}
+      </div>
     </div>
   );
 }

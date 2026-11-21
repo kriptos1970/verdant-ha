@@ -1,3 +1,10 @@
+# 0.11.27 — swipe per eliminare nell’elenco delle piante
+
+- Su telefono una riga dell’elenco delle piante si scorre verso sinistra e scopre il pulsante **Elimina**: la pianta va nel cestino senza conferma, perché il ripristino entro 30 giorni resta disponibile, e compare l’avviso “Pianta spostata nel cestino”.
+- Il gesto non blocca lo scorrimento verticale, si apre una riga alla volta, un tocco sulla riga aperta la richiude e un tocco altrove chiude ogni riga. Il desktop non cambia e continua a usare il menu ⋯.
+- Nel cestino il nuovo pulsante **Svuota cestino** chiede conferma, con il numero di piante, prima di eliminare tutto definitivamente; la finestra di conferma e le sue etichette sono ora tradotte in entrambe le lingue.
+- 225 test backend, 1021 chiavi i18n, build frontend.
+
 # 0.11.26 — giorni a scorrimento continuo nel calendario su telefono
 
 - Su telefono le frecce settimanali lasciano il posto a una striscia di giorni a scorrimento orizzontale continuo: da 14 giorni prima di oggi a un anno avanti, con aggancio morbido e senza barra di scorrimento.
