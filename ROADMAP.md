@@ -2,7 +2,7 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **0.11.23** (21 November 2026).
+Current release: **0.11.24** (21 November 2026).
 
 ## Done recently
 

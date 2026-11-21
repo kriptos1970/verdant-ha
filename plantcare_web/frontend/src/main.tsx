@@ -63,6 +63,7 @@ import type {
   DrainageQuality,
 } from "./types";
 import { api, photoURL, uid, todayISO } from "./api";
+import { uploadPhoto } from "./photo-upload";
 import "./style.css";
 import "./tokens.css";
 import "./ios-layout.css";
@@ -1906,13 +1907,7 @@ function PlantEditor({
     setPhotoFile(file);
     setUploading(true);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      const p = await api<{ path: string }>("photos", {
-        method: "POST",
-        body: form,
-      });
-      set("photoPath", p.path);
+      set("photoPath", await uploadPhoto(file));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -2921,7 +2916,7 @@ function ProductEditor({
     },
   );
   const [error, setError] = useState(""),[uploading,setUploading]=useState(false);
-  const upload=async(file?:File)=>{if(!file)return;setUploading(true);setError("");try{const form=new FormData();form.append("file",file);const photo=await api<{path:string}>("photos",{method:"POST",body:form});set(p=>({...p,photoPath:photo.path}))}catch(e){setError((e as Error).message)}finally{setUploading(false)}};
+  const upload=async(file?:File)=>{if(!file)return;setUploading(true);setError("");try{const path=await uploadPhoto(file);set(p=>({...p,photoPath:path}))}catch(e){setError((e as Error).message)}finally{setUploading(false)}};
   return (
     <Modal
       title={product ? t("product.editTitle") : t("product.newTitle")}
@@ -3143,9 +3138,8 @@ function EventEditor({
     setUploading(true);
     try{
       for(const file of files){
-        const form=new FormData();form.append("file",file);
-        const uploaded=await api<{path:string}>("photos",{method:"POST",body:form});
-        setPhotoPaths(old=>[...old,uploaded.path]);
+        const path=await uploadPhoto(file);
+        setPhotoPaths(old=>[...old,path]);
       }
     }catch(e){setError((e as Error).message)}finally{setUploading(false)}
   };
@@ -4068,13 +4062,8 @@ function GrowthEditor({
     setError("");
     try {
       for (const file of files) {
-        const data = new FormData();
-        data.append("file", file);
-        const p = await api<{ path: string }>("photos", {
-          method: "POST",
-          body: data,
-        });
-        setPaths((old) => [...old, p.path]);
+        const path = await uploadPhoto(file);
+        setPaths((old) => [...old, path]);
       }
     } catch (e) {
       setError((e as Error).message);

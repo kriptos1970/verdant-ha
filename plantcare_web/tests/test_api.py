@@ -113,6 +113,19 @@ def test_language_preference_is_stored_and_validated(client):
     assert client.put('/api/preferences',json={'language':'fr'}).status_code==422
 
 
+def test_phone_photo_is_rotated_and_downscaled(client):
+    image=Image.new('RGB',(3000,2000),(0,128,0))
+    image.paste((255,0,0),(0,0,300,300))
+    exif=Image.Exif(); exif[0x0112]=6
+    data=io.BytesIO(); image.save(data,format='JPEG',quality=90,exif=exif)
+    uploaded=client.post('/api/photos',files={'file':('phone.jpg',data.getvalue(),'image/jpeg')})
+    assert uploaded.status_code==201,uploaded.text
+    with Image.open(main.store.photos/uploaded.json()['path']) as stored:
+        assert stored.size==(1600,2400)
+        red=stored.convert('RGB').getpixel((1560,50))
+        assert red[0]>200 and red[1]<80
+
+
 def test_photo_thumbnails_are_immutable_and_cached(client):
     image=Image.new('RGB',(1200,900),'green');data=io.BytesIO();image.save(data,format='JPEG')
     path=client.post('/api/photos',files={'file':('x.jpg',data.getvalue(),'image/jpeg')}).json()['path']

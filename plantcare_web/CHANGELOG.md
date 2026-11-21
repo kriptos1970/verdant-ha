@@ -1,3 +1,10 @@
+# 0.11.24 — caricamento foto più rapido
+
+- Nel **Diario di crescita** (attività “Aggiorna progressi” e editor del diario) la fotografia viene ora ridotta nel browser a 2400 px e ricodificata in JPEG prima dell’invio: il telefono trasferisce circa un terzo dei byte e la miniatura compare molto prima, anche da remoto.
+- La riduzione mantiene l’orientamento della fotocamera ed è usata anche da album salute, foto della pianta e foto prodotto; le immagini già piccole restano invariate.
+- Il server elabora le foto in un thread separato e decodifica a risoluzione ridotta le immagini molto grandi, senza bloccare il resto dell’interfaccia.
+- 225 test backend, 1014 chiavi i18n, build frontend.
+
 # 0.11.23 — icona dell’azione sulle immagini degli eventi
 
 - Nelle card delle cure e nella cronologia l’immagine della pianta mostra in basso a destra una piccola icona dell’azione da compiere: annaffiatura, concimazione, rotazione, controllo salute, diario di crescita e le altre cure.

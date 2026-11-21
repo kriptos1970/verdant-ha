@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **0.11.23**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **0.11.24**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -18,7 +18,7 @@ Current release: **0.11.23**, published on [GitHub Releases](https://github.com/
 
 ## Verification
 
-- **224 backend tests** pass.
+- **225 backend tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
@@ -50,6 +50,12 @@ Current release: **0.11.23**, published on [GitHub Releases](https://github.com/
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 0.11.24 (21 November 2026)
+
+- **Growth diary**: a chosen or shot photo is downscaled to 2400 px and re-encoded as JPEG in the browser before the request, so about a third of the bytes cross the network and the thumbnail appears sooner, including through Ingress or from a remote connection.
+- The compression keeps the EXIF orientation and also covers the health album, plant photo and product photo; the server decodes and re-encodes in a worker thread and asks libjpeg for a smaller decode of very large images.
+- 225 backend tests, 1,014 i18n keys, frontend build.
 
 ## Release 0.11.23 (21 November 2026)
 

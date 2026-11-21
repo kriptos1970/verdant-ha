@@ -15,6 +15,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import ValidationError
 from .settings import Settings
@@ -535,22 +536,31 @@ def cleanup_photos(body:PhotoCleanupRequest):
         deleted.append(dict(name=name,bytes=stat.st_size))
     return dict(deleted=deleted,count=len(deleted),bytes=sum(item['bytes'] for item in deleted))
 
-@app.post('/api/photos',status_code=201)
-async def upload_photo(file:UploadFile=File()):
-    max_bytes=int(settings.options.get('max_photo_mb',20))*1024*1024
-    content=await file.read(max_bytes+1)
-    if len(content)>max_bytes: raise HTTPException(413,'Fotografia oltre il limite configurato.')
+def normalize_photo(content):
     try:
         with Image.open(io.BytesIO(content)) as image:
+            # Ask libjpeg for a smaller decode when the photo is much larger than
+            # the stored size: big phone pictures cost seconds on a Raspberry Pi.
+            image.draft('RGB',(2400,2400))
             image=ImageOps.exif_transpose(image)
             image.thumbnail((2400,2400))
             output=io.BytesIO()
             image.convert('RGB').save(output,format='JPEG',quality=88)
     except (UnidentifiedImageError,OSError,Image.DecompressionBombError): raise HTTPException(422,'Immagine non supportata. Usa JPEG, PNG o WebP.')
+    return output.getvalue()
+
+@app.post('/api/photos',status_code=201)
+async def upload_photo(file:UploadFile=File()):
+    max_bytes=int(settings.options.get('max_photo_mb',20))*1024*1024
+    content=await file.read(max_bytes+1)
+    if len(content)>max_bytes: raise HTTPException(413,'Fotografia oltre il limite configurato.')
+    # Decoding and re-encoding run in a worker thread so the scheduler and the
+    # other requests keep flowing while a photo is processed.
+    output=await run_in_threadpool(normalize_photo,content)
     import shutil
-    if shutil.disk_usage(store.photos).free < len(output.getvalue())+50*1024*1024:
+    if shutil.disk_usage(store.photos).free < len(output)+50*1024*1024:
         raise HTTPException(507,'Spazio insufficiente nella cartella delle foto.')
-    path=store.write_photo(output.getvalue())
+    path=store.write_photo(output)
     return {'path':path}
 @app.post('/api/identify')
 async def identify_plant(file:UploadFile=File(), organ:str=Form('leaf'), consent:bool=Form(False)):
