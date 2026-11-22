@@ -3659,6 +3659,7 @@ function PlantDetail({
     [moveOpen,setMoveOpen]=useState(false),
     [moreOpen,setMoreOpen]=useState(false),
     [growthOpen, setGrowthOpen] = useState(false),
+    [growthPhoto, setGrowthPhoto] = useState<{ src: string; label: string; failed?: boolean }>(),
     [adaptiveOpen, setAdaptiveOpen] = useState(false),
     [phoneSection,setPhoneSection]=useState(""),
     [safetyBusy,setSafetyBusy]=useState(false),
@@ -3668,6 +3669,7 @@ function PlantDetail({
     setTab("Scheda");
     setPhoneSection("");
     setError("");
+    setGrowthPhoto(undefined);
   }, [plant.id]);
   useEffect(() => {
     if (tab !== "Misure") return;
@@ -3965,23 +3967,22 @@ function PlantDetail({
                     </small>
                     <p>{g.note}</p>
                     <div className="growth-photos">
-                      {g.photoPaths.map(
-                        (p) =>
-                          photoURL(p) && (
-                            <a
-                              href={photoURL(p)}
-                              target="_blank"
-                              rel="noreferrer"
-                              key={p}
-                            >
-                              <img
-                                src={photoURL(p, true)}
-                                alt={t("detail.growthPhotoAlt", { date: dateLabel(g.date) })}
-                                loading="lazy"
-                              />
-                            </a>
-                          ),
-                      )}
+                      {g.photoPaths.map((path) => {
+                        const src = photoURL(path);
+                        if (!src) return null;
+                        const date = dateLabel(g.date);
+                        return (
+                          <button
+                            className="growth-photo-button"
+                            type="button"
+                            key={path}
+                            aria-label={t("detail.openGrowthPhoto", { date })}
+                            onClick={() => setGrowthPhoto({ src, label: t("detail.growthPhotoAlt", { date }) })}
+                          >
+                            <img src={photoURL(path, true)} alt="" loading="lazy" />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -4154,6 +4155,20 @@ function PlantDetail({
       {labelOpen && <PlantLabel plant={plant} settings={settings} onClose={()=>setLabelOpen(false)}/>}
       {moveOpen && <MovePlantModal plant={plant} rooms={rooms} busy={busy} onClose={()=>setMoveOpen(false)} onSave={async(data)=>{await run(()=>api(`plants/${plant.id}/move`,{method:"POST",body:JSON.stringify({...data,version:plant._version})}),t("detail.moved"));setMoveOpen(false)}}/>}
       {adaptiveOpen && <AdaptiveEditor key={plant.id} plant={plant} defaultLocation={settings?.location} onClose={()=>setAdaptiveOpen(false)} onApplied={()=>run(async()=>{}, "Piano intelligente applicato")}/>}
+      {growthPhoto && (
+        <Modal title={growthPhoto.label} onClose={() => setGrowthPhoto(undefined)}>
+          {growthPhoto.failed ? (
+            <p role="alert">{t("detail.growthPhotoUnavailable")}</p>
+          ) : (
+            <img
+              className="growth-photo-original"
+              src={growthPhoto.src}
+              alt={growthPhoto.label}
+              onError={() => setGrowthPhoto((photo) => photo && { ...photo, failed: true })}
+            />
+          )}
+        </Modal>
+      )}
       {growthOpen && (
         <GrowthEditor
           busy={busy}

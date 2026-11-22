@@ -327,6 +327,8 @@ const en: Record<MessageKey, string> = {
   "detail.safety": "Safety",
   "detail.postponedTo": "Postponed to {date}",
   "detail.growthPhotoAlt": "Growth on {date}",
+  "detail.openGrowthPhoto": "Open growth photo from {date}",
+  "detail.growthPhotoUnavailable": "Unable to load the photo. Close and try again.",
   "detail.climateLine": "Water {from} → {to} d · Fertilizer {feedFrom} → {feedTo} d",
   "detail.pets": "Pets:",
   "detail.petsRisk": "known risk",

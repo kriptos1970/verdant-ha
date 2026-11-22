@@ -325,6 +325,8 @@ const it = {
   "detail.safety": "Sicurezza",
   "detail.postponedTo": "Rinviata al {date}",
   "detail.growthPhotoAlt": "Crescita del {date}",
+  "detail.openGrowthPhoto": "Apri la foto di crescita del {date}",
+  "detail.growthPhotoUnavailable": "Impossibile caricare la foto. Chiudi e riprova.",
   "detail.climateLine": "Acqua {from} → {to} g · Concime {feedFrom} → {feedTo} g",
   "detail.pets": "Animali:",
   "detail.petsRisk": "rischio noto",
