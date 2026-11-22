@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Check, LoaderCircle, Sparkles, RotateCw } from "lucide-react";
 import { api } from "./api";
+import { useI18n } from "./i18n";
 import type { Plant, Settings } from "./types";
 
 const Markdown = lazy(() => import("./markdown"));
@@ -17,6 +18,7 @@ export function PlantAssistant({plant,settings,run}:{plant:Plant;settings?:Setti
   const [question,setQuestion]=useState("Come posso prendermi cura di questa pianta?"),[advice,setAdvice]=useState<Advice|null>(null);
   const [selection,setSelection]=useState<Record<string,boolean>>({watering:true,fertilizing:true,inspection:true,pruning:true,repotting:true});
   const [asking,setAsking]=useState(false),[applying,setApplying]=useState(false),[error,setError]=useState("");
+  const { formatDate, formatNumber } = useI18n();
   useEffect(()=>{let active=true;setAdvice(null);setError("");api<Advice|null>(`plants/${plant.id}/advice`).then(v=>{if(active)setAdvice(v)}).catch(e=>{if(active)setError(e.message)});return()=>{active=false}},[plant.id]);
   const stale=advice && !advice.applied && (advice.stale || advice.expectedVersion!==plant._version);
   const [preview,setPreview]=useState<Record<string,number|null>>();
@@ -34,7 +36,7 @@ export function PlantAssistant({plant,settings,run}:{plant:Plant;settings?:Setti
     </form>
     {!settings?.aiConfigured && <p className="muted small-text">Configura provider e chiave nelle opzioni dell’add-on Home Assistant.</p>}
     {error && <p role="alert" className="form-error">{error}</p>}
-    {advice && <div className="advice-proposal"><p className="muted small-text">{advice.provider} · {advice.model} · {new Date(advice.createdAt).toLocaleString("it-IT")}</p>{advice.climateContext && <p className="muted small-text">Clima del piano salvato: {advice.climateContext.generatedAt ? new Date(advice.climateContext.generatedAt).toLocaleString("it-IT") : "data sconosciuta"}. Questi dati non rappresentano il meteo attuale.</p>}<div className="ai-answer">
+    {advice && <div className="advice-proposal"><p className="muted small-text">{advice.provider} · {advice.model} · {formatDate(advice.createdAt, { dateStyle: "medium", timeStyle: "short" })}</p>{advice.climateContext && <p className="muted small-text">Clima del piano salvato: {advice.climateContext.generatedAt ? formatDate(advice.climateContext.generatedAt, { dateStyle: "medium", timeStyle: "short" }) : "data sconosciuta"}. Questi dati non rappresentano il meteo attuale.</p>}<div className="ai-answer">
         <Suspense fallback={<p>{advice.summaryMarkdown}</p>}>
           <Markdown>{advice.summaryMarkdown}</Markdown>
         </Suspense>

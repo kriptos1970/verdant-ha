@@ -2017,6 +2017,7 @@ function PlantEditor({
   const { categoryLabel, lightLabel, potLabel, planModeLabel, placementLabel } = useDomainLabels();
   const { categoryLabel: productCategoryLabel } = useProductLabels();
   const { kindLabel } = useCareLabels();
+  const phone = usePhoneLayout();
   const [draft, setDraft] = useState<Plant>(() =>
     plant
       ? { ...plant }
@@ -2393,7 +2394,7 @@ function PlantEditor({
             <label className="full">
               {t("plantEditor.name")}
               <input
-                autoFocus
+                autoFocus={!phone}
                 required
                 maxLength={200}
                 value={draft.name}
@@ -3089,6 +3090,7 @@ function ProductEditor({
 }) {
   const { t } = useI18n();
   const { categoryLabel, formLabel } = useProductLabels();
+  const phone = usePhoneLayout();
   const [p, set] = useState<Product>(
     product || {
       id: uid(),
@@ -3128,7 +3130,7 @@ function ProductEditor({
         <label>
           {t("product.name")}
           <input
-            autoFocus
+            autoFocus={!phone}
             required
             value={p.name}
             onChange={(e) => set({ ...p, name: e.target.value })}
@@ -3646,7 +3648,7 @@ function PlantDetail({
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
   busy: boolean;
 }) {
-  const { t, plural, locale } = useI18n();
+  const { t, plural, locale, formatDate, formatNumber } = useI18n();
   const { actionLabel, dueLabel, kindLabel, dateLabel } = useCareLabels();
   const { categoryLabel, lightLabel, potLabel, placementLabel } = useDomainLabels();
   const [tab, setTab] = useState("Scheda"),
@@ -4000,7 +4002,7 @@ function PlantDetail({
                           {e.status === "postponed" ? " · Rinviata" : ""}
                         </strong>
                         <small>
-                          {new Date(e.date).toLocaleString("it-IT", {
+                          {formatDate(e.date, {
                             dateStyle: "medium",
                             timeStyle: "short",
                           })}
@@ -4077,7 +4079,10 @@ function PlantDetail({
                       )[m.kind] || m.kind}
                     </strong>
                     <small>
-                      {new Date(m.measured_at).toLocaleString("it-IT")}
+                      {formatDate(m.measured_at, {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
                     </small>
                     <small>
                       {m.source === "manual"
@@ -4095,7 +4100,7 @@ function PlantDetail({
                     </small>
                   </span>
                   <b>
-                    {Number(m.value).toLocaleString("it-IT", {
+                    {formatNumber(Number(m.value), {
                       maximumFractionDigits: 1,
                     })}{" "}
                     {m.unit}
@@ -4969,6 +4974,7 @@ function SensorsTool({
   settings?: Settings;
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
 }) {
+  const { t, formatNumber } = useI18n();
   const [sensors, setSensors] = useState<Sensor[]>([]),
     [mappings, setMappings] = useState<Mapping[]>([]),
     [entity, setEntity] = useState(""),
@@ -5039,7 +5045,7 @@ function SensorsTool({
             <small>{s.entityID}</small>
           </span>
           <b>
-            {s.value.toLocaleString("it-IT", { maximumFractionDigits: 1 })}{" "}
+            {formatNumber(s.value, { maximumFractionDigits: 1 })}{" "}
             {s.unit}
           </b>
         </div>

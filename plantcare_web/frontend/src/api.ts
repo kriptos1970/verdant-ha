@@ -113,16 +113,3 @@ export const photoURL = (path?: string | null, thumb = false) =>
     : undefined;
 export const uid = () => crypto.randomUUID().toUpperCase();
 export const todayISO = () => new Date().toISOString();
-export const dateLabel = (date: string) =>
-  new Date(date).toLocaleDateString("it-IT", {
-    day: "numeric",
-    month: "short",
-  });
-export const dueLabel = (days: number) =>
-  days < 0
-    ? `${Math.abs(days)} g in ritardo`
-    : days === 0
-      ? "Oggi"
-      : days === 1
-        ? "Domani"
-        : `Tra ${days} giorni`;

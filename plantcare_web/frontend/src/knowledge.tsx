@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import {Camera,Leaf,LoaderCircle,Search,Sparkles} from 'lucide-react';
 import {api} from './api';
 import {Modal} from './ui';
+import {useI18n} from './i18n';
 import type {Plant,Settings} from './types';
 
 type Candidate={scientificName:string;commonName:string;family:string;score:number;category:string};
@@ -9,6 +10,7 @@ type Profile={ranges?:{title:string;minimum:number|null;maximum:number|null;unit
 export type PlantSeed={draft:Partial<Plant>;file?:File};
 const toxicity=(v:boolean|null)=>v===true?'Tossica secondo la fonte':v===false?'Non tossica secondo la fonte':'Dato non disponibile';
 export function BotanicalLookup({scientificName,configured}:{scientificName:string;configured:boolean}){
+  const { formatDate } = useI18n();
   const [profile,setProfile]=useState<Profile|null>(),[busy,setBusy]=useState(false),[error,setError]=useState('');
   const generation=useRef(0);
   useEffect(()=>{generation.current++;setProfile(undefined);setError('');setBusy(false)},[scientificName]);
@@ -16,7 +18,7 @@ export function BotanicalLookup({scientificName,configured}:{scientificName:stri
     <button type="button" className="button secondary" disabled={!configured||busy||!scientificName.trim()} onClick={async()=>{const request=++generation.current;setBusy(true);setError('');try{const p=await api<Profile|null>('knowledge/profile',{method:'POST',body:JSON.stringify({scientificName})});if(request===generation.current)setProfile(p)}catch(e){if(request===generation.current)setError((e as Error).message)}finally{if(request===generation.current)setBusy(false)}}}>{busy?<LoaderCircle className="spin" size={16}/>:<Search size={16}/>}Consulta scheda botanica</button>
     {!configured&&<p className="muted small-text">Configura Open Plantbook o Perenual nelle opzioni dell’add-on e riavvia Verdant.</p>}
     {error&&<p role="alert" className="form-error">{error}</p>}{profile===null&&<p>Nessuna scheda trovata per questa specie.</p>}
-    {profile&&<article className="reference-profile"><h4>{profile.scientificName}</h4>{!profile.exactMatch&&<p className="form-error">Corrispondenza approssimativa: verifica la specie prima di usare queste informazioni.</p>}<p className="muted small-text">{profile.source} · consultata il {new Date(profile.fetchedAt).toLocaleDateString('it-IT')}</p><dl><dt>Acqua · riferimento della specie</dt><dd>{profile.wateringLabel||'Non indicata'} · circa {profile.wateringDays} giorni</dd><dt>Luce</dt><dd>{profile.sunlight.join(', ')||'Dato non disponibile'}</dd><dt>Terreno</dt><dd>{profile.soil.join(', ')||'Dato non disponibile'}</dd><dt>Difficoltà</dt><dd>{profile.careLevel||'Dato non disponibile'}</dd><dt>Animali</dt><dd>{toxicity(profile.poisonousToPets)}</dd><dt>Persone</dt><dd>{toxicity(profile.poisonousToHumans)}</dd></dl>{profile.ranges?.map(r=><p key={r.title}>{r.title}: {r.minimum ?? "—"}–{r.maximum ?? "—"} {r.unit}</p>)}{profile.summary&&<p>{profile.summary}</p>}<a href={profile.sourceURL} target="_blank" rel="noreferrer">Apri la fonte</a></article>}
+    {profile&&<article className="reference-profile"><h4>{profile.scientificName}</h4>{!profile.exactMatch&&<p className="form-error">Corrispondenza approssimativa: verifica la specie prima di usare queste informazioni.</p>}<p className="muted small-text">{profile.source} · consultata il {formatDate(profile.fetchedAt, { dateStyle: 'medium' })}</p><dl><dt>Acqua · riferimento della specie</dt><dd>{profile.wateringLabel||'Non indicata'} · circa {profile.wateringDays} giorni</dd><dt>Luce</dt><dd>{profile.sunlight.join(', ')||'Dato non disponibile'}</dd><dt>Terreno</dt><dd>{profile.soil.join(', ')||'Dato non disponibile'}</dd><dt>Difficoltà</dt><dd>{profile.careLevel||'Dato non disponibile'}</dd><dt>Animali</dt><dd>{toxicity(profile.poisonousToPets)}</dd><dt>Persone</dt><dd>{toxicity(profile.poisonousToHumans)}</dd></dl>{profile.ranges?.map(r=><p key={r.title}>{r.title}: {r.minimum ?? "—"}–{r.maximum ?? "—"} {r.unit}</p>)}{profile.summary&&<p>{profile.summary}</p>}<a href={profile.sourceURL} target="_blank" rel="noreferrer">Apri la fonte</a></article>}
   </section>
 }
 
