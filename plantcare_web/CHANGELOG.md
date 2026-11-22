@@ -1,3 +1,13 @@
+# 1.0.1 — telefono più reattivo e UI inglese completa
+
+- **Risposta al tocco**: evidenziazione del tap, `touch-action: manipulation` e stato premuto su pulsanti, tab e card; i controlli non sembrano più inerti.
+- **Prodotti**: rimossa la seconda select "Categoria" che appariva sotto la lista, perché il filtro desktop non veniva nascosto dal selettore `.collection-toolbar>select` (la select è dentro una label).
+- **Dettaglio pianta**: i due pulsanti tondi passano da 40 a 44 px, la griglia "In sintesi" non è più un div cliccabile e aprendo un editor su telefono non si apre più la tastiera da sola.
+- **Scroll**: modali e overlay prodotto contengono lo scroll (`overscroll-behavior: contain`), la pagina sotto non si muove più.
+- **UI inglese**: Album salute, Etichette QR/NFC, Biblioteca botanica, riconoscimento Pl@ntNet, libreria delle specie, Assistente AI e catalogo modelli passano al catalogo i18n (85 chiavi nuove, 1.193 totali). Date, numeri e dosi seguono la lingua attiva; rimosso l'helper che restituiva "Tra 2 giorni" in italiano.
+- **Aspetto**: `color-scheme: light` allinea select e scrollbar native; i placeholder di ricerca terminano con i puntini.
+- Verifiche: 225 test backend, 1.193 chiavi i18n allineate, build frontend, parità dosi con la funzione Swift su 40 casi, verifica visiva a 320/360/375/390 px in italiano e inglese.
+
 # 1.0.0 — prima versione stabile
 
 - **Vetrina Home Assistant**: icona e logo ricavati dall'artwork dell'app nativa, introduzione dell'add-on nello store, nomi e descrizioni delle opzioni in italiano e inglese. La pagina dell'add-on non mostra più chiavi grezze.

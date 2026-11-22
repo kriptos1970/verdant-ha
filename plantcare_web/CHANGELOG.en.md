@@ -4,6 +4,25 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.0.1 — a more responsive phone and a complete English UI
+
+- **Touch feedback**: tap highlight, `touch-action: manipulation` and a pressed state on buttons,
+  tabs and cards.
+- **Products**: the second "Category" select under the list is gone; the desktop filter was not
+  hidden because `.collection-toolbar>select` did not match a select nested in a label.
+- **Plant detail**: the two round buttons are 44 px instead of 40, the "At a glance" grid is no
+  longer a clickable div, and opening an editor on a phone no longer raises the keyboard.
+- **Scrolling**: modals and the product overlay contain their scroll
+  (`overscroll-behavior: contain`), so the page behind stays put.
+- **English UI**: health album, QR/NFC labels, botanical library, Pl@ntNet identification, species
+  library, AI assistant and model catalog now use the message catalog (85 new keys, 1,193 total).
+  Dates, numbers and doses follow the active language; the helper that returned the Italian
+  "Tra 2 giorni" is gone.
+- **Looks**: `color-scheme: light` aligns native selects and scrollbars; search placeholders end
+  with an ellipsis.
+- Checks: 225 backend tests, 1,193 aligned i18n keys, frontend build, dose parity against the
+  Swift function on 40 cases, visual checks at 320/360/375/390 px in Italian and English.
+
 # 1.0.0 — first stable release
 
 - **Home Assistant store**: icon and logo taken from the native app artwork, an add-on

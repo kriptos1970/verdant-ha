@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **1.0.0**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **1.0.1**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,15 @@ Current release: **1.0.0**, published on [GitHub Releases](https://github.com/kr
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 1.0.1 (22 November 2026)
+
+- **Measured visual check** with `scripts/preview_ios.py` and headless Chrome at 320/360/375/390 px: no horizontal overflow on Home, Plant detail and Products, and the tab bar never covers content at the end of a scroll.
+- **Touch**: visible tap highlight (`rgba(25,67,48,.12)`), `touch-action: manipulation` and a pressed `filter: brightness(.94)`; before this release the cascade had no `:active` rule at all.
+- **Products**: the duplicated "Category" select is hidden through `main[data-page=products] .collection-toolbar`; the desktop filter is unchanged at 1440 px.
+- **Detail**: `ios-plan-button` and `ios-more-trigger` reach 44 px, the "At a glance" grid is no longer clickable, `autoFocus` is off on phones, `color-scheme: light`, `overscroll-behavior: contain` on modals and the product overlay.
+- **i18n**: health album, QR/NFC labels, botanical library, identification, species library, AI assistant and model catalog move to `t()`; dates, numbers and doses use `formatDate`/`formatNumber`/the active locale. The `dueLabel` helper in `api.ts` that always returned Italian is gone.
+- Checks: 225 backend tests, 1,193 aligned i18n keys, frontend build, `verify_product_dose.mjs` against the Swift function on 40 cases, screenshots in Italian and English.
 
 ## Release 1.0.0 (22 November 2026)
 

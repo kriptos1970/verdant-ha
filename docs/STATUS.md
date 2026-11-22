@@ -1,4 +1,4 @@
-# Stato dell’incremento 1.0.0
+# Stato dell’incremento 1.0.1
 
 ## Stato rispetto agli otto step
 
@@ -12,6 +12,15 @@
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
 | 8 — Consolidamento | 0.11.28 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 1.0.1 (22 novembre 2026)
+
+- **Verifica visiva misurata** con `scripts/preview_ios.py` e Chrome headless a 320/360/375/390 px: zero overflow orizzontale su Panoramica, Dettaglio pianta e Prodotti; la barra delle tab non copre il contenuto a fine scroll.
+- **Tocco**: tap highlight visibile (`rgba(25,67,48,.12)`), `touch-action: manipulation` sui controlli e stato premuto `filter: brightness(.94)`; prima non esisteva alcuna regola `:active` nel cascade.
+- **Prodotti**: la select "Categoria" duplicata è stata rimossa nascondendo `main[data-page=products] .collection-toolbar`; il filtro desktop resta invariato a 1440 px.
+- **Dettaglio**: pulsanti `ios-plan-button` e `ios-more-trigger` a 44 px, griglia "In sintesi" non più cliccabile, `autoFocus` disattivato su telefono, `color-scheme: light`, `overscroll-behavior: contain` su modali e overlay prodotto.
+- **i18n**: Album salute, etichette QR/NFC, biblioteca botanica, riconoscimento, libreria specie, assistente AI e catalogo modelli passano a `t()`; date, numeri e dosi usano `formatDate`/`formatNumber`/locale. Rimosso l'helper `dueLabel` in `api.ts` che restituiva italiano fisso.
+- Verifiche: 225 test backend, 1.193 chiavi i18n allineate, build frontend, `verify_product_dose.mjs` con parità Swift su 40 casi, screenshot in italiano e inglese.
 
 ## Rilascio 1.0.0 (22 novembre 2026)
 
