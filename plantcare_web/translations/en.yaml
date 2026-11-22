@@ -1,0 +1,55 @@
+configuration:
+  language:
+    name: Interface language
+    description: Language of the web interface and of notifications. "auto" follows the browser.
+  photo_directory:
+    name: Photo directory
+    description: Where plant photos are stored. Use /share/plantcare/photos to share them with other tools; existing photos are not moved automatically.
+  max_photo_mb:
+    name: Maximum photo size (MB)
+    description: Upload limit for a single photo. Larger images are rejected before upload.
+  measurement_retention_days:
+    name: Measurement retention (days)
+    description: How long sensor readings are kept. Care events and photos are never deleted automatically.
+  timezone:
+    name: Timezone
+    description: IANA timezone used for calendar days, reminders and daily AI analysis.
+  exposed_entities:
+    name: Allowed sensor entities
+    description: Home Assistant entities the add-on may read (temperature, humidity, light, soil moisture, conductivity). Entities not listed here are ignored.
+  poll_interval_minutes:
+    name: Sensor polling interval (minutes)
+    description: How often the listed entities are sampled.
+  care_engine_mode:
+    name: Care engine mode
+    description: "shadow: recommendations are advisory and never change the calendar. active: the engine may postpone watering on a fresh, reliable wet-soil reading; it never advances care."
+  ai_provider:
+    name: AI provider
+    description: Optional provider for advice and daily analysis. Disabled by default.
+  ai_model:
+    name: AI model
+    description: Explicit model name. Leave empty to use the provider default.
+  openai_api_key:
+    name: OpenAI API key
+    description: Stored in the add-on options and used only by the server. Never sent to the browser.
+  gemini_api_key:
+    name: Gemini API key
+    description: Stored in the add-on options and used only by the server. Never sent to the browser.
+  ai_update_time:
+    name: Daily AI analysis time
+    description: Local time (HH:MM) of the daily analysis for plants in AI mode.
+  auto_apply_ai:
+    name: Apply AI proposals automatically
+    description: Off by default. When on, proposals are applied without the preview step.
+  plantnet_api_key:
+    name: Pl@ntNet API key
+    description: Optional plant identification from a photo.
+  perenual_api_key:
+    name: Perenual API key
+    description: Optional botanical profiles and safety notes.
+  openplantbook_client_id:
+    name: Open Plantbook client ID
+    description: Optional Open Plantbook consultation.
+  openplantbook_secret:
+    name: Open Plantbook secret
+    description: Optional Open Plantbook consultation.

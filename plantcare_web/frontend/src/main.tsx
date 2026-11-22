@@ -4118,20 +4118,20 @@ function PlantDetail({
       <header className="detail-top">
         <button
           className="icon-button"
-          aria-label="Chiudi scheda"
+          aria-label={t("detail.closePlant")}
           onClick={onClose}
         >
           <ArrowLeft size={20} className="desktop-symbol"/><ChevronLeft size={24} className="mobile-symbol"/>
         </button>
-        <span className="desktop-detail-caption">LA TUA PIANTA</span><span className="ios-detail-caption">{plant.name}</span>
+        <span className="desktop-detail-caption">{t("detail.yourPlant")}</span><span className="ios-detail-caption">{plant.name}</span>
         <button
           className="icon-button desktop-detail-edit"
-          aria-label="Modifica pianta"
+          aria-label={t("detail.editPlant")}
           onClick={onEdit}
         >
           <Pencil size={18} />
         </button>
-        <button className="ios-plan-button" aria-label={plant.carePlanMode==='AI'?'Imposta piano AI':plant.carePlanMode==='Intelligente'?'Configura piano intelligente':'Modifica piano manuale'} onClick={()=>{if(plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else if(plant.carePlanMode==='Intelligente'){setAdaptiveOpen(true)}else onEdit()}}>{plant.carePlanMode==='AI'?<IOSIcon name="brain" size={25}/>:plant.carePlanMode==='Intelligente'?<Sprout size={25}/>:<Pencil size={23}/>}</button>
+        <button className="ios-plan-button" aria-label={plant.carePlanMode==='AI'?t('detail.planSetAI'):plant.carePlanMode==='Intelligente'?t('detail.planConfigure'):t('detail.planEditManual')} onClick={()=>{if(plant.carePlanMode==='AI'){setPhoneSection('AI');setTab('AI')}else if(plant.carePlanMode==='Intelligente'){setAdaptiveOpen(true)}else onEdit()}}>{plant.carePlanMode==='AI'?<IOSIcon name="brain" size={25}/>:plant.carePlanMode==='Intelligente'?<Sprout size={25}/>:<Pencil size={23}/>}</button>
         <div className="ios-detail-more" ref={moreRef}>
           <button type="button" className="ios-more-trigger" aria-label={t("detail.moreActions")} aria-expanded={moreOpen} onClick={()=>setMoreOpen(v=>!v)}><IOSIcon name="ellipsis" size={23}/></button>
           {moreOpen && <div className="ios-more-menu" role="menu">

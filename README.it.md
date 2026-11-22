@@ -1,152 +1,155 @@
 # Verdant per Home Assistant
 
-**Italiano** | [English](README.md)
+**La cura delle piante dentro Home Assistant.** Un add-on self-hosted per la tua collezione:
+giro di cure, calendario, cronologia, trattamenti, sensori e consigli AI facoltativi — sulla
+tua istanza, senza account cloud.
 
-Versione incrementale **0.11.28**. Add-on autonomo con React/TypeScript, FastAPI, SQLite e fotografie su filesystem. Nessuna sincronizzazione con le app Apple.
+[![Apri la tua istanza Home Assistant e aggiungi il repository Verdant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fkriptos1970%2Fverdant-ha)
 
-Codice sorgente: [github.com/kriptos1970/verdant-ha](https://github.com/kriptos1970/verdant-ha). Le versioni installabili sono pubblicate nelle GitHub Releases; la cartella locale `releases/` non è versionata. L’interfaccia è disponibile in italiano e inglese, comprese cure, prodotti, trattamenti, dettaglio iOS, guide e diagnosi. La direzione del progetto è in [ROADMAP.md](ROADMAP.md).
+[![CI](https://github.com/kriptos1970/verdant-ha/actions/workflows/ci.yml/badge.svg)](https://github.com/kriptos1970/verdant-ha/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/kriptos1970/verdant-ha?label=release)](https://github.com/kriptos1970/verdant-ha/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-La matrice di riferimento è in [docs/REFERENCE.md](docs/REFERENCE.md); stato, verifiche e differenze dal nativo sono in [docs/STATUS.md](docs/STATUS.md). Il motore di cura è spiegato per esteso in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md): Manuale, Verdant, AI, modalità shadow/operativa, ricalcoli e limiti.
+<p align="center">
+  <img src="docs/screenshots/readme/home-desktop.jpg" alt="Verdant in un'istanza Home Assistant: calendario delle cure, elenco piante e scheda" width="100%">
+</p>
+
+## Perché Verdant
+
+Home Assistant sa leggere un sensore di umidità del terreno, ma non ti dice **cosa fare
+oggi**: quale pianta ha sete, cosa hai già completato, cosa hai fatto tre settimane fa e se
+una pianta sta migliorando. Verdant è quel flusso di lavoro, come add-on con
+un'interfaccia vera: niente dashboard YAML da montare, nessuna seconda app cloud.
+
+## Schermate
+
+| Oggi | Collezione | Pianta |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/readme/home-phone.jpg" width="240" alt="Oggi: agenda della settimana e piano di cura"> | <img src="docs/screenshots/readme/plants-phone.jpg" width="240" alt="Collezione con ambienti e ricerca"> | <img src="docs/screenshots/readme/plant-phone.jpg" width="240" alt="Dettaglio pianta con azioni rapide e scadenze"> |
+
+<p align="center">
+  <img src="docs/screenshots/readme/care-phone.jpg" width="280" alt="Calendario delle cure con le attività del giorno">
+</p>
+
+## In sintesi
+
+- **Collezione**: piante, ambienti, prodotti, fotografie, diario di crescita e album salute annotato.
+- **Cure**: giro di cure guidato per ambiente, calendario settimanale e mensile, cronologia
+  paginata, cicli di trattamento, rinvii e promemoria.
+- **Pianificazione**: pianificatore adattivo con regole stagionali e meteo Open-Meteo
+  facoltativo. Le piante nuove partono in modalità manuale; il motore operativo può rinviare
+  l'annaffiatura con una lettura affidabile del terreno ancora bagnato (attivo per
+  impostazione predefinita) e non anticipa mai una cura. Vedi [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md).
+- **Sensori**: temperatura, umidità, luce, umidità del terreno e conducibilità dalle entità di
+  Home Assistant, associate a una pianta o a un ambiente.
+- **Consigli AI (facoltativi)**: Gemini o OpenAI con output strutturato, anteprima esplicita e
+  applicazione selettiva. Disattivati per impostazione predefinita; l'applicazione automatica è spenta.
+- **Conoscenza**: identificazione Pl@ntNet, catalogo specie iNaturalist, profili Perenual e
+  Open Plantbook, nove guide di cura e controllo guidato dei sintomi.
+- **Etichette**: QR/NFC che aprono la pianta tramite l'URL stabile del pannello Home Assistant.
+- **Dati**: importazione dell'archivio nativo (envelope v1–v3), backup ZIP con checksum SHA256,
+  deduplicazione foto e rimozione EXIF, conservazione misure configurabile.
+- **Interfaccia web**: responsiva, allineata all'app nativa Verdant alle larghezze telefono;
+  funziona dentro Home Assistant Ingress senza esporre porte.
 
 ## Installazione su Home Assistant OS
 
 ### Repository add-on (consigliato)
 
 1. In Home Assistant aprire **Impostazioni → Add-on → Add-on store**.
-2. Menu **⋮** → **Repository** e aggiungere `https://github.com/kriptos1970/verdant-ha`.
-3. Aggiornare l’elenco, aprire **Verdant** e installarlo.
-4. Avviare l’add-on e aprire **Interfaccia web**. È disponibile Ingress; non serve esporre porte.
-5. Configurare fuso orario, entità consentite, cartella foto e le eventuali chiavi AI/Pl@ntNet nelle opzioni dell’add-on.
-6. In **Altro → Archivio e backup** caricare il backup esportato dall’app Verdant. L’importazione avviene su archivio vuoto, dopo l’anteprima.
+2. Menu **⋮** → **Repository** e aggiungere `https://github.com/kriptos1970/verdant-ha`
+   (oppure usare il badge qui sopra).
+3. Aggiornare l'elenco, aprire **Verdant** e installarlo.
+4. Avviare l'add-on e aprire **Interfaccia web**. È disponibile Ingress; non serve esporre porte.
+5. Configurare fuso orario, entità consentite, cartella foto e le eventuali chiavi AI/Pl@ntNet
+   nelle opzioni dell'add-on.
+6. In **Altro → Archivio e backup** caricare il backup esportato dall'app Verdant. L'importazione
+   avviene su archivio vuoto, dopo l'anteprima.
 
-Home Assistant controlla `plantcare_web/config.yaml` nel repository: una nuova versione compare direttamente nell’App store dopo una release.
+Home Assistant controlla `plantcare_web/config.yaml` nel repository: una nuova versione compare
+direttamente nell'App store dopo una release.
 
 ### Add-on locale (offline o sviluppo)
 
-1. Copiare **la cartella `plantcare_web` completa** in `/addons/plantcare_web` tramite Samba o Terminal & SSH. Non copiare `.venv`, `node_modules` o archivi personali.
-2. Nell’App store di Home Assistant aggiornare l’elenco degli add-on locali e installare **Verdant**.
+1. Scaricare l'ultimo `plantcare-web-<versione>.zip` dalle [Release](https://github.com/kriptos1970/verdant-ha/releases) ed estrarlo.
+2. Copiare **la cartella `plantcare_web` completa** in `/addons/plantcare_web` tramite Samba o
+   Terminal & SSH. Non copiare `.venv`, `node_modules` o archivi personali.
+3. Nell'App store di Home Assistant aggiornare l'elenco degli add-on locali e installare **Verdant**.
 
-> L’installazione da repository crea un add-on con slug prefissato dal repository (ad esempio `309d34f7_plantcare_web`), quella locale è registrata come `local_plantcare_web`: hanno cartelle dati separate. Per passare un’installazione locale al repository, esportare prima il backup ZIP, installare l’add-on da repository, reinserire le opzioni e importare lo ZIP sull’archivio vuoto.
+> L'installazione da repository crea un add-on con slug prefissato dal repository (ad esempio
+> `309d34f7_plantcare_web`), quella locale è registrata come `local_plantcare_web`: hanno cartelle
+> dati separate. Per passare un'installazione locale al repository, esportare prima il backup ZIP,
+> installare l'add-on da repository, reinserire le opzioni e importare lo ZIP sull'archivio vuoto.
 
-Il container viene costruito localmente durante l’installazione. Sono state verificate le build Docker ARM64 e AMD64. La 0.2.0 è stata installata su Home Assistant il 15 novembre 2026, verificando avvio e dashboard tramite Ingress; la 0.4.2 contiene ora la collezione reale importata e verificata nelle viste principali.
+Dettagli su opzioni, percorsi dati, backup e ripristino in [docs/INSTALL.md](docs/en/INSTALL.md)
+e [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Giro di cure e trattamenti
+## Privacy e impronta
 
-- **Oggi → Apri il giro di cura**, oppure **Cure → Giro di cure**: scegli l’ambiente e segui le attività di oggi, ordinate per stanza.
-- **Completata** registra la cura; **Rimanda a domani** salva un rinvio nel fuso configurato; **Salta** non modifica l’archivio. La lista non si accorcia sotto l’indice durante il salvataggio.
-- Quando previsto, conferma esplicitamente la concimazione insieme all’annaffiatura. I prodotti fogliari non vengono abbinati all’acqua.
-- **Prodotti → Pianifica ciclo**: scegli pianta, primo intervento, intervallo, numero di applicazioni, eventuale termine, dose e note.
-- Nella scheda **Trattamenti** puoi registrare un intervento, modificare, interrompere o riprendere un ciclo. L’interruzione conserva il diario.
-- Modificare o eliminare una registrazione ricalcola il numero delle applicazioni. Le applicazioni importate senza registrazioni storiche rimangono conservate.
-- **Cure → Calendario/Cronologia**: vista settimanale o mensile e filtri per ambiente, pianta, tipo e date. Le proiezioni mostrano la prossima attività in attesa, senza inventare eventi futuri.
+- Nessun account, nessuna telemetria, nessun servizio esterno necessario per usare la collezione.
+- Le ricerche meteo vanno a Open-Meteo. Pl@ntNet, Perenual, Open Plantbook, Gemini e OpenAI
+  vengono chiamati solo se aggiungi una chiave.
+- Le chiavi API restano nelle opzioni dell'add-on e sono usate solo dal backend.
+- L'add-on richiede l'API di Home Assistant per leggere le entità sensore che elenchi e Ingress
+  per l'interfaccia. Nessuna host network, nessuna porta esposta.
 
-Le cure già salvate restano nell’archivio se esci dal giro. La sessione del giro è temporanea, come nel nativo. Le attività di giorni precedenti restano nel calendario e non vengono reinserite automaticamente nel giro di oggi.
+## Domande frequenti
 
-## Dati e fotografie
+**Servono i sensori?** No. I sensori sono facoltativi: le scadenze funzionano con intervalli,
+stagione e profilo della specie.
 
-- Database e stato dell’app: `/data/plantcare.sqlite`, su disco locale dell’add-on.
-- Foto predefinite: `/data/photos`.
-- Miniature ricostruibili: `/data/thumbnails`.
-- Per foto condivise: impostare `photo_directory: /share/plantcare/photos`. La cartella `/share` è montata in scrittura. Non spostare SQLite su una condivisione di rete.
-- Il cambio del percorso **non sposta automaticamente** le foto: arrestare l’app, copiare la cartella conservando i nomi, cambiare l’opzione e riavviare. Conservare il percorso precedente fino alla verifica.
-- Se si usa un NAS montato da Home Assistant, verificare che il mount sia disponibile prima di avviare l’app. La condivisione non equivale a un backup.
-- Le foto nuove sono ridimensionate fino a 2400 px, convertite in JPEG, private dei metadati EXIF e deduplicate per contenuto. Le foto importate sono conservate senza ricompressione.
-- Dimensione massima upload configurabile con `max_photo_mb` (20 MB predefiniti); foto di backup nativo fino a 20 MB ciascuna. Miniature da 480 px generate al primo accesso.
-- Le misurazioni hanno una conservazione configurabile, predefinita di 365 giorni. Le cure e le foto non vengono cancellate automaticamente.
+**Serve una chiave AI?** No. I consigli AI sono spenti per impostazione predefinita e ogni
+proposta passa da un'anteprima prima di essere applicata.
 
-Quando le foto sono in `/share`, includere la cartella condivisa nel backup HA oppure eseguire un backup dedicato sul NAS. Salvare anche il database nello stesso punto temporale. SQLite resta la scelta attuale; MariaDB esterno è rimandato.
+**Dove stanno i dati?** SQLite e foto in `/data` (o `/share` per le foto), inclusi nei backup di
+Home Assistant. L'add-on esporta anche uno ZIP con checksum SHA256.
 
-## Backup e ripristino
+**Sincronizza con l'app nativa Verdant?** No. L'add-on web importa una volta l'archivio nativo;
+non c'è sincronizzazione continua.
 
-L’esportazione predefinita produce un **ZIP** con `data.json`, fotografie separate e manifest con checksum SHA256. I file vengono copiati su disco a blocchi, senza trasformare tutta la collezione fotografica in base64 nella RAM. Servono spazio temporaneo e spazio libero sufficienti. Gli archivi temporanei completati vengono eliminati dopo il download.
+**Italiano o inglese?** Entrambe, comprese cure, prodotti, trattamenti, guide e diagnosi. Alcune
+note lunghe già presenti negli archivi possono restare nella lingua originale.
 
-Importazione: ZIP web fino a 2 GB; JSON nativo con envelope v1–v3 fino a 150 MB. Il formato JSON storico può richiedere più RAM del peso del file; per gli archivi fotografici grandi usare ZIP e i backup Home Assistant. Il ripristino verifica tutti i checksum prima delle scritture nel database e non estrae percorsi arbitrari. I file già presenti non vengono sovrascritti.
+## Stato
 
-Compatibilità JSON web: `GET api/backup?format=json`, consentita soltanto fino a 40 MB di foto.
+Versione attuale: **0.11.28**, pubblicata nelle [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio
+personale, ma è ancora in sviluppo attivo. Limiti noti e roadmap in [docs/STATUS.md](docs/STATUS.md)
+e [ROADMAP.md](ROADMAP.md).
 
-## Sensori e AI
+Sotto il cofano: Python 3.13, FastAPI, Pydantic, SQLite, React 19, TypeScript e Vite, confezionati
+come add-on Home Assistant per `aarch64` e `amd64`. 225 test backend più type-check e build del
+frontend girano in CI a ogni push e pull request.
 
-Impostare `exposed_entities` soltanto con le entità destinate alle piante. Sono accettate temperatura, umidità, luce, umidità del terreno e conducibilità. In **Altro → Sensori** associare una pianta o una stanza. Il token Supervisor rimane nel container.
+## Documentazione
 
-Per l’AI impostare `ai_provider`, chiave corrispondente e, facoltativamente, `ai_model`. I valori predefiniti conservano quelli dei sorgenti Apple: `gemini-3.5-flash-lite` o `gpt-5-nano`. Se non disponibili nel proprio account, selezionare esplicitamente un modello valido. Nessuna sostituzione automatica di provider.
-
-L’analisi periodica interessa solo le piante con modalità AI e produce proposte. L’applicazione automatica è disattivata, salvo `auto_apply_ai: true`. Le proposte basate su una scheda modificata vengono rifiutate. Le prove dei provider sono simulate; non sono state usate chiavi o eseguite chiamate a pagamento.
-
-## Sviluppo locale
-
-```sh
-python3 -m venv .venv
-.venv/bin/pip install -r plantcare_web/backend/requirements.lock pytest
-npm ci --prefix plantcare_web/frontend
-npm run build --prefix plantcare_web/frontend
-PLANTCARE_DATA=.data .venv/bin/uvicorn plantcare_web.backend.main:app --host 127.0.0.1 --port 8099 --no-proxy-headers
-```
-
-Aprire `http://127.0.0.1:8099/`. In sviluppo non viene usato Ingress: il bind è solo loopback. Per sviluppo frontend con ricaricamento: `npm run dev --prefix plantcare_web/frontend` con backend avviato sulla porta 8099.
-
-```sh
-.venv/bin/python -m pytest plantcare_web/tests -q
-.venv/bin/python scripts/verify_native.py
-docker build -t plantcare-web:0.2.0 plantcare_web
-```
-
-`verify_native.py` confronta gli algoritmi Python con il codice Swift originale nella cartella sorella `PlantCare2.0`, senza modificarlo. Richiede Swift disponibile sul sistema.
-
-## Pianificazione intelligente (0.3.0)
-
-Dalla scheda della pianta aprire **Configura piano intelligente**: esposizione, località e clima manuale o meteo Open-Meteo opzionale. Il sistema mostra un’anteprima prima di cambiare il calendario. I piani importati non avviano richieste meteo automaticamente. Dalla 0.11.4 il motore operativo si imposta nelle opzioni dell’add-on ed è **operativo per default**; dettagli in [docs/CARE_ENGINE.md](docs/CARE_ENGINE.md).
-
-La 0.3.0 è installata su Home Assistant e la dashboard Ingress è stata verificata in Safari.
-
-Verifiche di equivalenza aggiuntive: `.venv/bin/python scripts/verify_adaptive.py` e `.venv/bin/python scripts/verify_care_engine.py`; eseguono il codice Swift originale dalla cartella adiacente PlantCare2.0, senza modificarlo.
-
-## Assistente AI (0.4.0)
-
-Consigli conservati nella scheda, selezione delle attività da applicare e anteprima del piano effettivo. Catalogo dei modelli da **Altro → Piano AI**; chiavi e provider nelle opzioni Home Assistant. Cache per richieste identiche e notifiche per le proposte giornaliere. I collaudi provider sono simulati: la prova con un account reale richiede la configurazione delle chiavi. Equivalenza delle regole di applicazione: `.venv/bin/python scripts/verify_ai.py`.
-
-La 0.4.0 è installata su Home Assistant; caricamento della dashboard e versione verificati tramite Ingress. Nessun backup Home Assistant creato durante l’aggiornamento.
-
-La correzione 0.4.1 è installata: catalogo Gemini verificato con la chiave di Verdant Server copiata su richiesta dell’utente. Gli errori dei servizi esterni ora mostrano una causa specifica senza esporre credenziali.
-
-La **0.4.2** è installata su Home Assistant: importate le 18 piante Verdant, sette prodotti e 124 foto (375 MB nella cartella condivisa). Verificate collezione, diario, prodotti e calendario. Originali invariati e nessun backup creato. [Dettagli della migrazione](docs/IMPORT.md).
-
-Collaudo Gemini reale completato sul Ficus: risposta e anteprima selettiva verificate, consiglio lasciato da applicare. Dalla 0.4.3 il contesto climatico indica la data del piano salvato e viene distinto esplicitamente dal meteo attuale. I consigli precedenti richiedono rigenerazione.
-
-La **0.5.0** aggiunge in **Altro** il riconoscimento fotografico Pl@ntNet e la biblioteca delle specie importate. Dopo aver scelto un risultato, controlla la bozza prima di salvare. Le schede di coltivazione Perenual sono consultabili dai risultati, dal catalogo locale e dall’editor della pianta. Configura `plantnet_api_key` e `perenual_api_key` nelle opzioni dell’add-on, poi riavvialo. Le credenziali sono facoltative; il catalogo locale funziona senza chiavi. Nessun nuovo servizio cambia automaticamente il piano di cura.
-
-La **0.6.0** aggiunge **Altro → Guide di cura**, **Altro → Controllo salute** e la scheda **Guida** di ogni pianta. Le guide e il primo controllo dei sintomi funzionano localmente, senza chiavi API e senza registrare cure. [Dettagli dello step 7](docs/STEP7.md).
-
-La **0.6.1** corregge la visualizzazione delle fotografie dei prodotti già importate e aggiunge anteprima/caricamento nell’editor prodotto. Nessuna reimportazione necessaria.
-
-La **0.7.0** raggruppa sfondo bianco, album salute con quattro foto annotate, etichette QR/NFC e consultazione Open Plantbook con Perenual alternativo. Le credenziali si configurano nelle opzioni Home Assistant; nessuna chiave entra nel QR.
-
-## Catalogo e profili botanici — 0.8.0
-
-In **Altro → Catalogo botanico** cerca una specie o consulta le quattro selezioni native. «Prepara scheda» apre una bozza da verificare. Le immagini remote con licenza non vengono duplicate nella cartella foto.
-
-Nel piano intelligente, «Consulta riferimento botanico» cerca Open Plantbook con fallback Perenual. Seleziona esplicitamente il profilo e controlla l’anteprima prima di applicare il piano. Le corrispondenze approssimative richiedono conferma; i profili privi di una frequenza affidabile non vengono applicati. Le soglie dei sensori non vengono sovrascritte.
-
-## Archivio e prestazioni — 0.9.0
-
-La collezione carica il diario completo quando apri una pianta. In **Cure → Cronologia**, consulta 50 eventi per pagina usando i filtri abituali. Nel diario della pianta le cure e le storie di crescita hanno pagine separate. Nessun evento viene tagliato o rimosso. Verifiche e limiti in [docs/STEP8.md](docs/STEP8.md).
-
-## Interfaccia iPhone — 0.10.0
-
-Layout mobile riallineato a Verdant iOS: navigazione, lista Piante/Ambienti, scheda con riepilogo, strumenti e prodotti. Testi e foto più grandi; foto ingrandibili a tutta schermata. Il confronto e i limiti sono in [docs/IOS_LAYOUT.md](docs/IOS_LAYOUT.md). Il riallineamento desktop resta rimandato.
+- [Installazione, opzioni e backup](docs/en/INSTALL.md)
+- [Motore di cura — Manuale, Verdant e AI](docs/CARE_ENGINE.md)
+- [Matrice di riferimento](docs/REFERENCE.md)
+- [Stato e limiti noti](docs/STATUS.md)
+- [Indice della documentazione](docs/README.md)
 
 ## Contribuire
 
-Il progetto è aperto a contributi. Leggi [CONTRIBUTING.md](CONTRIBUTING.md) prima di aprire una pull request. Esegui i test backend e la build frontend:
+Il progetto è aperto a contributi. Leggi [CONTRIBUTING.md](CONTRIBUTING.md) prima di aprire una
+pull request. Esegui i test backend e la build frontend:
 
 ```sh
 .venv/bin/python -m pytest plantcare_web/tests -q
 npm run build --prefix plantcare_web/frontend
 ```
 
-La CI GitHub esegue gli stessi controlli a ogni push e pull request. Non includere credenziali, archivi personali o fotografie dell'archivio operativo nei commit. Per problemi di sicurezza segui [SECURITY.md](SECURITY.md), senza aprire issue pubbliche. L'indice della documentazione è in [docs/README.md](docs/README.md).
+La CI GitHub esegue gli stessi controlli a ogni push e pull request. Non includere credenziali,
+archivi personali o fotografie dell'archivio operativo nei commit. Per problemi di sicurezza segui
+[SECURITY.md](SECURITY.md), senza aprire issue pubbliche.
+
+Se Verdant ti è utile, una stella aiuta altri utenti Home Assistant a trovarlo.
 
 ## Licenza
 
 Distribuito con licenza [MIT](LICENSE). Copyright © 2026 Maurizio Antonio Sicoli.
 
-Verdant è un progetto indipendente: non è affiliato a Home Assistant, Pl@ntNet, Perenual, Open Plantbook, iNaturalist, Google o OpenAI. I marchi citati appartengono ai rispettivi proprietari.
+Verdant è un progetto indipendente dell'autore dell'app nativa Verdant e non è affiliato a Home
+Assistant, Pl@ntNet, Perenual, Open Plantbook, iNaturalist, Google o OpenAI, né all'app iOS
+“Verdant Grow Intelligence”, che non ha alcun rapporto con questo progetto. I marchi citati
+appartengono ai rispettivi proprietari.

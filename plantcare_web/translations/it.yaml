@@ -1,0 +1,55 @@
+configuration:
+  language:
+    name: Lingua dell'interfaccia
+    description: Lingua dell'interfaccia web e delle notifiche. "auto" segue il browser.
+  photo_directory:
+    name: Cartella delle foto
+    description: Dove vengono salvate le foto delle piante. Usa /share/plantcare/photos per condividerle con altri strumenti; le foto esistenti non vengono spostate automaticamente.
+  max_photo_mb:
+    name: Dimensione massima foto (MB)
+    description: Limite di caricamento per una singola foto. Le immagini più grandi vengono rifiutate prima dell'invio.
+  measurement_retention_days:
+    name: Conservazione misure (giorni)
+    description: Per quanto tempo vengono conservate le letture dei sensori. Cure e foto non vengono mai eliminate automaticamente.
+  timezone:
+    name: Fuso orario
+    description: Fuso IANA usato per i giorni del calendario, i promemoria e l'analisi AI giornaliera.
+  exposed_entities:
+    name: Entità sensore consentite
+    description: Entità di Home Assistant che l'add-on può leggere (temperatura, umidità, luce, umidità del terreno, conducibilità). Le entità non elencate vengono ignorate.
+  poll_interval_minutes:
+    name: Intervallo di lettura (minuti)
+    description: Ogni quanto vengono campionate le entità elencate.
+  care_engine_mode:
+    name: Modalità del motore di cura
+    description: "shadow: i consigli sono informativi e non modificano il calendario. active: il motore può rinviare l'annaffiatura con una lettura affidabile e recente del terreno ancora bagnato; non anticipa mai una cura."
+  ai_provider:
+    name: Provider AI
+    description: Provider facoltativo per consigli e analisi giornaliera. Disattivato per impostazione predefinita.
+  ai_model:
+    name: Modello AI
+    description: Nome esplicito del modello. Vuoto usa il valore predefinito del provider.
+  openai_api_key:
+    name: Chiave API OpenAI
+    description: Salvata nelle opzioni dell'add-on e usata solo dal server. Non viene mai inviata al browser.
+  gemini_api_key:
+    name: Chiave API Gemini
+    description: Salvata nelle opzioni dell'add-on e usata solo dal server. Non viene mai inviata al browser.
+  ai_update_time:
+    name: Ora dell'analisi AI giornaliera
+    description: Ora locale (HH:MM) dell'analisi giornaliera per le piante in modalità AI.
+  auto_apply_ai:
+    name: Applica automaticamente le proposte AI
+    description: Disattivato per impostazione predefinita. Se attivo, le proposte vengono applicate senza l'anteprima.
+  plantnet_api_key:
+    name: Chiave API Pl@ntNet
+    description: Identificazione facoltativa della pianta da una foto.
+  perenual_api_key:
+    name: Chiave API Perenual
+    description: Schede botaniche e note di sicurezza facoltative.
+  openplantbook_client_id:
+    name: Client ID Open Plantbook
+    description: Consultazione facoltativa di Open Plantbook.
+  openplantbook_secret:
+    name: Secret Open Plantbook
+    description: Consultazione facoltativa di Open Plantbook.
