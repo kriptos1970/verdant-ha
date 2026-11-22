@@ -16,9 +16,10 @@ import { EventAvatar, usePhoneLayout } from "./ui";
 import { useI18n } from "./i18n";
 import { IOSIcon, careIconName } from "./ios-icons";
 import { useCareLabels } from "./care-labels";
+import { dateFormatter } from "./intl-cache";
 
 export function dayKey(value: string, zone: string) {
-  const parts = new Intl.DateTimeFormat("en", {
+  const parts = dateFormatter("en", {
     timeZone: zone,
     year: "numeric",
     month: "2-digit",
@@ -33,10 +34,7 @@ const shift = (day: string, days: number) => {
   return date.toISOString().slice(0, 10);
 };
 const display = (day: string, options: Intl.DateTimeFormatOptions, locale = "it") =>
-  new Date(day + "T12:00:00Z").toLocaleDateString(locale, {
-    ...options,
-    timeZone: "UTC",
-  });
+  dateFormatter(locale, { ...options, timeZone: "UTC" }).format(new Date(day + "T12:00:00Z"));
 function DayButton({
   day,
   selected,

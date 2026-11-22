@@ -5,6 +5,7 @@ import {api} from './api';
 import guidesIt from './data/care-guides.json';
 import guidesEn from './data/care-guides.en.json';
 import {useI18n,type MessageKey} from './i18n';
+import {dateFormatter} from './intl-cache';
 import {useCareLabels} from './care-labels';
 import {useDomainLabels} from './domain-labels';
 const guideImages=import.meta.glob('./assets/care-guides/*.webp',{eager:true,query:'?url',import:'default'}) as Record<string,string>;
@@ -39,7 +40,7 @@ export function PlantKnowledge({plant}:{plant:Plant}){
  const {categoryLabel}=useDomainLabels();
  const [guide,setGuide]=useState<Practical>(),[error,setError]=useState('');
  useEffect(()=>{let active=true;setGuide(undefined);setError('');api<Practical>(`knowledge/plants/${plant.id}/guide?language=${locale}`).then(v=>{if(active)setGuide(v)}).catch(e=>{if(active)setError(e.message)});return()=>{active=false}},[plant.id,plant._version]);
- const months=Array.from({length:12},(_,i)=>new Intl.DateTimeFormat(locale,{month:'short'}).format(new Date(2026,i,1)));
+ const months=Array.from({length:12},(_,i)=>dateFormatter(locale,{month:'short'}).format(new Date(2026,i,1)));
  return <section className="practical-guide"><h3><BookOpen size={19}/> {t('guides.practical')}</h3><p className="muted small-text">{t('guides.categoryIntro',{category:categoryLabel(plant.category).toLocaleLowerCase(locale)})}</p>{error&&<p role="alert">{error}</p>}{!guide&&!error&&<p>{t('guides.loading')}</p>}{guide&&<><div className="guide-ranges">{guide.ranges.map(r=><article key={r.title}><h4>{metricKeys[r.title]?t(metricKeys[r.title]):r.title}</h4><small>{t('guides.ideal')}</small><strong>{r.ideal}</strong><hr/><p>{t('guides.tolerable',{value:r.tolerable})}</p></article>)}</div><div className="guide-tiles">{guide.tiles.map(tile=><article key={tile.title}><h4>{tileKeys[tile.title]?t(tileKeys[tile.title]):tile.title}</h4><strong>{tile.value}</strong><p>{tile.tip}</p></article>)}</div><section className="seasonal-guide"><h4>{t('guides.seasonal')}</h4><p className="small-text">{t('guides.seasonalInterval')}</p><div className="seasonal-bars" role="img" aria-label={guide.seasonal.map(p=>t('guides.daysAria',{month:months[p.month-1],days:p.days})).join('; ')}>{guide.seasonal.map(p=><div key={p.month}><span>{p.days}</span><i style={{height:`${Math.max(4,p.days/Math.max(...guide.seasonal.map(item=>item.days))*100)}px`}}/><small>{months[p.month-1]}</small></div>)}</div><p className="muted small-text">{t('guides.seasonalNote')}</p></section></>}</section>
 }
 export function GuidesTool({plants}:{plants:Plant[]}){

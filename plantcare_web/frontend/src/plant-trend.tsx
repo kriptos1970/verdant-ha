@@ -7,6 +7,7 @@ import {
   ChartLegend,
 } from "./chart-kit";
 import { useI18n } from "./i18n";
+import { dateFormatter } from "./intl-cache";
 import type { CareEvent } from "./types";
 
 const WATER_KIND = "Annaffia";
@@ -15,7 +16,7 @@ const MONTHS = 12;
 type MonthKey = { key: string; short: string; long: string; water: number; other: number };
 
 function zoneMonth(date: Date, zone: string) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
+  const parts = dateFormatter("en-CA", {
     timeZone: zone,
     year: "numeric",
     month: "2-digit",
@@ -26,7 +27,7 @@ function zoneMonth(date: Date, zone: string) {
 }
 
 function monthKeys(zone: string, now: Date) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
+  const parts = dateFormatter("en-CA", {
     timeZone: zone,
     year: "numeric",
     month: "2-digit",
@@ -48,11 +49,11 @@ function monthKeys(zone: string, now: Date) {
 function monthLabel(key: string, locale: string, zone: string) {
   const [year, month] = key.split("-").map(Number);
   const date = new Date(Date.UTC(year, month - 1, 1));
-  const short = new Intl.DateTimeFormat(locale, {
+  const short = dateFormatter(locale, {
     timeZone: zone,
     month: "short",
   }).format(date);
-  const long = new Intl.DateTimeFormat(locale, {
+  const long = dateFormatter(locale, {
     timeZone: zone,
     month: "long",
     year: "numeric",

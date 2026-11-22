@@ -37,10 +37,25 @@ for (const key of new Set([...italianKeys, ...englishKeys])) {
   }
 }
 
+// plural("base", count) builds the key at runtime, so TypeScript cannot check it.
+const sources = new URL('../plantcare_web/frontend/src/', import.meta.url);
+const pluralBases = new Set();
+for (const entry of fs.readdirSync(sources, { recursive: true })) {
+  const file = String(entry);
+  if (!/\.tsx?$/.test(file) || file.includes('i18n/')) continue;
+  const source = fs.readFileSync(new URL(file, sources), 'utf8');
+  for (const match of source.matchAll(/\bplural\(\s*["']([\w.]+)["']/g)) pluralBases.add(match[1]);
+}
+for (const base of [...pluralBases].sort()) {
+  for (const form of ['one', 'other']) {
+    if (!(`${base}.${form}` in it)) problems.push(`chiave plurale mancante: ${base}.${form} (usata da plural("${base}"))`);
+  }
+}
+
 if (problems.length) {
   console.error('Cataloghi di traduzione non allineati:');
   for (const problem of problems) console.error(' - ' + problem);
   process.exit(1);
 }
 
-console.log(`i18n OK: ${italianKeys.length} chiavi, italiano e inglese allineati (chiavi e segnaposto).`);
+console.log(`i18n OK: ${italianKeys.length} chiavi, italiano e inglese allineati (chiavi, segnaposto e ${pluralBases.size} chiavi plurali usate nel codice).`);

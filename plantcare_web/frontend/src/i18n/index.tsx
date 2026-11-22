@@ -10,6 +10,7 @@ import {
 import it, { type MessageKey } from "./it";
 import en from "./en";
 import { api } from "../api";
+import { dateFormatter, numberFormatter, pluralRule } from "../intl-cache";
 
 export type { MessageKey } from "./it";
 
@@ -105,13 +106,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       setPreference,
       t,
       plural: (key, count, params) => {
-        const category = new Intl.PluralRules(locale).select(count);
+        const category = pluralRule(locale).select(count);
         return t(`${key}.${category}` as MessageKey, { count, ...params });
       },
       formatDate: (value, options) =>
-        new Intl.DateTimeFormat(locale, options).format(new Date(value)),
+        dateFormatter(locale, options).format(new Date(value)),
       formatNumber: (value, options) =>
-        new Intl.NumberFormat(locale, options).format(value),
+        numberFormatter(locale, options).format(value),
     };
   }, [locale, preference, setPreference]);
 
