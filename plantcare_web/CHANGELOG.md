@@ -1,3 +1,10 @@
+# 1.0.2 — foto del diario a schermo intero e rendering più leggero
+
+- **Foto del diario di crescita**: nella scheda pianta le miniature aprono un modale con l'originale, invece di un nuovo tab che su telefono restava vuoto; se l'originale non carica compare un messaggio. Il comando è un vero pulsante con etichetta accessibile, la miniatura resta decorativa per lo screen reader.
+- **Prestazioni**: i formatter `Intl` sono memorizzati per lingua e forma delle opzioni. Prima ogni cella del calendario, ogni punto del grafico e ognuno dei dodici mesi della guida creavano il proprio `Intl.DateTimeFormat`: circa 0,95 ms per render del calendario, ora 0,01 ms (Mac di sviluppo, 35 celle).
+- **Controlli**: `check_i18n.mjs` verifica anche le chiavi plurali costruite a runtime (`plural("x")` → `x.one`/`x.other`), che TypeScript non vede per via del cast sulla categoria grammaticale. 24 basi plurali controllate.
+- Verifiche: 225 test backend, 1.195 chiavi i18n allineate, build frontend.
+
 # 1.0.1 — telefono più reattivo e UI inglese completa
 
 - **Risposta al tocco**: evidenziazione del tap, `touch-action: manipulation` e stato premuto su pulsanti, tab e card; i controlli non sembrano più inerti.

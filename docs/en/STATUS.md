@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **1.0.1**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **1.0.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -50,6 +50,22 @@ Current release: **1.0.1**, published on [GitHub Releases](https://github.com/kr
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 1.0.2 (22 November 2026)
+
+- **Diary photos**: thumbnails on the plant page open a modal with the original (`growthPhoto` in
+  `main.tsx`), with a localised failure state (`detail.growthPhotoUnavailable`); they used to be
+  links to a new tab that stayed blank on phones. The control is a `<button>` with an
+  `aria-label`, and the thumbnail is `alt=""`.
+- **Cached `Intl`**: a new `intl-cache.ts` module caches `DateTimeFormat`, `NumberFormat` and
+  `PluralRules` for the i18n helpers, the calendar, the trend chart and the guides. Micro-measure:
+  0.95 → 0.01 ms per calendar render (35 cells).
+- **i18n checks**: `scripts/check_i18n.mjs` now verifies the 24 plural keys used in the code, so a
+  missing form fails the check instead of reaching the screen. The guard was proven with a fake key
+  that was removed straight after.
+- Checks: 225 backend tests, 1,195 aligned keys, frontend build. The photo modal was not exercised
+  in the demo preview (the sample archive has no growth photos): the visual check is on your real
+  archive.
 
 ## Release 1.0.1 (22 November 2026)
 

@@ -1,4 +1,4 @@
-# Stato dell’incremento 1.0.1
+# Stato dell’incremento 1.0.2
 
 ## Stato rispetto agli otto step
 
@@ -12,6 +12,13 @@
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
 | 8 — Consolidamento | 0.11.28 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 1.0.2 (22 novembre 2026)
+
+- **Foto del diario**: le miniature nella scheda pianta aprono un modale con l'originale (`growthPhoto` in `main.tsx`), con stato di errore localizzato (`detail.growthPhotoUnavailable`); prima erano link a un nuovo tab che su telefono restava vuoto. Il comando è un `<button>` con `aria-label` e la miniatura ha `alt=""`.
+- **`Intl` memorizzato**: nuovo modulo `intl-cache.ts` con cache per `DateTimeFormat`, `NumberFormat` e `PluralRules`; usato da `i18n`, calendario, grafico del trend e guide. Micro-misura: 0,95 → 0,01 ms per render del calendario (35 celle).
+- **Controlli i18n**: `scripts/check_i18n.mjs` verifica le 24 chiavi plurali usate nel codice; una chiave mancante ora blocca il controllo invece di comparire a schermo. La guardia è stata provata con una chiave finta e rimossa subito dopo.
+- Verifiche: 225 test backend, 1.195 chiavi allineate, build frontend. Il modale foto non è stato esercitato nel preview demo (l'archivio di prova non ha foto di crescita): la verifica visiva è sul tuo archivio reale.
 
 ## Rilascio 1.0.1 (22 novembre 2026)
 

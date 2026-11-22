@@ -4,6 +4,20 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.0.2 — full-size diary photos and lighter rendering
+
+- **Growth diary photos**: on the plant page thumbnails open a modal with the original instead of
+  a new tab that stayed blank on phones; a message appears when the original fails to load. The
+  control is a real button with an accessible label, and the thumbnail is decorative for screen
+  readers.
+- **Rendering**: `Intl` formatters are cached per language and option shape. Every calendar cell,
+  chart point and one of the twelve guide months used to build its own `Intl.DateTimeFormat`:
+  about 0.95 ms per calendar render, now 0.01 ms (development Mac, 35 cells).
+- **Checks**: `check_i18n.mjs` also verifies the plural keys built at runtime
+  (`plural("x")` → `x.one`/`x.other`), which TypeScript cannot see through the category cast.
+  24 plural bases checked.
+- Checks: 225 backend tests, 1,195 aligned i18n keys, frontend build.
+
 # 1.0.1 — a more responsive phone and a complete English UI
 
 - **Touch feedback**: tap highlight, `touch-action: manipulation` and a pressed state on buttons,
