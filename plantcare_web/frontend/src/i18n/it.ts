@@ -6,6 +6,8 @@ const it = {
   "nav.more": "Altro",
   "nav.analytics": "Analisi",
   "nav.main": "Navigazione principale",
+  "nav.rooms": "Stanze",
+  "app.skipToContent": "Vai al contenuto",
 
   "app.resizeSidebar": "Ridimensiona la colonna laterale",
   "app.resizeSidebarHint": "Trascina per ridimensionare. Doppio clic per tornare alla larghezza predefinita.",
@@ -978,6 +980,7 @@ const it = {
   "backup.choose": "Scegli un backup Verdant",
   "backup.formats": "JSON nativo fino a 150 MB o ZIP web fino a 2 GB",
   "backup.verifying": "Verifico l’archivio…",
+  "backup.restoring": "Ripristino l’archivio…",
   "backup.contents": "Contenuto del backup",
   "backup.nativeFormat": "PlantCare nativo",
   "backup.trashed": "nel cestino",

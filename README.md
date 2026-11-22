@@ -106,7 +106,7 @@ diagnosis. Some long notes already stored in archives may remain in their origin
 
 ## Status
 
-Current version: **1.0.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Current version: **1.1.0**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 The project is usable and runs on a real Home Assistant installation with a personal archive,
 but it is still under active development. Known limits and the remaining roadmap are tracked in
 [docs/STATUS.md](docs/STATUS.md) and [ROADMAP.md](ROADMAP.md).

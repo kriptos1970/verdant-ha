@@ -1,5 +1,22 @@
 # Step 8 — consolidamento dell’archivio (0.9.0)
 
+## Chiusura dello Step 8
+
+Il collaudo è concluso per l’uso domestico dell’add-on. Le note successive descrivono le verifiche storiche delle singole versioni.
+
+| Issue | Esito |
+|---|---|
+| [#1](https://github.com/kriptos1970/verdant-ha/issues/1) | Il manutentore ha confermato layout e VoiceOver nell’app Companion su iPhone fisico. |
+| [#2](https://github.com/kriptos1970/verdant-ha/issues/2) | Un QR appena generato ha aperto la pianta corretta su iPhone tramite il link stabile del pannello Home Assistant. Il collaudo dei tag NFC è stato escluso dal perimetro. |
+| [#3](https://github.com/kriptos1970/verdant-ha/issues/3) | Ripristinati il backup ZIP Verdant e il backup parziale Home Assistant (add-on + `/share`) in una VM isolata. Verificati dati, impostazioni e foto; l’archivio reale non è stato coinvolto. |
+| [#4](https://github.com/kriptos1970/verdant-ha/issues/4) | Confermati temperatura esterna Open-Meteo e sensori HA di umidità, illuminamento e umidità del substrato. Temperatura interna e conducibilità non rientrano nel collaudo confermato. |
+| [#5](https://github.com/kriptos1970/verdant-ha/issues/5) | Ingress verificato con archivi sintetici fino a 500.000 eventi in VM. Era una prova di stress una tantum, non un requisito: niente replica su hardware di produzione. Il [limite ZIP emerso](ARCHIVE_SCALE.md#home-assistant-os-rehearsal-mac-vm) resta documentato e la correzione è rinviata. |
+| [#6](https://github.com/kriptos1970/verdant-ha/issues/6) | Esiti riportati nella [roadmap](../ROADMAP.md) e nello stato [italiano](STATUS.md#chiusura-dello-step-8) e [inglese](en/STATUS.md#step-8-closeout). |
+
+Confermati anche Pl@ntNet nell’editor e Gemini su dati reali. OpenAI non è stato provato perché non era configurata una chiave.
+
+## Implementazione originale (0.9.0)
+
 La collezione usa `GET /api/plants?summary=true`: conserva anagrafica, conteggi, calendario, trattamenti e apprendimento, senza trasferire di nuovo cronologia, crescita e album salute di tutte le piante. La singola scheda completa viene richiesta all’apertura e dopo una variazione della sua versione. Risposte superate dopo cambio pianta vengono ignorate; errori di caricamento offrono «Riprova». Una scheda sintetica non può essere salvata al posto di quella completa.
 
 La cronologia generale usa `GET /api/history` con 50 eventi per pagina, limite API massimo 100, filtri per ambiente, pianta, tipo e date. Query SQLite JSON in sola lettura, ordinamento deterministico per istante/pianta/evento, eventi eliminati esclusi. Le date sono giorni locali nel fuso configurato, incluso il cambio d’ora. Al cambio filtri/versioni si torna alla prima pagina. Le pagine rappresentano l’archivio corrente, non un’istantanea permanente tra client differenti.

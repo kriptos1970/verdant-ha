@@ -10,6 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 from .domain import iso, now, parse
 from .care_kinds import canonical_plant, legacy_plant
+from .history_index import ensure_history_index
 
 class Conflict(Exception):
     pass
@@ -37,6 +38,7 @@ class Store:
             columns={row[1] for row in db.execute('PRAGMA table_info(entities)')}
             if 'deleted_at' not in columns:
                 db.execute('ALTER TABLE entities ADD COLUMN deleted_at TEXT')
+            ensure_history_index(db)
 
     @contextmanager
     def connection(self):

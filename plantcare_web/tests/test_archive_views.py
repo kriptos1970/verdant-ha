@@ -1,4 +1,6 @@
 from copy import deepcopy
+import json
+import sqlite3
 from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
@@ -65,6 +67,77 @@ def test_dates_use_local_calendar_across_dst(client):
     rows=client.get('/api/history?from_day=2026-10-25&to_day=2026-10-25').json()
     assert rows['total']==2
     assert {r['event']['date'] for r in rows['items']}=={'2026-10-24T22:00:00Z','2026-10-25T22:59:59Z'}
+
+
+def test_existing_database_backfills_history_without_rewriting_payload(client, tmp_path, monkeypatch):
+    path = tmp_path / 'legacy'
+    path.mkdir()
+    plant = Plant(name='Legacy', room='Studio').model_dump()
+    entry = event(day='2026-10-25T00:00:00+02:00', note='Legacy text')
+    plant['history'] = [entry, event(deletedAt='2026-11-18T12:00:00Z')]
+    payload = json.dumps(plant)
+    with sqlite3.connect(path / 'plantcare.sqlite') as db:
+        db.execute('CREATE TABLE entities(collection TEXT, id TEXT, payload TEXT, version INTEGER, PRIMARY KEY(collection,id))')
+        db.execute('INSERT INTO entities VALUES (?,?,?,?)', ('plants', plant['id'], payload, 7))
+    for _ in range(2):
+        store = Store(path)
+        monkeypatch.setattr(main, 'store', store)
+        history = client.get('/api/history', params={'kind': 'water', 'room': 'Studio', 'from_day': '2026-10-25'}).json()
+        assert history['total'] == 1
+        assert history['items'][0]['event'] == entry
+        assert history['items'][0]['version'] == 7
+        with store.connection() as db:
+            assert db.execute('SELECT payload FROM entities').fetchone()[0] == payload
+
+
+def test_history_index_tracks_edits_and_rollbacks(client):
+    original = event(note='Before')
+    plant = seed(events=[original])
+    plant['name'] = 'Renamed'
+    main.store.put('plants', plant, 1)
+    first = client.get('/api/history').json()['items'][0]
+    assert (first['plantName'], first['version']) == ('Renamed', 2)
+    plant['room'] = 'Studio'
+    main.store.put('plants', plant, 2)
+    assert client.get('/api/history', params={'room': 'Casa'}).json()['total'] == 0
+    assert client.get('/api/history', params={'room': 'Studio'}).json()['total'] == 1
+
+    edited = {**original, 'kind': 'Pota', 'date': '2026-12-01T12:00:00Z'}
+    plant['history'] = [edited]
+    with pytest.raises(RuntimeError):
+        with main.store.connection() as db:
+            main.store.put('plants', plant, 3, db)
+            raise RuntimeError('Abort the transaction')
+    assert client.get('/api/history', params={'kind': 'Pota'}).json()['total'] == 0
+    assert client.get('/api/history', params={'kind': 'Annaffia'}).json()['total'] == 1
+    main.store.put('plants', plant, 3)
+    assert client.get('/api/history').json()['items'][0]['event'] == edited
+    plant['history'][0]['deletedAt'] = '2026-12-02T12:00:00Z'
+    main.store.put('plants', plant, 4)
+    assert client.get('/api/history').json()['total'] == 0
+
+
+def test_history_index_replaces_events_on_backup_restore(client):
+    saved = event(note='Saved')
+    plant = seed(events=[saved])
+    backup = client.get('/api/backup').content
+    current = {**event(note='Current'), 'kind': 'Pota'}
+    plant['history'] = [current]
+    main.store.put('plants', plant, 1)
+    seed(name='Other', events=[event()])
+    assert client.get('/api/history').json()['total'] == 2
+    response = client.post('/api/import?replace=true', files={'file': ('archive.zip', backup)})
+    assert response.status_code == 200, response.text
+    history = client.get('/api/history').json()
+    assert history['total'] == 1
+    assert history['kinds'] == ['Annaffia']
+    assert history['items'][0]['event']['id'] == saved['id']
+
+
+def test_hard_delete_removes_index_rows(client):
+    plant = seed(events=[event()])
+    main.store.delete('plants', plant['id'], 1)
+    assert client.get('/api/history').json()['total'] == 0
 
 @pytest.mark.parametrize('params',[{'page':0},{'limit':101},{'limit':0},{'from_day':'bad'},{'from_day':'2026-11-20','to_day':'2026-11-01'}])
 def test_invalid_history_pagination_and_dates(client,params):

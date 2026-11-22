@@ -49,16 +49,19 @@ function DayButton({
   onClick: () => void;
 }) {
   const { plural, locale } = useI18n();
-  const dateText = display(day, { weekday: "long", day: "numeric", month: "long" }, locale);
+  const weekday = display(day, { weekday: "short" }, locale);
+  const dayNumber = Number(day.slice(-2));
+  const dateText = `${weekday} ${dayNumber} ${display(day, { month: "long" }, locale)}`;
   return (
     <button
       className={`calendar-day ${selected ? "selected" : ""} ${day === today ? "is-today" : ""}`}
       onClick={onClick}
       aria-pressed={Boolean(selected)}
+      aria-current={day === today ? "date" : undefined}
       aria-label={plural("calendar.dayAria", actions.length, { date: dateText })}
     >
-      <small>{display(day, { weekday: "short" }, locale)}</small>
-      <strong>{Number(day.slice(-2))}</strong>
+      <small>{weekday}</small>{" "}
+      <strong>{dayNumber}</strong>
       <span className="day-dots" aria-hidden="true">
         {actions.slice(0, 3).map((a) => (
           <i

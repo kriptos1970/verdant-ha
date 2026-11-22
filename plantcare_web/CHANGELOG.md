@@ -1,3 +1,11 @@
+# 1.1.0 — cronologia indicizzata e interfaccia più accessibile
+
+- **Cronologia più rapida**: la cronologia generale usa un indice SQLite derivato dall’archivio, creato al primo avvio, aggiornato nella stessa transazione delle cure e ripopolato durante il ripristino. Con 200.000 eventi sintetici il p95 scende da **798 a 26 ms** senza filtri e da **501 a 21 ms** con filtri, misurati su Home Assistant OS in una VM isolata. L’archivio JSON, i backup e le foto non cambiano e l’indice è ricostruibile.
+- **Accessibilità**: salto al contenuto, indicazione della vista attiva, nomi accessibili per le finestre, ritorno del focus alla chiusura, contrasto del testo secondario migliorato e nomi dei giorni nel calendario.
+- **Test nel browser**: Playwright e axe su Chromium con archivio temporaneo, eseguiti anche in CI dopo la build. I 15 test coprono navigazione da tastiera, editor pianta, lingua, ripristino web, annullamento e completamento di una cura, schede pianta su desktop e diario di crescita su telefono, layout a 320, 360, 375 e 390 px.
+- **Chiusura dello Step 8**: documentati i collaudi su iPhone e Home Assistant, il ripristino isolato e i limiti della prova di carico. Il collaudo NFC è fuori perimetro e la prova da 500.000 eventi non è un requisito per l’uso domestico.
+- Verifiche: 234 test backend (4 nuovi), 15 test browser, 1.234 chiavi i18n allineate, build frontend.
+
 # 1.0.3 — ripristino dei backup sull’archivio esistente
 
 - **Ripristino in-place**: un backup web (ZIP o JSON) può ora essere ripristinato sopra l’archivio attuale, senza doverlo prima svuotare. L’anteprima mostra sia il contenuto del backup sia i dati che verrebbero sostituiti, e il ripristino chiede una seconda conferma.

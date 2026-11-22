@@ -38,7 +38,10 @@ The add-on is installed from the repository `kriptos1970/verdant-ha` as `309d34f
 node scripts/check_i18n.mjs
 .venv/bin/python -m pytest plantcare_web/tests -q
 npm run build --prefix plantcare_web/frontend
+npm test --prefix plantcare_web/frontend
 ```
+
+Before the first browser test run, install Chromium with `npm exec --prefix plantcare_web/frontend -- playwright install chromium --only-shell`. The tests start `scripts/preview_ios.py` with a temporary archive on port 8771 and use the built frontend; stop any process already using that port or run the tests later.
 
 For phone layouts, use `scripts/preview_ios.py` with the browser at 320/360/375/390 px; do not claim a visual check without looking at the rendered page.
 

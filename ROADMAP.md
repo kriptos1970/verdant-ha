@@ -2,11 +2,14 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **1.0.3** (22 November 2026).
+Current release: **1.1.0** (22 November 2026).
 
 ## Done recently
 
 - [x] **Backup and restore**: a web ZIP/JSON backup can now be restored over the current archive, with a preview of both sides, a second confirmation, an atomic replacement and a `restore-snapshot.sqlite` copy of the previous database. Photos are never deleted; the export docs now name the add-on plus `/share` partial backup.
+- [x] **Frontend quality baseline**: Chromium E2E and axe checks in CI, keyboard navigation and dialog fixes, and improved text contrast in the core views.
+- [x] **Care and plant detail browser coverage**: verify that canceling a watering changes nothing, completion persists in both histories, and plant details show the correct diary on desktop and mobile.
+- [x] **Archive scale baseline**: [repeatable synthetic workload](docs/ARCHIVE_SCALE.md) and a local SQLite index for paginated care history, without changing the backup format.
 - [x] Growth diary photos open full size in a modal instead of a blank tab on phones.
 - [x] `Intl` formatters cached once per language and option shape; plural keys used in code are checked in CI.
 - [x] Phone polish: real tap feedback, 44 px detail buttons, contained modal scrolling and no keyboard stealing in the editors.
@@ -41,26 +44,23 @@ The three requested steps are released. The next work is field validation and th
 
 No automatic plan changes are introduced by these steps: proposals remain reviewable and the operational engine still only postpones watering.
 
-## Field validation (deferred)
+## Step 8 — field validation complete
 
-These are verification tasks, not missing features. They are tracked in the [Step 8 milestone](https://github.com/kriptos1970/verdant-ha/milestone/1).
+Field validation is complete for the home-use add-on. See the [closeout report](docs/STEP8.md#chiusura-dello-step-8) and the [GitHub milestone](https://github.com/kriptos1970/verdant-ha/milestone/1).
 
-- [ ] Responsive layout on a **physical iPhone with the Home Assistant Companion app** (bottom bar, safe-area insets). [#1](https://github.com/kriptos1970/verdant-ha/issues/1)
-- [ ] **QR/NFC label scan** with a real phone and the stable Home Assistant panel link. [#2](https://github.com/kriptos1970/verdant-ha/issues/2)
-- [ ] **Backup and restore rehearsal on an isolated Home Assistant instance**. [#3](https://github.com/kriptos1970/verdant-ha/issues/3)
-- [ ] **Live Home Assistant sensors** and **Open-Meteo** with real entities and a real location. [#4](https://github.com/kriptos1970/verdant-ha/issues/4)
-- [ ] **Much larger archive** than the synthetic benchmark (100 plants / 50,000 events). [#5](https://github.com/kriptos1970/verdant-ha/issues/5)
-- [ ] **Real Pl@ntNet trial** inside the plant editor (consent and quota).
-- [ ] **Real Gemini daily analysis/advice** on live data; OpenAI remains untested because no key is configured.
-- [ ] Record the results in `docs/STATUS.md` and close the open step 8 items. [#6](https://github.com/kriptos1970/verdant-ha/issues/6)
+- [x] Responsive layout on a **physical iPhone with the Home Assistant Companion app**: confirmed by the maintainer in everyday use. [#1](https://github.com/kriptos1970/verdant-ha/issues/1)
+- [x] **VoiceOver** on a physical iPhone in Home Assistant Companion: tested successfully by the maintainer.
+- [x] **QR label scan**: a newly generated QR code opened the correct plant on a physical iPhone via the stable Home Assistant panel link. [#2](https://github.com/kriptos1970/verdant-ha/issues/2)
+- [x] **Backup and restore rehearsal**: Verdant ZIP and Home Assistant partial backup (add-on plus `/share`) restored successfully in an isolated macOS VM, using synthetic plants, care history and photos. [#3](https://github.com/kriptos1970/verdant-ha/issues/3)
+- [x] **Open-Meteo**: confirmed that the Today view shows the outdoor temperature for a real location. [#4](https://github.com/kriptos1970/verdant-ha/issues/4)
+- [x] **Live Home Assistant sensors**: the maintainer confirmed that humidity, illuminance and soil moisture sensors work in Verdant. No temperature sensor was configured. [#4](https://github.com/kriptos1970/verdant-ha/issues/4)
+- [x] **Large archive rehearsal**: tested up to 500,000 synthetic events through Home Assistant Ingress on an isolated Mac VM, not on production hardware or with a personal archive. This was a one-off stress test, not a requirement for the home-use add-on. [#5](https://github.com/kriptos1970/verdant-ha/issues/5)
 
-## Next features
+- [x] **Pl@ntNet in the plant editor**: tested successfully by the maintainer.
+- [x] **Gemini on live data**: tested successfully by the maintainer. OpenAI was not tested because no key is configured.
+- [x] Results recorded in the [Italian](docs/STATUS.md#chiusura-dello-step-8) and [English](docs/en/STATUS.md#step-8-closeout) status docs. [#6](https://github.com/kriptos1970/verdant-ha/issues/6)
 
-- [ ] **Phone camera light meter**: evaluate whether the browser can provide a trustworthy measurement before implementing it.
-- [ ] **Notification bell “Active” / web push**, if requested; today only AI proposals create a persistent Home Assistant notification.
-- [ ] **Frontend tests and accessibility**: add component/E2E coverage and a broader accessibility pass; backend tests are at 230, frontend checks are build and i18n only.
-- [ ] **Housekeeping**: add an add-on icon/logo, remove the old `local_plantcare_web` add-on after final verification, and clean the migration snapshot when no longer needed.
-- [ ] **Scale**: evaluate a relational/local index if real archives grow well beyond the JSON-document approach.
+**Deferred:** A ZIP with `data.json` below the metadata limit can still be rejected because of internal base64 wrapping. Keep the [reproduction and measurements](docs/ARCHIVE_SCALE.md#home-assistant-os-rehearsal-mac-vm) for reference; no fix or repeat of the 500,000-event stress test is planned for now.
 
 ## On hold / non-goals
 

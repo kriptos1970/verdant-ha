@@ -16,7 +16,7 @@ def run():
     parser.add_argument('--product-photo',type=Path)
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix='plantcare-ios-preview-') as directory:
-        os.environ.update(PLANTCARE_DATA=directory,PLANTCARE_PHOTOS=directory+'/photos',PLANTCARE_OPTIONS=directory+'/options.json',PLANTCARE_INGRESS='0',SUPERVISOR_TOKEN='')
+        os.environ.update(PLANTCARE_DATA=directory,PLANTCARE_PHOTOS=directory+'/photos',PLANTCARE_OPTIONS=directory+'/options.json',PLANTCARE_MIGRATE_DIR=directory+'/migration',PLANTCARE_INGRESS='0',SUPERVISOR_TOKEN='')
         sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
         from plantcare_web.backend import main
         from plantcare_web.backend.domain import now,iso

@@ -113,7 +113,7 @@ note lunghe già presenti negli archivi possono restare nella lingua originale.
 
 ## Stato
 
-Versione attuale: **1.0.3**, pubblicata nelle [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Versione attuale: **1.1.0**, pubblicata nelle [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio
 personale, ma è ancora in sviluppo attivo. Limiti noti e roadmap in [docs/STATUS.md](docs/STATUS.md)
 e [ROADMAP.md](ROADMAP.md).

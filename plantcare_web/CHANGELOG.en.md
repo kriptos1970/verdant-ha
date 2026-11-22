@@ -4,6 +4,14 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.1.0 — indexed history and a more accessible interface
+
+- **Faster history**: the collection history uses an SQLite index derived from the archive, created on first start, updated in the same transaction as care changes and rebuilt during restore. With 200,000 synthetic events p95 falls from **798 to 26 ms** unfiltered and from **501 to 21 ms** filtered, measured on Home Assistant OS in an isolated VM. The JSON archive, backups and photos are unchanged and the index can be rebuilt.
+- **Accessibility**: skip to content, active-view indication, accessible dialog names, focus restoration on close, improved secondary-text contrast and calendar day names.
+- **Browser tests**: Playwright and axe in Chromium against a temporary archive, also run in CI after the build. The 15 tests cover keyboard navigation, the plant editor, language persistence, web restore, canceling and completing care, plant cards on desktop, the mobile growth diary and the 320/360/375/390 px layouts.
+- **Step 8 closeout**: documented iPhone and Home Assistant checks, the isolated restore and the stress-test limits. NFC testing is out of scope, and the 500,000-event test is not a home-use requirement.
+- Checks: 234 backend tests (4 new), 15 browser tests, 1,234 aligned i18n keys, frontend build.
+
 # 1.0.3 — restoring backups over the current archive
 
 - **In-place restore**: a web backup (ZIP or JSON) can now be restored over the current archive

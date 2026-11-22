@@ -8,6 +8,8 @@ const en: Record<MessageKey, string> = {
   "nav.more": "More",
   "nav.analytics": "Analytics",
   "nav.main": "Main navigation",
+  "nav.rooms": "Rooms",
+  "app.skipToContent": "Skip to content",
 
   "app.resizeSidebar": "Resize the sidebar",
   "app.resizeSidebarHint": "Drag to resize. Double-click to restore the default width.",
@@ -979,6 +981,7 @@ const en: Record<MessageKey, string> = {
   "backup.choose": "Choose a Verdant backup",
   "backup.formats": "Native JSON up to 150 MB or web ZIP up to 2 GB",
   "backup.verifying": "Checking the archive…",
+  "backup.restoring": "Restoring the archive…",
   "backup.contents": "Backup contents",
   "backup.nativeFormat": "PlantCare native",
   "backup.trashed": "in the trash",

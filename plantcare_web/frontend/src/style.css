@@ -8,7 +8,7 @@
   --forest: var(--vc-forest);
   --moss: var(--vc-moss);
   --cream: #fff;
-  --muted: #7c877e;
+  --muted: var(--vc-text-secondary);
   --line: var(--vc-line);
   --sidebar: 238px;
   --detail: 390px;
@@ -65,8 +65,22 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #91bba3;
+  outline: 3px solid #467656;
   outline-offset: 3px;
+}
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  inset-block-start: max(12px, env(safe-area-inset-top));
+  inset-inline-start: max(12px, env(safe-area-inset-left));
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: white;
+  color: var(--forest);
+  transform: translateY(calc(-100% - max(16px, env(safe-area-inset-top))));
+}
+.skip-link:focus-visible {
+  transform: none;
 }
 button {
   color: inherit;
@@ -160,13 +174,13 @@ svg {
   font-size: 7px;
   letter-spacing: 1.8px;
   margin-top: 6px;
-  color: #6d7b6d;
+  color: var(--muted);
   font-weight: 600;
 }
 .sidebar-label {
   font-size: 9px;
   font-weight: 650;
-  color: #87917f;
+  color: var(--muted);
   letter-spacing: 1.8px;
   margin: 0 13px 16px;
   display: flex;
@@ -187,7 +201,7 @@ svg {
   padding: 11px 13px;
   border-radius: 9px;
   text-align: left;
-  color: #657062;
+  color: var(--muted);
   font-size: 14px;
 }
 .sidebar nav button:hover {
@@ -233,7 +247,7 @@ svg {
 .sidebar-bottom small {
   display: block;
   font-size: 10px;
-  color: #8b9485;
+  color: var(--muted);
   margin-top: 5px;
 }
 .sidebar-bottom .icon-button {
@@ -266,7 +280,7 @@ main {
   align-items: center;
   gap: 12px;
   font-size: 12px;
-  color: #8b9488;
+  color: var(--muted);
 }
 .breadcrumb strong {
   color: #56644f;
@@ -279,7 +293,7 @@ main {
 }
 .local-badge {
   font-size: 10px;
-  color: #73816e;
+  color: var(--muted);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -362,11 +376,11 @@ main {
   letter-spacing: 1.9px;
   font-size: 9px;
   font-weight: 650;
-  color: #7d8b73;
+  color: var(--muted);
   margin-bottom: 11px;
 }
 .page-heading p {
-  color: #8a9285;
+  color: var(--muted);
   font-size: 13px;
   margin-top: 12px;
 }
@@ -674,7 +688,7 @@ main {
   gap: 16px;
   align-items: center;
   min-height: 95px;
-  color: #8b9c7d;
+  color: var(--muted);
 }
 .gentle-empty strong {
   font-size: 13px;
@@ -746,7 +760,7 @@ main {
 }
 .plant-card-body > small {
   font-size: 10px;
-  color: #929985;
+  color: var(--muted);
   font-style: italic;
 }
 .plant-card-body h3 {
@@ -765,12 +779,12 @@ main {
   margin-top: 14px;
   padding-top: 12px;
   font-size: 9px;
-  color: #8c9780;
+  color: var(--muted);
 }
 .card-next b {
   margin-left: auto;
   font-weight: 400;
-  color: #6b865d;
+  color: #536f48;
 }
 .card-next svg {
   color: #7f9d8f;
@@ -778,7 +792,7 @@ main {
 .page-footer {
   margin-top: 40px;
   padding: 15px 0;
-  color: #adb4a3;
+  color: var(--muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -862,7 +876,7 @@ main {
   border-radius: 20px;
   padding: 7px 13px;
   font-size: 10px;
-  color: #819077;
+  color: var(--muted);
 }
 .chips button.selected {
   background: var(--forest);
@@ -908,7 +922,7 @@ main {
 }
 .product > p {
   font-size: 12px;
-  color: #8c957e;
+  color: var(--muted);
   margin: 8px 0 14px;
 }
 .product-notes {
@@ -974,7 +988,7 @@ main {
 }
 .tool-card small {
   display: block;
-  color: #8a967f;
+  color: var(--muted);
   font-size: 10px;
   line-height: 1.6;
   margin-top: 6px;
@@ -1123,7 +1137,7 @@ main {
   font-size: 13px;
 }
 .import-drop small {
-  color: #929e86;
+  color: var(--muted);
 }
 .import-drop input {
   max-width: 100%;
@@ -1136,7 +1150,7 @@ main {
   margin: 20px 0;
 }
 .import-counts span {
-  color: #8a967f;
+  color: var(--muted);
   font-size: 10px;
 }
 .import-counts b {
@@ -1766,7 +1780,7 @@ dialog label {
 }
 label {
   display: block;
-  color: #738267;
+  color: var(--muted);
   font-size: 12px;
   margin: 16px 0 0;
 }
@@ -1854,7 +1868,7 @@ textarea::placeholder {
   display: block;
   font-size: 9px;
   margin-top: 6px;
-  color: #a0af90;
+  color: var(--muted);
 }
 .photo-upload input {
   font-size: 10px;
@@ -2496,7 +2510,7 @@ main {
 }
 .native-week .section-heading p {
   font-size: 11px;
-  color: #8a9483;
+  color: var(--muted);
   margin-top: 7px;
 }
 .calendar-week,
@@ -2571,7 +2585,7 @@ main {
   font-size: 12px;
   min-height: 34px;
   border-radius: 6px;
-  color: #7a8770;
+  color: var(--muted);
 }
 .segmented button.selected {
   background: white;
@@ -2584,7 +2598,7 @@ main {
   align-items: center;
   margin: 0 0 10px;
   font-size: 10px;
-  color: #8a9782;
+  color: var(--muted);
 }
 .calendar-month .calendar-day {
   min-height: 70px;
@@ -2598,7 +2612,7 @@ main {
   display: flex;
   gap: 9px;
   align-items: center;
-  color: #a07151;
+  color: #885a3c;
   min-height: 28px;
 }
 .history-filters {
@@ -2932,7 +2946,7 @@ progress::-webkit-progress-value {
 }
 .empty-native-detail p {
   font-size: 13px;
-  color: #8e9687;
+  color: var(--muted);
   max-width: 270px;
 }
 .detail-tabs button {
@@ -4779,7 +4793,7 @@ dialog:has(.plant-editor-form) {
 .home-care-row small {
   display: block;
   margin-top: 2px;
-  color: #7a847c;
+  color: var(--muted);
   font-size: 14px;
   font-style: italic;
 }
@@ -5075,7 +5089,7 @@ dialog:has(.plant-editor-form) {
   display: flex;
   justify-content: space-between;
   margin-top: 4px;
-  color: #7a847c;
+  color: var(--muted);
   font-size: 11px;
 }
 

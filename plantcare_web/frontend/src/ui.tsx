@@ -1,5 +1,5 @@
 import {adaptiveIcon} from "./ios-icons";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useId, useLayoutEffect, useRef } from "react";
 import {
   Leaf,
   X,
@@ -112,8 +112,9 @@ export function Modal({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const { t } = useI18n();
-  useEffect(() => {
+  useLayoutEffect(() => {
     const d = ref.current;
     d?.showModal();
     return () => {
@@ -123,6 +124,7 @@ export function Modal({
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -132,8 +134,8 @@ export function Modal({
       }}
     >
       <div className="modal-top">
-        <h2>{title}</h2>
-        <button className="icon-button" aria-label={t("common.close")} onClick={onClose}>
+        <h2 id={titleId}>{title}</h2>
+        <button type="button" className="icon-button" aria-label={t("common.close")} onClick={onClose}>
           <X size={21} />
         </button>
       </div>

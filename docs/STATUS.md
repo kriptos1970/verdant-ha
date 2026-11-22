@@ -1,4 +1,4 @@
-# Stato dell’incremento 1.0.3
+# Stato dell’incremento 1.1.0
 
 ## Stato rispetto agli otto step
 
@@ -11,7 +11,40 @@
 | 5 — Motore adattivo e sensori | Implementato: pianificatore adattivo verificato con Swift, meteo opzionale, apprendimento e motore operativo (shadow/operativo, default operativo). Dettagli in `docs/CARE_ENGINE.md`. |
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
-| 8 — Consolidamento | 0.11.28 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+| 8 — Consolidamento | Collaudo concluso per l’uso domestico dell’add-on. [Esiti e limiti](#chiusura-dello-step-8). |
+
+## Chiusura dello Step 8
+
+- Il manutentore ha confermato layout e VoiceOver in Home Assistant Companion su iPhone fisico, apertura della pianta corretta tramite QR, temperatura esterna Open-Meteo, sensori HA di umidità, illuminamento e umidità del substrato, Pl@ntNet nell’editor e Gemini su dati reali.
+- Ripristino ZIP Verdant e backup parziale Home Assistant (add-on + `/share`) riusciti su un’istanza isolata. La prova sintetica fino a 500.000 eventi non è un requisito per l’uso domestico e non sarà ripetuta per ora; la correzione del limite ZIP resta rinviata.
+- Il collaudo NFC è fuori perimetro. Non sono stati confermati sensori di temperatura interna o conducibilità; OpenAI non è stato provato perché non era configurata una chiave. [Riepilogo per issue](STEP8.md#chiusura-dello-step-8).
+
+## Collaudo backup e ripristino su Home Assistant isolato
+
+- Home Assistant OS 18.4 ARM in una VM sul Mac, con l’add-on Verdant 1.0.3 del repository. Tutte le piante, le cure e le foto usate erano di prova.
+- **ZIP Verdant:** l’anteprima ha mostrato una pianta nel backup e due nell’archivio corrente; l’import senza `replace=true` è stato rifiutato. Il ripristino ha recuperato pianta e cura originali mantenendo anche la foto non più collegata. Lo snapshot SQLite precedente conteneva entrambe le piante.
+- **Backup parziale Home Assistant (add-on + `/share`):** dopo aver cambiato cartella foto e modalità del motore e aggiunto una pianta, il ripristino ha riportato indietro i dati e le impostazioni. Verificati l’avvio dell’add-on, la cronologia e gli SHA-256 delle due foto anche nel backup scaricato. L’istanza Home Assistant reale non è stata modificata.
+
+## Archivi grandi
+
+- Aggiunto un indice SQLite derivato per la cronologia generale; si crea al primo avvio, si aggiorna nella stessa transazione delle cure e si ripopola durante il ripristino. L’archivio JSON, il formato dei backup e le foto non cambiano.
+- Nel benchmark diretto sul Mac con 400 piante e 200.000 eventi sintetici, il p95 scende da **706 a 33 ms** senza filtri e da **488 a 25 ms** con filtri. Aumenta lo spazio SQLite; la collezione sintetica resta il flusso più lento. [Metodo e misure](ARCHIVE_SCALE.md).
+- **Collaudo Home Assistant OS 18.4 in VM:** per 200.000 eventi via Ingress il p95 della cronologia scende da **798 a 26 ms**, o da **501 a 21 ms** con filtri. Con 500.000 eventi la cronologia resta sotto 63 ms e la collezione raggiunge 2,19 s; scheda, diario e filtro sono stati provati anche in Chromium. Un ZIP con note più lunghe ha rivelato un limite effettivo dei metadati inferiore a quello previsto, dovuto al passaggio interno in base64. Nessun uso di dati reali.
+
+## Frontend e accessibilità
+
+- Playwright e axe su Chromium con archivio temporaneo: navigazione, editor pianta, lingua, ripristino web e blocco dell’import nativo su archivio non vuoto. La CI esegue la suite dopo la build.
+- La suite verifica anche che annullare un’annaffiatura non modifichi la scheda e che completarla la registri nel diario della pianta e nella cronologia generale, anche dopo il ricaricamento. Le schede pianta sono testate su desktop (cambio pianta senza trascinare il diario precedente) e telefono (apertura e chiusura della sezione di crescita); la sezione è stata controllata visivamente a 320, 360, 375 e 390 px.
+- Aggiunti salto al contenuto, indicazione della vista attiva, nomi accessibili per le finestre e ritorno del focus alla chiusura. Migliorati contrasto del testo secondario, nomi dei giorni nel calendario e messaggi di stato del ripristino.
+- Controllata visivamente l’anteprima e la conferma del ripristino a 320, 360, 375 e 390 px in Chromium. Il manutentore ha confermato il funzionamento di VoiceOver su iPhone fisico con Companion. Queste prove non certificano l’accessibilità dell’intera app.
+
+## Rilascio 1.1.0 (22 novembre 2026)
+
+- **Indice della cronologia**: `care_history_index` è una tabella derivata dall’archivio — i payload JSON restano l’unica fonte — creata da `ensure_history_index` al primo avvio, con backfill transazionale dell’archivio esistente e trigger su inserimento, modifica della cronologia/ambiente e cancellazione. `GET /api/history` legge l’indice con una transazione di lettura per conteggio e pagina, quindi conteggio e risultati sono coerenti.
+- **Prestazioni misurate**: con 200.000 eventi via Ingress su Home Assistant OS in VM il p95 scende da 798 a 26 ms senza filtri e da 501 a 21 ms con filtri; con 400 piante/200.000 eventi in locale da 706 a 33 ms e da 488 a 25 ms. Con 500.000 eventi la cronologia resta sotto 63 ms e la collezione raggiunge 2,19 s. Metodo, compromessi e limite ZIP in [ARCHIVE_SCALE.md](ARCHIVE_SCALE.md).
+- **Integrità verificata**: 4 nuovi test backend coprono il backfill di un database esistente senza riscrivere i payload, modifiche e rollback delle cure, la ricostruzione dell’indice dopo un ripristino e la cancellazione definitiva.
+- **Accessibilità e test browser**: Playwright e axe in CI, salto al contenuto, vista attiva, nomi accessibili delle finestre, ritorno del focus, contrasto migliorato. 15 test browser con archivio temporaneo, anche per cure, schede pianta e diario mobile.
+- Verifiche: 234 test backend (4 nuovi), 15 test browser, 1.234 chiavi i18n allineate, build frontend. La 1.1.0 è la prima versione che include l’indice; il collaudo HA confrontava solo i file backend dell’indice sovrapposti all’immagine 1.0.3, quindi il bundle frontend non è stato provato su HA in quella prova.
 
 ## Rilascio 1.0.3 (22 novembre 2026)
 

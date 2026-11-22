@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **1.0.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **1.1.0**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -16,9 +16,20 @@ Current release: **1.0.3**, published on [GitHub Releases](https://github.com/kr
 - **Languages**: Italian and English message catalogs, language selector, English guides and diagnosis, server-side language preference for notifications and AI.
 - **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page renders the 30-day charts (phase 2), the Home page shows a compact collection health and care-rhythm summary without loading Recharts (phase 3), the plant card adds a twelve-month care activity chart (phase 4) and a merged care-and-measurement timeline (phase 5), and the Analytics page has a 30/90/365 selector that buckets the activity series by day, week or month (phase 6).
 
+## Step 8 closeout
+
+- The maintainer confirmed layout and VoiceOver in Home Assistant Companion on a physical iPhone, QR opening the correct plant, Open-Meteo outdoor temperature, live HA humidity, light and soil moisture sensors, Pl@ntNet in the plant editor and Gemini on live data.
+- Verdant ZIP restore and Home Assistant partial restore (add-on plus `/share`) passed on an isolated instance. The 500,000-event synthetic stress test is not a home-use requirement and will not be repeated for now; the ZIP limit fix is deferred.
+- NFC testing is out of scope. Indoor temperature and conductivity sensors were not confirmed, and OpenAI was not tested because no key was configured. See the [issue-by-issue closeout](../STEP8.md#chiusura-dello-step-8).
+
 ## Verification
 
-- **230 backend tests** pass.
+- **Isolated Home Assistant backup rehearsal**: Verdant 1.0.3 on Home Assistant OS 18.4 ARM in a Mac VM. A Verdant ZIP restore recovered the original plant and care entry, retained the unlinked photo, and kept both plants in the pre-restore SQLite snapshot. A Home Assistant partial restore of the add-on and `/share` recovered the plant data, care history and add-on options after deliberate changes; both photo checksums matched. No production Home Assistant changes.
+- **Archive scale work**: a rebuildable SQLite index speeds up paginated care history without changing backups. At 200,000 synthetic events through Home Assistant Ingress in a Mac VM, p95 fell from 798 to 26 ms unfiltered and from 501 to 21 ms filtered. The indexed build also handled 500,000 events in the browser; longer notes exposed a ZIP metadata limit caused by internal base64 wrapping. [Method and trade-offs](../ARCHIVE_SCALE.md). Production hardware and personal data were not tested.
+- **Frontend and accessibility checks**: CI runs Playwright and axe in Chromium against a temporary archive. Tests cover navigation, plant editing, language persistence, web restore and rejection of native backups on a populated archive. Keyboard focus, dialog names, secondary text contrast and calendar labels were improved.
+- The suite also verifies that canceling a watering leaves the archive unchanged and completing it persists in the plant diary and collection history after reload. Desktop tests cover switching plants without carrying over the previous diary; mobile tests cover the growth diary disclosure, with visual checks at 320, 360, 375 and 390 px.
+- The restore preview and confirmation were visually checked in Chromium at 320, 360, 375 and 390 px. The maintainer confirmed VoiceOver works in the Companion app on a physical iPhone. These checks do not certify accessibility across the entire app.
+- **234 backend tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
@@ -50,6 +61,14 @@ Current release: **1.0.3**, published on [GitHub Releases](https://github.com/kr
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 1.1.0 (22 November 2026)
+
+- **History index**: `care_history_index` is a table derived from the archive — the JSON payloads stay the only source — created by `ensure_history_index` on first start, with a transactional backfill of an existing archive and triggers on insert, history/room update and delete. `GET /api/history` reads the index inside a read transaction so the count and the page it returns agree.
+- **Measured performance**: with 200,000 events through Ingress on Home Assistant OS in a VM, p95 fell from 798 to 26 ms unfiltered and from 501 to 21 ms filtered; locally with 400 plants/200,000 events from 706 to 33 ms and from 488 to 25 ms. With 500,000 events history stays under 63 ms and the collection reaches 2.19 s. Method, trade-offs and the ZIP limit are in [ARCHIVE_SCALE.md](../ARCHIVE_SCALE.md).
+- **Integrity**: 4 new backend tests cover backfilling an existing database without rewriting payloads, care edits and rollbacks, rebuilding the index after a restore and a hard delete.
+- **Accessibility and browser tests**: Playwright and axe in CI, skip to content, active view, accessible dialog names, focus restoration and improved contrast. 15 browser tests with a temporary archive, including care, plant cards and the mobile diary.
+- Checks: 234 backend tests (4 new), 15 browser tests, 1,234 aligned i18n keys, frontend build. 1.1.0 is the first release that ships the index; the Home Assistant comparison overlaid only the index backend files on the 1.0.3 image, so the frontend bundle was not exercised on HA in that run.
 
 ## Release 1.0.3 (22 November 2026)
 

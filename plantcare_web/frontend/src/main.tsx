@@ -580,6 +580,12 @@ function App() {
         ...(detailWidth!=null?{"--detail":`${detailWidth}px`}:{}),
       } as React.CSSProperties)}
     >
+      <a className="skip-link" href="#main-content" onClick={(event) => {
+        event.preventDefault(); // The URL fragment is reserved for plant links.
+        document.getElementById("main-content")?.focus();
+      }}>
+        {t("app.skipToContent")}
+      </a>
       <aside className={`sidebar ${menu ? "open" : ""}`}>
         <a
           className="brand"
@@ -597,11 +603,12 @@ function App() {
           </span>
         </a>
         <div className="sidebar-label">{t("app.collection")}</div>
-        <nav>
+        <nav aria-label={t("nav.main")}>
           {navigation.map((item) => (
             <button
               key={item.id}
               className={page === item.id ? "active" : ""}
+              aria-current={page === item.id ? "page" : undefined}
               onClick={() => navigate(item.id)}
             >
               <item.icon size={19} />
@@ -611,6 +618,7 @@ function App() {
           ))}
           <button
             className={page === "analytics" ? "active" : ""}
+            aria-current={page === "analytics" ? "page" : undefined}
             onClick={() => navigate("analytics")}
           >
             <BarChart3 size={19} />
@@ -620,11 +628,12 @@ function App() {
         <div className="sidebar-label rooms-label">
           {t("app.environments")} <span>{rooms.length}</span>
         </div>
-        <nav className="rooms">
+        <nav className="rooms" aria-label={t("nav.rooms")}>
           {rooms.map((r) => (
             <button
               key={r}
               className={page === "plants" && room === r ? "active" : ""}
+              aria-current={page === "plants" && room === r ? "true" : undefined}
               onClick={() => {
                 setPage("plants");
                 setRoom(r);
@@ -668,7 +677,7 @@ function App() {
           onClick={() => setMenu(false)}
         />
       )}
-      <main data-page={page} data-collection-mode={phoneCollectionMode} data-tool={tool||""}>
+      <main id="main-content" tabIndex={-1} data-page={page} data-collection-mode={phoneCollectionMode} data-tool={tool||""}>
         <header className="topbar">
           <button
             className="icon-button mobile-menu"
@@ -1450,6 +1459,7 @@ function App() {
           <button
             key={n.id}
             className={page === n.id ? "active" : ""}
+            aria-current={page === n.id ? "page" : undefined}
             onClick={() => navigate(n.id)}
           >
             <span>
@@ -1694,12 +1704,9 @@ function App() {
           </div>
         </Modal>
       )}
-      {notice && (
-        <div className="toast" role="status">
-          <CheckCircle2 size={19} />
-          {notice}
-        </div>
-      )}
+      <div role="status">
+        {notice && <div className="toast"><CheckCircle2 size={19} aria-hidden="true" />{notice}</div>}
+      </div>
     </div>
   );
 }
@@ -2396,6 +2403,7 @@ function PlantEditor({
               <input
                 autoFocus={!phone}
                 required
+                pattern={".*\\S.*"}
                 maxLength={200}
                 value={draft.name}
                 placeholder={t("plantEditor.namePlaceholder")}
@@ -2952,7 +2960,7 @@ function PlantEditor({
           <button type="button" className="button secondary" onClick={onClose}>
             {t("common.cancel")}
           </button>
-          <button className="button primary" type="submit" disabled={busy || uploading || !draft.name.trim()}>
+          <button className="button primary" type="submit" disabled={busy || uploading}>
             {busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}
             {t("plantEditor.save")}
           </button>
@@ -4373,6 +4381,9 @@ function BackupTool({
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
 }) {
   const { t, plural, formatNumber } = useI18n();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const previewHeading = useRef<HTMLHeadingElement>(null);
+  const focusFileAfterImport = useRef(false);
   const [file, setFile] = useState<File>(),
     [preview, setPreview] = useState<{
       web: boolean;
@@ -4399,6 +4410,15 @@ function BackupTool({
     }>(),
     [photoBusy, setPhotoBusy] = useState(false),
     [photoConfirm, setPhotoConfirm] = useState(false);
+  useEffect(() => {
+    if (!busy && focusFileAfterImport.current) {
+      focusFileAfterImport.current = false;
+      fileInput.current?.focus();
+    }
+  }, [busy]);
+  useEffect(() => {
+    if (preview) previewHeading.current?.focus();
+  }, [preview]);
   const photoSize = (bytes: number) =>
     `${formatNumber(bytes / (1024 * 1024), { maximumFractionDigits: 1 })} MB`;
   const scanPhotos = async () => {
@@ -4475,6 +4495,8 @@ function BackupTool({
       setPreview(undefined);
       setFile(undefined);
       setRestoreConfirm(false);
+      if (fileInput.current) fileInput.current.value = "";
+      focusFileAfterImport.current = true;
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -4503,20 +4525,22 @@ function BackupTool({
         <strong>{file?.name || t("backup.choose")}</strong>
         <small>{t("backup.formats")}</small>
         <input
+          ref={fileInput}
           type="file"
+          aria-label={t("backup.choose")}
           accept="application/json,application/zip,.json,.zip"
           disabled={busy}
           onChange={(e) => void inspect(e.target.files?.[0])}
         />
       </label>
-      {busy && (
-        <p>
-          <LoaderCircle className="spin" size={17} /> {t("backup.verifying")}
-        </p>
-      )}
+      <div role="status">
+        {busy && !restoreConfirm && (
+          <p><LoaderCircle className="spin" size={17} aria-hidden="true" /> {t("backup.verifying")}</p>
+        )}
+      </div>
       {preview && (
         <div className="import-preview">
-          <h3>{preview.web ? "PlantCare Web" : t("backup.nativeFormat")}</h3>
+          <h3 ref={previewHeading} tabIndex={-1}>{preview.web ? "PlantCare Web" : t("backup.nativeFormat")}</h3>
           <p className="muted small-text">{t("backup.contents")}</p>
           <div className="import-counts">
             {Object.entries(preview.counts).map(([k, n]) => {
@@ -4566,36 +4590,15 @@ function BackupTool({
                   {plural("backup.events", current.measurements)}
                 </span>
               </div>
-              {restoreConfirm ? (
-                <div className="button-row">
-                  <button
-                    type="button"
-                    className="button secondary"
-                    disabled={busy}
-                    onClick={() => setRestoreConfirm(false)}
-                  >
-                    {t("common.cancel")}
-                  </button>
-                  <button
-                    type="button"
-                    className="button destructive"
-                    disabled={busy}
-                    onClick={() => void importArchive()}
-                  >
-                    {t("backup.restoreConfirm")}
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  className="button destructive"
-                  disabled={busy}
-                  onClick={() => setRestoreConfirm(true)}
-                >
-                  <RotateCcw size={17} />
-                  {t("backup.restore")}
-                </button>
-              )}
+              <button
+                type="button"
+                className="button destructive"
+                disabled={busy}
+                onClick={() => setRestoreConfirm(true)}
+              >
+                <RotateCcw size={17} aria-hidden="true" />
+                {t("backup.restore")}
+              </button>
             </div>
           ) : (
             <>
@@ -4620,7 +4623,22 @@ function BackupTool({
           )}
         </div>
       )}
-      {error && (
+      {restoreConfirm && (
+        <Modal title={t("backup.restoreTitle")} onClose={() => { if (!busy) setRestoreConfirm(false); }}>
+          <p>{t("backup.restoreText")}</p>
+          <div role="status">{busy && <p>{t("backup.restoring")}</p>}</div>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <div className="modal-actions">
+            <button type="button" className="button secondary" disabled={busy} onClick={() => setRestoreConfirm(false)}>
+              {t("common.cancel")}
+            </button>
+            <button type="button" className="button destructive" disabled={busy} onClick={() => void importArchive()}>
+              {t("backup.restoreConfirm")}
+            </button>
+          </div>
+        </Modal>
+      )}
+      {error && !restoreConfirm && (
         <p className="form-error" role="alert">
           {error}
         </p>

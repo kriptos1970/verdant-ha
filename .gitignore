@@ -3,6 +3,8 @@ __pycache__/
 .pytest_cache/
 node_modules/
 plantcare_web/frontend/dist/
+plantcare_web/frontend/playwright-report/
+plantcare_web/frontend/test-results/
 .data/
 *.pyc
 .DS_Store
