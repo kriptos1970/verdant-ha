@@ -1,0 +1,74 @@
+name: Publish add-on images
+
+# Builds the add-on image for every supported architecture and pushes it to
+# GHCR. The tag equals the add-on version, which is what Home Assistant pulls
+# when `image:` is set in plantcare_web/config.yaml:
+#
+#   image: "ghcr.io/kriptos1970/verdant-ha-{arch}"
+#
+# The packages must be public for a one-click install without credentials.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        run: |
+          version=$(grep -m1 '^version:' plantcare_web/config.yaml | sed -E 's/^version:[[:space:]]*"([^"]+)".*/\1/')
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building images for $version"
+
+  build:
+    needs: version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            platform: linux/arm64
+          - arch: amd64
+            platform: linux/amd64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: plantcare_web
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}-${{ matrix.arch }}:${{ needs.version.outputs.version }}
+            ghcr.io/${{ github.repository }}-${{ matrix.arch }}:latest
+          labels: |
+            org.opencontainers.image.title=Verdant
+            org.opencontainers.image.description=Plant care add-on for Home Assistant
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+            org.opencontainers.image.licenses=MIT

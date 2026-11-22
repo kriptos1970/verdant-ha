@@ -1,5 +1,5 @@
 name: Verdant
-version: "0.11.28"
+version: "1.0.0"
 slug: plantcare_web
 description: Plant care for Home Assistant — collection, care rounds, calendar, sensors and optional AI
 url: https://github.com/kriptos1970/verdant-ha

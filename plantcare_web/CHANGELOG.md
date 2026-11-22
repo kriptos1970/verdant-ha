@@ -1,3 +1,13 @@
+# 1.0.0 — prima versione stabile
+
+- **Vetrina Home Assistant**: icona e logo ricavati dall'artwork dell'app nativa, introduzione dell'add-on nello store, nomi e descrizioni delle opzioni in italiano e inglese. La pagina dell'add-on non mostra più chiavi grezze.
+- **Pannello per tutti**: `panel_admin: false`, così il pannello è visibile anche agli utenti non amministratori della casa; `stage: stable` dichiarato esplicitamente.
+- **README e schermate**: pagina del repository riscritta con badge di installazione in un clic, schermate reali in inglese a 390×844 e 1440×900, FAQ, privacy e stato; versione italiana allineata.
+- **Note di rilascio bilingui**: inglese prima, italiano sotto, con l'installazione da repository come primo passo e il nome corretto dell'add-on.
+- **Correzioni di lingua**: plurale "cares" nel riepilogo del giorno, didascalie della scheda desktop ("YOUR PLANT") e nome del piano tradotti nella UI inglese.
+- **Immagini precompilate**: workflow che pubblica le immagini aarch64 e amd64 su GHCR con il tag della versione.
+- 225 test backend, 1024 chiavi i18n, build frontend.
+
 # 0.11.28 — cestino raggiungibile anche da telefono
 
 - Su telefono il comando **Cestino** stava nell’intestazione della pagina Piante, che il layout mobile nasconde: dopo l’eliminazione con lo swipe non c’era modo di aprire il cestino e ripristinare. Ora accanto al titolo della collezione c’è un pulsante tondo con l’icona del cestino ed etichetta accessibile “Cestino”.

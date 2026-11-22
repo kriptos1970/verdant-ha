@@ -1,4 +1,4 @@
-# Stato dell’incremento 0.11.28
+# Stato dell’incremento 1.0.0
 
 ## Stato rispetto agli otto step
 
@@ -12,6 +12,17 @@
 | 6 — Assistente AI | Implementati catalogo modelli, scelta modello, applicazione selettiva con anteprima, cache, notifiche e controlli delle risposte. Test simulati passati; Gemini reale verificato su Ficus con risposta strutturata e anteprima selettiva. Applicazione su dati reali e analisi giornaliera ancora da collaudare. |
 | 7 — Funzioni aggiuntive native | Prima parte implementata: riconoscimento Pl@ntNet, biblioteca delle specie importate e consultazione Perenual. Guide e diagnosi guidata implementate; album salute annotati, QR/NFC e consultazione Open Plantbook aggiunti nella 0.7.0. Catalogo online e collegamento guidato dei profili botanici implementati nella 0.8.0; installata e avviata su HA il 16 novembre 2026. |
 | 8 — Consolidamento | 0.11.28 installata da repository su Home Assistant con archivio reale migrato (18 piante, 739 eventi, 120 crescita, 5 trattamenti, 124 foto); vecchio add-on locale fermo per rollback; benchmark sintetico 100 piante/50.000 eventi; restano collaudi fisici, ripristino isolato e archivio reale molto grande. |
+
+## Rilascio 1.0.0 (22 novembre 2026)
+
+- **Prima versione stabile.** Il codice è invariato rispetto alla 0.11.28: cambiano la presentazione e il processo di distribuzione.
+- **Vetrina dell'add-on**: `icon.png` e `logo.png` ricavati da `AppIcon-1024.png` dell'app nativa, `plantcare_web/README.md` come introduzione nello store, `translations/en.yaml` e `translations/it.yaml` per tutte le opzioni.
+- **Pannello**: `panel_admin: false` (visibile anche ai non amministratori), `stage: stable`.
+- **README**: badge `my.home-assistant.io` per l'aggiunta del repository in un clic, cinque schermate reali in inglese (390×844 a 2x, 1440×900), FAQ e sezione privacy; `README.it.md` allineato.
+- **Release**: note bilingui generate da `scripts/release_notes.py`, con installazione da repository come primo passo.
+- **Lingua**: corretto il plurale `calendar.daySummary.other`, tradotte le didascalie della scheda desktop e il nome del piano nella UI inglese (`detail.yourPlant`, `detail.editPlant`, `detail.closePlant`).
+- **Immagini**: `.github/workflows/publish.yml` pubblica `ghcr.io/kriptos1970/verdant-ha-{arch}:<versione>` per aarch64 e amd64; l'immagine viene attivata in `config.yaml` dopo la prima pubblicazione.
+- Verifiche: 225 test backend, 1024 chiavi i18n allineate, build frontend, CI verde sul commit di presentazione.
 
 ## Rilascio 0.11.28 (21 novembre 2026)
 
