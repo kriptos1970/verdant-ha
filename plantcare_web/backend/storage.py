@@ -203,6 +203,22 @@ class Store:
             os.replace(tmp, destination)
         return destination.name
 
+    def snapshot_database(self):
+        """Keep the pre-restore database as one file, overwritten by the next restore."""
+        import sqlite3
+        from contextlib import closing
+        destination = self.root / 'restore-snapshot.sqlite'
+        temporary = self.root / 'restore-snapshot.tmp'
+        try:
+            with closing(sqlite3.connect(self.root / 'plantcare.sqlite')) as source, closing(sqlite3.connect(temporary)) as target:
+                source.backup(target)
+            os.replace(temporary, destination)
+        except BaseException:
+            try: temporary.unlink()
+            except OSError: pass
+            raise
+        return destination
+
     def export(self):
         if sum(p.stat().st_size for p in self.photos.glob('*.jpg'))>40*1024*1024:
             raise ValueError('Usa il backup ZIP per archivi fotografici oltre 40 MB.')

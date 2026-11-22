@@ -4,6 +4,22 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.0.3 — restoring backups over the current archive
+
+- **In-place restore**: a web backup (ZIP or JSON) can now be restored over the current archive
+  without emptying it first. The preview shows both the backup contents and the data that would be
+  replaced, and the restore asks for a second confirmation.
+- **Safety**: replacement runs in a single transaction: if a check or a write fails, the previous
+  archive stays intact. The starting database is copied to `restore-snapshot.sqlite` and overwritten
+  by the next restore; photos are never deleted, unlinked files stay in the folder and can be
+  removed with **Photo cleanup**. Native backups still require an empty archive.
+- **Interface**: the **Archive and backup** panel is translated into Italian and English, plurals
+  included, and shows the current archive counts before a restore.
+- **Documentation**: backup scheduling now names a partial add-on backup together with the `/share`
+  folder, and the guide explains preview, confirmation and the safety copy.
+- Checks: 230 backend tests, 1,231 aligned i18n keys, frontend build; full browser flow at
+  320/360/375/390 and 1440 px, with a plant added after the backup removed by the restore.
+
 # 1.0.2 — full-size diary photos and lighter rendering
 
 - **Growth diary photos**: on the plant page thumbnails open a modal with the original instead of

@@ -24,7 +24,7 @@ from .storage import Store, Conflict
 from .models import Plant, Product, EventRequest, Question, Mapping, Measurement, TreatmentInput, RoundCommand, AdaptiveRequest, MoveRequest, PhotoCleanupRequest, CareLocation, AIModelSelection, AdviceSelection, HealthPhotoSession, LanguagePreference
 from .domain import iso, now, parse, plant_view, schedule, active_history, pending_actions, normalize_experience
 from .care_kinds import legacy_view, legacy_action, canonical_health
-from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, MAX_ARCHIVE, resolve_existing_photos
+from .backup import decode_archive, decode_zip, export_zip, import_archive, summary, current_archive, MAX_ARCHIVE, resolve_existing_photos
 from . import services, ai, care, adaptive
 from .treatments import pin_baselines, update_counts, treatment_view
 
@@ -657,7 +657,7 @@ def photo(filename:str, thumb:bool=False):
     etag=f'"{filename}-thumb"' if thumb else f'"{filename}"'
     return FileResponse(path,headers={'Cache-Control':'private, max-age=31536000, immutable','ETag':etag})
 
-async def handle_import(file,commit=False):
+async def handle_import(file,commit=False,replace=False):
     import tempfile
     import zipfile
     with tempfile.TemporaryDirectory(prefix='import-',dir=store.root) as temporary:
@@ -673,14 +673,15 @@ async def handle_import(file,commit=False):
             if not is_zip and size>MAX_ARCHIVE: raise ValueError('Backup JSON oltre il limite di 150 MB.')
             archive=decode_zip(path,temporary) if is_zip else decode_archive(path.read_bytes())
             resolve_existing_photos(archive,store.photos)
-            return import_archive(store,archive) if commit else summary(archive)
+            if commit: return import_archive(store,archive,replace)
+            return {**summary(archive),'current':current_archive(store)}
         except (KeyError,TypeError,ValueError,ValidationError,binascii.Error,zipfile.BadZipFile) as e:
             raise HTTPException(422,'Backup non valido: '+str(e)[:250])
 
 @app.post('/api/import/preview')
 async def preview_import(file:UploadFile=File()): return await handle_import(file)
 @app.post('/api/import')
-async def commit_import(file:UploadFile=File()): return await handle_import(file,True)
+async def commit_import(file:UploadFile=File(),replace:bool=False): return await handle_import(file,True,replace)
 @app.get('/api/storage')
 def storage_status():
     import shutil

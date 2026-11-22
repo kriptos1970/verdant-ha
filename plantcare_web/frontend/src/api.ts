@@ -34,6 +34,8 @@ const EN_DETAILS: Record<string, string> = {
   "Identificativo non corrispondente.": "Identifier mismatch.",
   "Pianta non trovata.": "Plant not found.",
   "Backup oltre il limite di 2 GB.": "Backup exceeds the 2 GB limit.",
+  "Importazione disponibile soltanto su archivio vuoto.": "Import is available only into an empty archive.",
+  "Il ripristino completo richiede un backup web. I backup nativi si importano soltanto su un archivio vuoto.": "A full restore needs a web backup. Native backups can only be imported into an empty archive.",
 };
 
 const EN_ERRORS: Record<string, string> = {

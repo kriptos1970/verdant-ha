@@ -100,21 +100,39 @@ def resolve_existing_photos(archive, directory):
 
 
 def summary(archive):
-    return {'checksum':archive['checksum'],'format':'PlantCare Web' if archive['web'] else 'PlantCare nativo','counts':{k:len(v) for k,v in archive['collections'].items()},'photos':len(archive['photos']),'measurements':len(archive['measurements']),'missingPhotos':archive['missingPhotos']}
+    return {'checksum':archive['checksum'],'web':archive['web'],'format':'PlantCare Web' if archive['web'] else 'PlantCare nativo','counts':{k:len(v) for k,v in archive['collections'].items()},'photos':len(archive['photos']),'measurements':len(archive['measurements']),'missingPhotos':archive['missingPhotos']}
 
-def import_archive(store, archive):
+def current_archive(store):
+    """Size of the archive a restore would replace, so the UI can ask for confirmation."""
     with store.connection() as db:
-        if db.execute('SELECT 1 FROM imports WHERE checksum=?',(archive['checksum'],)).fetchone():
-            return {**summary(archive),'alreadyImported':True}
-        if db.execute('SELECT 1 FROM entities LIMIT 1').fetchone() or db.execute('SELECT 1 FROM measurements LIMIT 1').fetchone():
+        counts={r['collection']:r['count'] for r in db.execute('SELECT collection, COUNT(*) AS count FROM entities GROUP BY collection')}
+        plants=db.execute("SELECT COUNT(*) FROM entities WHERE collection='plants' AND deleted_at IS NULL").fetchone()[0]
+        trashed=db.execute("SELECT COUNT(*) FROM entities WHERE collection='plants' AND deleted_at IS NOT NULL").fetchone()[0]
+        measurements=db.execute('SELECT COUNT(*) FROM measurements').fetchone()[0]
+    return {'plants':plants,'trashed':trashed,'entities':sum(counts.values()),'measurements':measurements}
+
+def import_archive(store, archive, replace=False):
+    if replace and not archive['web']:
+        raise Conflict('Il ripristino completo richiede un backup web. I backup nativi si importano soltanto su un archivio vuoto.')
+    with store.connection() as db:
+        if not replace and db.execute('SELECT 1 FROM imports WHERE checksum=?',(archive['checksum'],)).fetchone():
+            return {**summary(archive),'alreadyImported':True,'replaced':False}
+        if not replace and (db.execute('SELECT 1 FROM entities LIMIT 1').fetchone() or db.execute('SELECT 1 FROM measurements LIMIT 1').fetchone()):
             raise Conflict('Importazione disponibile soltanto su archivio vuoto.')
         # Content-addressed files cannot overwrite an existing photo; database changes are atomic.
         mapping={name:store.write_photo(data) for name,data in archive['photos'].items()}
+        if replace:
+            # Snapshot the database first: a wrong backup can be undone, photos are never deleted.
+            store.snapshot_database()
+            db.execute('DELETE FROM entities')
+            db.execute('DELETE FROM measurements')
+            db.execute('DELETE FROM state')
+            db.execute('DELETE FROM imports')
         for collection, values in archive['collections'].items():
             for value in values:
                 store.put(collection,remap(value,mapping),db=db)
         for key,value in archive['state'].items():
-            if key in {'sensor-mappings','location','ai-status','last-ai-day','native-import-metadata','native-measurements','ai-model-selection'} or key.startswith('ai-advice-'):
+            if replace or key in {'sensor-mappings','location','ai-status','last-ai-day','native-import-metadata','native-measurements','ai-model-selection'} or key.startswith('ai-advice-'):
                 store.set_state(key,value,db)
         if not archive['web']:
             store.set_state('native-measurements',archive['measurements'],db)
@@ -132,7 +150,7 @@ def import_archive(store, archive):
                 continue
         store.set_state('native-import-metadata',{'missingPhotos':archive['missingPhotos']},db)
         db.execute('INSERT INTO imports VALUES (?,?)',(archive['checksum'],iso(datetime.now(timezone.utc))))
-    return {**summary(archive),'alreadyImported':False}
+    return {**summary(archive),'alreadyImported':False,'replaced':bool(replace)}
 
 # ZIP backups put photos alongside JSON rather than base64 inside JSON. Building and
 # serving them is disk-backed, so memory does not grow with the photo collection.

@@ -48,7 +48,8 @@ un'interfaccia vera: niente dashboard YAML da montare, nessuna seconda app cloud
   Open Plantbook, nove guide di cura e controllo guidato dei sintomi.
 - **Etichette**: QR/NFC che aprono la pianta tramite l'URL stabile del pannello Home Assistant.
 - **Dati**: importazione dell'archivio nativo (envelope v1–v3), backup ZIP con checksum SHA256,
-  deduplicazione foto e rimozione EXIF, conservazione misure configurabile.
+  ripristino in-place con copia del database precedente, deduplicazione foto e rimozione EXIF,
+  conservazione misure configurabile.
 - **Interfaccia web**: responsiva, allineata all'app nativa Verdant alle larghezze telefono;
   funziona dentro Home Assistant Ingress senza esporre porte.
 
@@ -112,7 +113,7 @@ note lunghe già presenti negli archivi possono restare nella lingua originale.
 
 ## Stato
 
-Versione attuale: **1.0.2**, pubblicata nelle [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Versione attuale: **1.0.3**, pubblicata nelle [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio
 personale, ma è ancora in sviluppo attivo. Limiti noti e roadmap in [docs/STATUS.md](docs/STATUS.md)
 e [ROADMAP.md](ROADMAP.md).

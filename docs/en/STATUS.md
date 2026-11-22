@@ -1,6 +1,6 @@
 # Status and known limits
 
-Current release: **1.0.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current release: **1.0.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
 ## Implemented
 
@@ -11,14 +11,14 @@ Current release: **1.0.2**, published on [GitHub Releases](https://github.com/kr
 - **AI (optional)**: Gemini or OpenAI structured advice with preview and selective application; disabled by default, automatic application off.
 - **Knowledge**: Pl@ntNet identification, iNaturalist catalog, Perenual and Open Plantbook profiles, nine illustrated care guides, guided symptom check.
 - **Labels**: QR/NFC labels using the stable Home Assistant panel URL.
-- **Data**: native archive import v1–v3, ZIP backup with SHA256 checksums, photo deduplication and EXIF stripping, configurable measurement retention.
+- **Data**: native archive import v1–v3, ZIP backup with SHA256 checksums, in-place restore over the current archive with a pre-restore database snapshot, photo deduplication and EXIF stripping, configurable measurement retention.
 - **Web UI**: responsive and aligned with the iOS app at phone widths; works inside Ingress. List images use cached 480 px thumbnails instead of originals.
 - **Languages**: Italian and English message catalogs, language selector, English guides and diagnosis, server-side language preference for notifications and AI.
 - **Analytics**: native plant health index (20–100) in every plant view, read-only collection analytics for 30/90/365 days and a merged plant timeline. The Analytics page renders the 30-day charts (phase 2), the Home page shows a compact collection health and care-rhythm summary without loading Recharts (phase 3), the plant card adds a twelve-month care activity chart (phase 4) and a merged care-and-measurement timeline (phase 5), and the Analytics page has a 30/90/365 selector that buckets the activity series by day, week or month (phase 6).
 
 ## Verification
 
-- **225 backend tests** pass.
+- **230 backend tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.
@@ -50,6 +50,15 @@ Current release: **1.0.2**, published on [GitHub Releases](https://github.com/kr
 - Some long backend texts already stored in archives (care notes, AI history notes) may remain in Italian. About 30 common error messages are translated; unusual ones fall back to generic English.
 - Photos are never deleted automatically; **Archive and backup** now has a cleanup tool that lists unreferenced files, protects uploads younger than one hour and deletes only the confirmed files. Trashed plants keep their photos until purged.
 - The frontend bundle is split into React, icons, QR and application chunks; the main chunk is below the default warning threshold.
+
+## Release 1.0.3 (22 November 2026)
+
+- **In-place restore**: `import_archive(store, archive, replace=True)` replaces the current archive with a web backup (ZIP or JSON) in a single transaction; `POST /api/import?replace=true` is the only way to ask for it and the preview returns `web` plus the current archive counts. Native backups are still limited to an empty archive.
+- **Protection**: before replacing, the database is copied to `restore-snapshot.sqlite` with `Connection.backup` (a consistent copy even with WAL) and overwritten by the next restore. Photos are content-addressed and never deleted: unlinked files stay available to photo cleanup.
+- **Atomicity**: a test makes the second insert fail and checks that the previous plants and measurements are still there; the restore answers 409 and the snapshot keeps the starting archive. Another test restores the same ZIP twice and checks that an already-imported checksum does not block the restore.
+- **Interface**: the Archive and backup panel is fully Italian and English (36 keys, plurals included); the preview separates backup contents from the current archive and the restore takes two steps with **Cancel** / **Confirm restore**.
+- **Visual check**: full flow with headless Chrome at 320, 360, 375, 390 and 1440 px with no horizontal overflow; a plant added after the export disappears after the restore and the plants in the backup come back.
+- Checks: 230 backend tests (5 new), 1,231 aligned i18n keys, frontend build.
 
 ## Release 1.0.2 (22 November 2026)
 

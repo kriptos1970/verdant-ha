@@ -2,10 +2,11 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current release: **1.0.2** (22 November 2026).
+Current release: **1.0.3** (22 November 2026).
 
 ## Done recently
 
+- [x] **Backup and restore**: a web ZIP/JSON backup can now be restored over the current archive, with a preview of both sides, a second confirmation, an atomic replacement and a `restore-snapshot.sqlite` copy of the previous database. Photos are never deleted; the export docs now name the add-on plus `/share` partial backup.
 - [x] Growth diary photos open full size in a modal instead of a blank tab on phones.
 - [x] `Intl` formatters cached once per language and option shape; plural keys used in code are checked in CI.
 - [x] Phone polish: real tap feedback, 44 px detail buttons, contained modal scrolling and no keyboard stealing in the editors.
@@ -57,8 +58,7 @@ These are verification tasks, not missing features. They are tracked in the [Ste
 
 - [ ] **Phone camera light meter**: evaluate whether the browser can provide a trustworthy measurement before implementing it.
 - [ ] **Notification bell “Active” / web push**, if requested; today only AI proposals create a persistent Home Assistant notification.
-- [ ] **Backup/restore improvements**: an in-place restore of the app ZIP (today import runs on an empty archive) and clearer scheduling guidance for Home Assistant backups. Photos in `/share` must be included explicitly.
-- [ ] **Frontend tests and accessibility**: add component/E2E coverage and a broader accessibility pass; backend tests are at 217, frontend checks are build and i18n only.
+- [ ] **Frontend tests and accessibility**: add component/E2E coverage and a broader accessibility pass; backend tests are at 230, frontend checks are build and i18n only.
 - [ ] **Housekeeping**: add an add-on icon/logo, remove the old `local_plantcare_web` add-on after final verification, and clean the migration snapshot when no longer needed.
 - [ ] **Scale**: evaluate a relational/local index if real archives grow well beyond the JSON-document approach.
 

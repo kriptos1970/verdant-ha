@@ -25,7 +25,7 @@ The full documentation is in the repository: [English index](https://github.com/
 
 With photos in `/data`, the add-on backup must include data and photos. With photos in `/share`, back up the shared folder too. The app ZIP export includes both with checksums and needs temporary space on the add-on volume.
 
-Import supports web ZIP archives and native JSON envelopes v1–v3. Import runs on an empty archive after a preview and validates checksums before writing.
+Import validates the checksum and the whole archive before writing. Native JSON envelopes v1–v3 are the one-time migration and require an empty archive. A web backup (ZIP or JSON) can also be restored over the current archive: the preview shows the backup contents and what the current archive would lose, and the restore needs a second confirmation. The restore is atomic, keeps the previous database as `restore-snapshot.sqlite`, and never deletes photos: unlinked files can be removed later with **Photo cleanup**.
 
 ## Care engine
 

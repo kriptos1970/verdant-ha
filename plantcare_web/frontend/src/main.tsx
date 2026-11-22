@@ -1221,7 +1221,7 @@ function App() {
                   {tool === "catalog" && <SpeciesCatalog settings={settings} onPrepare={preparePlant}/>}
                   {tool === "species" && <SpeciesLibrary settings={settings} onPrepare={preparePlant}/>}
                   {tool === "backup" && (
-                    <BackupTool plants={plants} run={run} />
+                    <BackupTool run={run} />
                   )}
                   {tool === "settings" && settings && (
                     <SettingsTool settings={settings} run={run} />
@@ -4368,16 +4368,20 @@ function GrowthEditor({
   );
 }
 function BackupTool({
-  plants,
   run,
 }: {
-  plants: Plant[];
   run: (fn: () => Promise<unknown>, message?: string) => Promise<void>;
 }) {
   const { t, plural, formatNumber } = useI18n();
   const [file, setFile] = useState<File>(),
     [preview, setPreview] = useState<{
-      format: string;
+      web: boolean;
+      current: {
+        plants: number;
+        trashed: number;
+        entities: number;
+        measurements: number;
+      };
       counts: Record<string, number>;
       photos: number;
       measurements: number;
@@ -4385,6 +4389,7 @@ function BackupTool({
     }>(),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
+    [restoreConfirm, setRestoreConfirm] = useState(false),
     [photoReport, setPhotoReport] = useState<{
       files: { name: string; bytes: number; recent: boolean }[];
       count: number;
@@ -4435,6 +4440,7 @@ function BackupTool({
   const inspect = async (f?: File) => {
     setFile(f);
     setPreview(undefined);
+    setRestoreConfirm(false);
     setError("");
     if (!f) return;
     setBusy(true);
@@ -4448,17 +4454,54 @@ function BackupTool({
       setBusy(false);
     }
   };
+  const importArchive = async () => {
+    if (!file || !preview) return;
+    const replace =
+      preview.web &&
+      (preview.current.entities > 0 || preview.current.measurements > 0);
+    const body = new FormData();
+    body.append("file", file);
+    setBusy(true);
+    setError("");
+    try {
+      await run(
+        () =>
+          api(replace ? "import?replace=true" : "import", {
+            method: "POST",
+            body,
+          }),
+        replace ? t("backup.restoreDone") : t("backup.imported"),
+      );
+      setPreview(undefined);
+      setFile(undefined);
+      setRestoreConfirm(false);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const current = preview?.current;
+  const replace = Boolean(
+    preview?.web &&
+      current &&
+      (current.entities > 0 || current.measurements > 0),
+  );
+  const countLabels: Record<string, "plants" | "products" | "species" | "recommendations" | "proposals"> = {
+    plants: "plants",
+    fertilizers: "products",
+    speciesBiologies: "species",
+    recommendations: "recommendations",
+    proposals: "proposals",
+  };
   return (
     <section className="panel">
-      <h2>Le tue piante, al sicuro.</h2>
-      <p className="muted">
-        Importa una volta il backup Verdant nativo o ripristina un backup web
-        su un archivio vuoto.
-      </p>
+      <h2>{t("backup.hero")}</h2>
+      <p className="muted">{t("backup.intro")}</p>
       <label className="import-drop">
         <Upload size={27} />
-        <strong>{file?.name || "Scegli un backup Verdant"}</strong>
-        <small>JSON nativo fino a 150 MB o ZIP web fino a 2 GB</small>
+        <strong>{file?.name || t("backup.choose")}</strong>
+        <small>{t("backup.formats")}</small>
         <input
           type="file"
           accept="application/json,application/zip,.json,.zip"
@@ -4468,66 +4511,112 @@ function BackupTool({
       </label>
       {busy && (
         <p>
-          <LoaderCircle className="spin" size={17} /> Verifico l’archivio…
+          <LoaderCircle className="spin" size={17} /> {t("backup.verifying")}
         </p>
       )}
       {preview && (
         <div className="import-preview">
-          <h3>{preview.format}</h3>
+          <h3>{preview.web ? "PlantCare Web" : t("backup.nativeFormat")}</h3>
+          <p className="muted small-text">{t("backup.contents")}</p>
           <div className="import-counts">
-            {Object.entries(preview.counts).map(([k, n]) => (
-              <span key={k}>
-                <b>{n}</b>
-                {(
-                  {
-                    plants: "Piante",
-                    fertilizers: "Prodotti",
-                    speciesBiologies: "Specie",
-                    recommendations: "Raccomandazioni",
-                    proposals: "Proposte",
-                  } as Record<string, string>
-                )[k] || k}
-              </span>
-            ))}
+            {Object.entries(preview.counts).map(([k, n]) => {
+              const label = countLabels[k];
+              return label ? (
+                <span key={k}>
+                  <b>{n}</b>
+                  {plural(`backup.${label}`, n)}
+                </span>
+              ) : (
+                <span key={k}>
+                  <b>{n}</b>
+                  {k}
+                </span>
+              );
+            })}
             <span>
-              <b>{preview.photos}</b>Fotografie
+              <b>{preview.photos}</b>
+              {plural("backup.photos", preview.photos)}
             </span>
           </div>
           {preview.missingPhotos.length > 0 && (
             <p className="danger">
-              {preview.missingPhotos.length} fotografie non sono incluse nel
-              backup originale. I riferimenti saranno conservati.
+              {plural("backup.missingPhotos", preview.missingPhotos.length)}
             </p>
           )}
-          <button
-            className="button primary"
-            disabled={busy || plants.length > 0}
-            onClick={async () => {
-              if (!file) return;
-              setBusy(true);
-              const body = new FormData();
-              body.append("file", file);
-              try {
-                await run(
-                  () => api("import", { method: "POST", body }),
-                  "Archivio importato",
-                );
-                setPreview(undefined);
-                setFile(undefined);
-              } catch (e) {
-                setError((e as Error).message);
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            Importa questo archivio
-          </button>
-          {plants.length > 0 && (
-            <p className="muted">
-              L’archivio contiene già piante: l’importazione richiede un
-              archivio vuoto.
-            </p>
+          {replace && current ? (
+            <div className="restore-recap">
+              <h3>{t("backup.restoreTitle")}</h3>
+              <p className="muted small-text">{t("backup.restoreText")}</p>
+              <p>
+                <strong>{t("backup.currentTitle")}</strong>
+              </p>
+              <div className="import-counts">
+                <span>
+                  <b>{current.plants}</b>
+                  {plural("backup.plants", current.plants)}
+                </span>
+                {current.trashed > 0 && (
+                  <span>
+                    <b>{current.trashed}</b>
+                    {t("backup.trashed")}
+                  </span>
+                )}
+                <span>
+                  <b>{current.measurements}</b>
+                  {plural("backup.events", current.measurements)}
+                </span>
+              </div>
+              {restoreConfirm ? (
+                <div className="button-row">
+                  <button
+                    type="button"
+                    className="button secondary"
+                    disabled={busy}
+                    onClick={() => setRestoreConfirm(false)}
+                  >
+                    {t("common.cancel")}
+                  </button>
+                  <button
+                    type="button"
+                    className="button destructive"
+                    disabled={busy}
+                    onClick={() => void importArchive()}
+                  >
+                    {t("backup.restoreConfirm")}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="button destructive"
+                  disabled={busy}
+                  onClick={() => setRestoreConfirm(true)}
+                >
+                  <RotateCcw size={17} />
+                  {t("backup.restore")}
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                className="button primary"
+                disabled={
+                  busy ||
+                  (!preview.web &&
+                    (Boolean(current?.entities) ||
+                      Boolean(current?.measurements)))
+                }
+                onClick={() => void importArchive()}
+              >
+                {t("backup.import")}
+              </button>
+              {!preview.web &&
+                (Boolean(current?.entities) ||
+                  Boolean(current?.measurements)) && (
+                  <p className="muted">{t("backup.emptyOnly")}</p>
+                )}
+            </>
           )}
         </div>
       )}
@@ -4537,15 +4626,11 @@ function BackupTool({
         </p>
       )}
       <hr />
-      <h3>Esporta un backup</h3>
-      <p className="muted">
-        Per archivi grandi usa il backup Home Assistant e un backup separato
-        della cartella delle fotografie. Il backup ZIP include i file senza
-        convertirli in testo e viene preparato su disco.
-      </p>
+      <h3>{t("backup.exportTitle")}</h3>
+      <p className="muted">{t("backup.exportText")}</p>
       <a className="button secondary" href="api/backup" download>
         <Download size={17} />
-        Scarica backup ZIP completo
+        {t("backup.download")}
       </a>
       <hr />
       <h3>{t("backup.photoCleanupTitle")}</h3>

@@ -1,3 +1,11 @@
+# 1.0.3 — ripristino dei backup sull’archivio esistente
+
+- **Ripristino in-place**: un backup web (ZIP o JSON) può ora essere ripristinato sopra l’archivio attuale, senza doverlo prima svuotare. L’anteprima mostra sia il contenuto del backup sia i dati che verrebbero sostituiti, e il ripristino chiede una seconda conferma.
+- **Sicurezza**: la sostituzione avviene in una sola transazione: se un controllo o una scrittura fallisce, l’archivio precedente resta intatto. Il database di partenza viene copiato in `restore-snapshot.sqlite` e sovrascritto al ripristino successivo; le foto non vengono mai eliminate, quelle non più collegate restano nella cartella e si rimuovono con **Pulizia fotografie**. I backup nativi continuano a richiedere un archivio vuoto.
+- **Interfaccia**: il pannello **Archivio e backup** è tradotto in italiano e inglese, plurali compresi, e mostra i conteggi dell’archivio attuale prima del ripristino.
+- **Documentazione**: la pianificazione dei backup indica il backup parziale dell’add-on insieme alla cartella `/share`, e la guida spiega anteprima, conferma e copia di sicurezza.
+- Verifiche: 230 test backend, 1.231 chiavi i18n allineate, build frontend; flusso completo nel browser a 320/360/375/390 e 1440 px, con una pianta aggiunta dopo il backup rimossa dal ripristino.
+
 # 1.0.2 — foto del diario a schermo intero e rendering più leggero
 
 - **Foto del diario di crescita**: nella scheda pianta le miniature aprono un modale con l'originale, invece di un nuovo tab che su telefono restava vuoto; se l'originale non carica compare un messaggio. Il comando è un vero pulsante con etichetta accessibile, la miniatura resta decorativa per lo screen reader.

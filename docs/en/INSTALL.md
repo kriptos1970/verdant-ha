@@ -54,9 +54,11 @@ Do not put SQLite on a network share. If you move photos, stop the add-on, copy 
 ## Backup and restore
 
 - **Altro → Archivio e backup** exports a ZIP with `data.json`, separate photos and a SHA256 manifest.
-- Import supports web ZIP archives and native JSON envelopes v1–v3. Import runs on an empty archive after a preview and validates checksums before writing.
+- Import validates the checksum and the whole archive before writing. A native JSON envelope (v1–v3) is the one-time migration and requires an empty archive.
+- A web backup (ZIP or JSON) can also be restored over the current archive: the preview shows both what the backup contains and what the current archive would lose, and the restore needs a second confirmation.
+- The restore is atomic and keeps the previous database as `restore-snapshot.sqlite` in the add-on data folder; the next restore overwrites it. Photos are content-addressed and are never deleted: unlinked files can be removed later with **Photo cleanup**.
 - The ZIP export needs temporary disk space roughly equal to the photo collection.
-- If photos live in `/share`, include that folder in the Home Assistant backup or run a dedicated backup on the NAS. Save the database at the same point in time.
+- If photos live in `/share`, include that folder in the Home Assistant backup or run a dedicated backup on the NAS. Save the database at the same point in time. A Home Assistant partial backup of the add-on plus the `share` folder is the recommended schedule (for example weekly, before updates).
 
 ## Upgrade
 

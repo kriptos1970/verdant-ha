@@ -47,7 +47,7 @@ with a real interface — no YAML dashboards to assemble, no second cloud app.
 - **Knowledge**: Pl@ntNet plant identification, iNaturalist species catalog, Perenual and
   Open Plantbook profiles, nine care guides and a guided symptom check.
 - **Labels**: QR/NFC labels that open the plant through the stable Home Assistant panel URL.
-- **Data**: native archive import (envelope v1–v3), ZIP backup with SHA256 checksums, photo
+- **Data**: native archive import (envelope v1–v3), ZIP backup with SHA256 checksums, in-place restore with a pre-restore database snapshot, photo
   deduplication and EXIF stripping, configurable measurement retention.
 - **Web UI**: responsive, aligned with the native Verdant app at phone widths; works inside
   Home Assistant Ingress without exposing ports.
@@ -106,7 +106,7 @@ diagnosis. Some long notes already stored in archives may remain in their origin
 
 ## Status
 
-Current version: **1.0.2**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Current version: **1.0.3**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 The project is usable and runs on a real Home Assistant installation with a personal archive,
 but it is still under active development. Known limits and the remaining roadmap are tracked in
 [docs/STATUS.md](docs/STATUS.md) and [ROADMAP.md](ROADMAP.md).
