@@ -100,7 +100,7 @@ def minimum_water(plant):
 
 def feed_days(desired, water):
     water = max(1, water)
-    return min(365, max(1, swift_round(max(water, desired) / water)) * water)
+    return min(365, max(2, swift_round(max(2 * water, desired) / water)) * water)
 
 def stable_water(plant):
     plan = plant.get('adaptivePlan') or {}

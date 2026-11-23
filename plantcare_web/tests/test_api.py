@@ -35,6 +35,15 @@ def test_edit_concurrency_and_persistence(client):
     reopened=Store(main.store.root,main.store.photos)
     assert reopened.get('plants',p['id'])[0]['name']=='Monstera grande'
 
+@pytest.mark.parametrize('mode', ['Manuale', 'AI'])
+def test_manual_intervals_cannot_feed_more_often_than_every_two_waterings(client, mode):
+    p = create(client, carePlanMode=mode, wateringInterval=7, fertilizingInterval=1)
+    assert p['fertilizingInterval'] == 14
+    p['wateringInterval'] = 30
+    response = client.put(f"/api/plants/{p['id']}?version={p['_version']}", json=p)
+    assert response.status_code == 200, response.text
+    assert response.json()['fertilizingInterval'] == 60
+
 def test_mutations_require_same_origin_custom_header(client):
     other=TestClient(main.app)
     assert other.post('/api/plants',json={'name':'X'}).status_code==403
@@ -158,7 +167,7 @@ def test_postponement_and_invalid_kind(client):
     assert client.post(path,json=event).json()['_schedule'][0]['dueDate']=='2026-12-01T12:00:00Z'
 
 def test_water_and_fertilizer_are_atomic(client):
-    p=create(client,fertilizingInterval=7,lastFertilized='2026-11-01T12:00:00Z')
+    p=create(client,fertilizingInterval=14,lastFertilized='2026-10-25T12:00:00Z')
     event={'kind':'Annaffia','date':'2026-11-08T12:00:00Z','includingFertilizing':True}
     result=client.post(f"/api/plants/{p['id']}/events",json=event)
     assert result.status_code==200,result.text

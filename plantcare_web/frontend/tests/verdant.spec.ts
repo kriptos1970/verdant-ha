@@ -37,6 +37,19 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Your week" })).toBeVisible();
 });
 
+test("combined care preselects feeding and allows opting out", async ({ page }) => {
+  const detail = await openPlant(page, "Olivia");
+  await detail.getByRole("button", { name: "Water", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  const feeding = dialog.getByRole("checkbox", { name: /fertiliz|feed/i });
+  await expect(feeding).toBeChecked();
+  await feeding.uncheck();
+  await expect(feeding).not.toBeChecked();
+  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await detail.getByRole("button", { name: "Water", exact: true }).click();
+  await expect(feeding).toBeChecked();
+});
+
 test("keyboard can skip navigation and close the named plant editor", async ({ page }) => {
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused();

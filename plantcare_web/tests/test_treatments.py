@@ -121,7 +121,7 @@ def test_native_cycle_epoch_and_missing_ledger_baseline_preserved(client):
 
 
 def test_round_water_feed_grouping_and_replay_count(client):
-    p=create(client,lastWatered='2026-11-08T12:00:00Z',fertilizingInterval=7,lastFertilized='2026-11-08T12:00:00Z')
+    p=create(client,lastWatered='2026-11-08T12:00:00Z',fertilizingInterval=14,lastFertilized='2026-11-01T12:00:00Z')
     assert len(p['_actions'])==1
     a=p['_actions'][0];assert a['includesFertilizing'] is True
     done,data=apply(client,p,a,includingFertilizing=True)

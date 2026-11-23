@@ -4,8 +4,11 @@ Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. T
 
 Current release: **1.1.0** (22 November 2026).
 
+Local patch: **1.1.1** (not yet published).
+
 ## Done recently
 
+- [x] **Feeding safety (1.1.1)**: preselect feeding for combined care while allowing opt-out; require at least two watering intervals between feeding dates, including manual saves, adaptive plans and AI suggestions, with explicit prompt constraints and output correction.
 - [x] **Backup and restore**: a web ZIP/JSON backup can now be restored over the current archive, with a preview of both sides, a second confirmation, an atomic replacement and a `restore-snapshot.sqlite` copy of the previous database. Photos are never deleted; the export docs now name the add-on plus `/share` partial backup.
 - [x] **Frontend quality baseline**: Chromium E2E and axe checks in CI, keyboard navigation and dialog fixes, and improved text contrast in the core views.
 - [x] **Care and plant detail browser coverage**: verify that canceling a watering changes nothing, completion persists in both histories, and plant details show the correct diary on desktop and mobile.

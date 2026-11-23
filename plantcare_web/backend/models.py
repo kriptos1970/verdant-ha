@@ -27,6 +27,12 @@ class Plant(BaseModel):
     history: list[dict[str, Any]] = Field(default_factory=list)
     carePlanMode: Literal['Manuale','Intelligente','AI'] | None = 'Manuale'
 
+    @model_validator(mode='after')
+    def minimum_fertilizing_interval(self):
+        if self.fertilizingInterval is not None:
+            self.fertilizingInterval = max(self.fertilizingInterval, 2 * self.wateringInterval)
+        return self
+
     @field_validator('name','room')
     @classmethod
     def nonblank(cls, value):

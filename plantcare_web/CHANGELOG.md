@@ -1,3 +1,10 @@
+# 1.1.1 — concimazione preselezionata e frequenza protetta
+
+- **Completamento combinato**: la concimazione è preselezionata quando disponibile insieme all’annaffiatura; resta possibile deselezionarla.
+- **Frequenza**: l’intervallo di concimazione non può essere inferiore a due intervalli di annaffiatura, anche nei piani adattivi e nei suggerimenti AI. I valori manuali troppo ravvicinati vengono corretti al salvataggio.
+- **AI**: vincolo esplicito nei prompt giornaliero e dell’assistente, schema delle risposte aggiornato e correzione dei valori restituiti; invalidata la cache dei consigli precedenti.
+- Verifiche: 267 test backend, 16 test browser, 1.234 chiavi i18n allineate e build frontend.
+
 # 1.1.0 — cronologia indicizzata e interfaccia più accessibile
 
 - **Cronologia più rapida**: la cronologia generale usa un indice SQLite derivato dall’archivio, creato al primo avvio, aggiornato nella stessa transazione delle cure e ripopolato durante il ripristino. Con 200.000 eventi sintetici il p95 scende da **798 a 26 ms** senza filtri e da **501 a 21 ms** con filtri, misurati su Home Assistant OS in una VM isolata. L’archivio JSON, i backup e le foto non cambiano e l’indice è ricostruibile.

@@ -1,4 +1,10 @@
-# Stato dell’incremento 1.1.0
+# Stato dell’incremento 1.1.1
+
+## Patch 1.1.1
+
+- Concimazione preselezionata nel completamento combinato, con possibilità di deselezionarla.
+- Intervallo minimo di concimazione pari a due annaffiature: controllo dei valori manuali al salvataggio, piani adattivi e output AI, con vincolo esplicito nei prompt.
+- Verifiche locali: 267 test backend, 16 test browser, controllo i18n e build frontend. Pubblicazione e aggiornamento Home Assistant non eseguiti per questa patch.
 
 ## Stato rispetto agli otto step
 

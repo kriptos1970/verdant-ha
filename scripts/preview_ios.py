@@ -31,11 +31,11 @@ def run():
             plant=Plant(name=name,species=species,room=room,category=category,light=light,wateringInterval=interval,lastWatered=iso(now()-timedelta(days=elapsed)),acquiredOn=iso(now()-timedelta(days=270)),notes=note).model_dump()
             if name=='Olivia':
                 if args.paired_care:
-                    plant.update(fertilizingInterval=7,lastFertilized=plant['lastWatered'],inspectionInterval=14,progressInterval=30,heightCM=58,potMaterial='Terracotta',potDiameterCM=20)
+                    plant.update(fertilizingInterval=14,lastFertilized=plant['lastWatered'],inspectionInterval=14,progressInterval=30,heightCM=58,potMaterial='Terracotta',potDiameterCM=20)
                 plant['history']=[dict(id=str(uuid4()).upper(),kind='Annaffia',date=iso(now()-timedelta(days=6)),status='completed')]
                 if args.paired_care:
                     completed=iso(now()-timedelta(days=5))
-                    plant['lastWatered']=completed;plant['lastFertilized']=completed;plant['history'][0]['date']=completed
+                    plant['lastWatered']=completed;plant['lastFertilized']=iso(now()-timedelta(days=12));plant['history'][0]['date']=completed
                     plant['history'].extend([dict(id=str(uuid4()).upper(),kind=kind,date=iso(now()-timedelta(days=days)),status='completed') for kind,days in [('Controlla salute',7),('Aggiorna progressi',16)]])
                 if args.plant_photo:plant['photoPath']=main.store.write_photo(args.plant_photo)
             main.store.put('plants',plant)

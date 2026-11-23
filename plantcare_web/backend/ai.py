@@ -183,6 +183,7 @@ def apply(store,plant_id):
         plant,version=store.get('plants',plant_id,db)
         if version!=proposal['expectedVersion'] or plant.get('carePlanMode')!='AI':
             raise Conflict('La pianta è cambiata dopo l’analisi. Genera una nuova proposta.')
+        proposal['proposedFertilizingDays']=feed_days(proposal['proposedFertilizingDays'],proposal['proposedWateringDays'])
         plant.update(wateringInterval=proposal['proposedWateringDays'],fertilizingInterval=proposal['proposedFertilizingDays'])
         if plant.get('adaptivePlan'):
             plant['adaptivePlan'].update(wateringDays=proposal['proposedWateringDays'],fertilizingDays=proposal['proposedFertilizingDays'],revisionSource='AI',revisedAt=iso(now()),revisionReason=proposal['reason'],revisionProvider=proposal['provider'],revisionChangedIntervals=True)
@@ -226,7 +227,7 @@ async def _advice(store,settings,plant_id,question):
         return cached
     schema=copy.deepcopy(ADVICE_SCHEMA)
     for key,value in [('wateringDays',water),('inspectionDays',values[22]),('pruningDays',values[23]),('repottingDays',values[24])]:schema['properties'][key]['enum']=[value]
-    schema['properties']['fertilizingDays']['enum']=list(range(max(7,water),366,max(1,water)))
+    schema['properties']['fertilizingDays']['enum']=[days for days in range(2*water,366,water) if days>=7]
     result=await complete(settings,prompt,schema,'verdant_care')
     if any(type(result.get(k)) is not int or abs(result[k])>10**12 for k in ['wateringDays','fertilizingDays','inspectionDays','pruningDays','repottingDays']) or not isinstance(result.get('summaryMarkdown'),str):
         raise ValueError('Risposta AI non valida')

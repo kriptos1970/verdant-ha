@@ -152,7 +152,7 @@ def test_smart_learning_after_water_is_prudent_and_idempotent(client):
 
 def test_learning_updates_deferred_fertilizer_to_new_water_date(client):
     product=client.post('/api/fertilizers',json=dict(name='Concime liquido',form='Liquido')).json()
-    p=plant(client,fertilizingInterval=7,lastFertilized='2026-11-01T12:00:00Z',fertilizerProductID=product['id'])
+    p=plant(client,fertilizingInterval=14,lastFertilized='2026-10-25T12:00:00Z',fertilizerProductID=product['id'])
     item,v=main.store.get('plants',p['id'])
     item.update(carePlanMode='Intelligente',wateringInterval=7,adaptivePlan=dict(wateringDays=7,verdantWateringDays=7,revisionSource='Verdant'))
     item['history']=[dict(id=str(uuid4()),kind='Annaffia',status='completed',date=f'2026-11-{day:02}T12:00:00Z') for day in [1,6]]

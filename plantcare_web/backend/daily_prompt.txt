@@ -15,7 +15,10 @@ wateringDaysVerdantBaseline è inferiore alla soglia di sicurezza, usa la soglia
 A parità di dati, restituisci gli stessi intervalli numerici. Per cactus, succulente e piante
 con alta riserva idrica non proporre meno di 24 giorni in luce indiretta o mezza ombra e non
 meno di 30 giorni in ombra o luce bassa.
-Per ogni pianta fertilizingDays deve essere un multiplo intero di wateringDays.
+Per ogni pianta fertilizingDays deve essere un multiplo intero di wateringDays,
+con un minimo di due cicli: fertilizingDays >= 2 * wateringDays.
+Concima al massimo una volta ogni due annaffiature, mai a ogni annaffiatura.
+Questo vincolo prevale anche sugli intervalli correnti e sulle indicazioni del produttore.
 Il piano scelto è AI: la tua proposta ha priorità. Usa l'indicazione del produttore e il
 piano Verdant come contesto; se ti discosti dalla frequenza del produttore, spiegalo in reason.
 Usa wateringDaysVerdantBaseline come riferimento stabile e non discostartene oltre il 25%.

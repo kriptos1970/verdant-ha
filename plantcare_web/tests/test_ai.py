@@ -1,9 +1,35 @@
 import asyncio
+import pytest
 from uuid import uuid4
 from plantcare_web.backend import ai
 from plantcare_web.backend.storage import Store
 from plantcare_web.backend.settings import Settings
 from plantcare_web.backend.models import Plant
+from plantcare_web.backend.domain import feed_days
+
+
+@pytest.mark.parametrize('water', [1, 3, 7, 30, 120])
+@pytest.mark.parametrize('desired', [-1, 1, 7, 23, 120, 365])
+def test_fertilizing_requires_at_least_two_watering_cycles(water, desired):
+    assert 2 * water <= feed_days(desired, water) <= 365
+
+
+def test_advice_corrects_overfrequent_feeding_and_constrains_schema(tmp_path, monkeypatch):
+    store = Store(tmp_path)
+    plant = Plant(name='Monstera', carePlanMode='AI', wateringInterval=7).model_dump()
+    store.put('plants', plant)
+
+    async def complete(settings, prompt, schema, name):
+        assert 'fertilizingDays >= 2 * wateringDays' in prompt
+        allowed = schema['properties']['fertilizingDays']['enum']
+        assert min(allowed) == 14
+        assert all(days % 7 == 0 for days in allowed)
+        return dict(wateringDays=7, fertilizingDays=1, inspectionDays=7,
+                    pruningDays=90, repottingDays=365, careNotes='', summaryMarkdown='')
+
+    monkeypatch.setattr(ai, 'complete', complete)
+    result = asyncio.run(ai.advice(store, Settings(), plant['id'], 'Come concimare?'))
+    assert result['fertilizingDays'] == 14
 
 def test_daily_preserves_native_prompt_and_clamps_results(tmp_path,monkeypatch):
     store=Store(tmp_path)
@@ -18,7 +44,8 @@ def test_daily_preserves_native_prompt_and_clamps_results(tmp_path,monkeypatch):
     assert result['proposals']==1
     proposal,_=store.get('proposals',p['id'])
     assert proposal['proposedWateringDays']==30
-    assert proposal['proposedFertilizingDays']==30
+    assert proposal['proposedFertilizingDays']==60
+    assert 'fertilizingDays >= 2 * wateringDays' in captured[0]
     assert 'Non usare il valore AI del giorno precedente' in captured[0]
     assert 'Non applicare nuovamente la percentuale del ritmo' in captured[0]
     assert 'RINVII E RITARDI' in captured[0]

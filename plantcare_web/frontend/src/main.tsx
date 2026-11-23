@@ -3330,6 +3330,11 @@ function EventEditor({
   const requiresHealth=['Controlla salute','Aggiorna progressi'].includes(action.kind);
   const isNewInspection=action.kind==='Controlla salute'&&!action.event;
   const isGrowth=action.kind==='Aggiorna progressi'&&!action.event;
+  const canIncludeFeeding = action.kind === "Annaffia" && !action.event && Boolean(
+    action.scheduled?.canIncludeFertilizing ||
+    action.scheduled?.includesFertilizing ||
+    (!action.scheduled && action.plant._actions.find((a) => a.kind === "Annaffia")?.canIncludeFertilizing)
+  );
   const toggleHealthOption=(value:string,values:string[],setValues:(items:string[])=>void)=>setValues(values.includes(value)?values.filter(v=>v!==value):[...values,value]);
   const uploadFiles=async(files:File[])=>{
     setUploading(true);
@@ -3352,7 +3357,7 @@ function EventEditor({
           new Date(Date.now() + 86400000).toISOString(),
       ),
     ),
-    [feeding, setFeeding] = useState(false),
+    [feeding, setFeeding] = useState(canIncludeFeeding),
     [error, setError] = useState("");
   return (
     <Modal title={action.event ? t("event.editTitle") : t("event.confirmTitle")} onClose={onClose}>
@@ -3373,7 +3378,7 @@ function EventEditor({
                 ? health
                 : action.event?.health,
             photoPaths,
-            includingFertilizing: feeding,
+            includingFertilizing: canIncludeFeeding && !postponed && feeding,
             treatmentPlanID:
               action.event?.treatmentPlanID ||
               action.scheduled?.treatmentPlanID ||
@@ -3423,14 +3428,7 @@ function EventEditor({
             />
           </label>
         )}
-        {action.kind === "Annaffia" &&
-          !postponed &&
-          !action.event &&
-          (action.scheduled?.canIncludeFertilizing ||
-            action.scheduled?.includesFertilizing ||
-            (!action.scheduled &&
-              action.plant._actions.find((a) => a.kind === "Annaffia")
-                ?.canIncludeFertilizing)) && (
+        {canIncludeFeeding && !postponed && (
             <>
               <label className="check-label">
                 <input
