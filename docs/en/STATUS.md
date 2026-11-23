@@ -1,12 +1,13 @@
 # Status and known limits
 
-Current release: **1.1.0**, published on [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current version: **1.1.1**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
 
-## Local patch 1.1.1
+## Patch 1.1.1
 
 - Combined watering and feeding preselects feeding, with an opt-out checkbox.
 - Feeding intervals must span at least two watering intervals, including manual saves, adaptive plans and AI output. Both AI prompts explicitly state the constraint.
-- Local checks: 267 backend tests, 16 browser tests, translation checks and frontend build. This patch has not been published or installed on Home Assistant.
+- Session, connection and server errors are distinguished from validation failures; field details are preserved in Italian and English.
+- Local checks: 267 backend tests, 25 browser tests, translation checks and frontend build. This patch has not been installed on Home Assistant.
 
 ## Implemented
 

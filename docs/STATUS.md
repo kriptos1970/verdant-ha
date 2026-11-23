@@ -4,7 +4,8 @@
 
 - Concimazione preselezionata nel completamento combinato, con possibilità di deselezionarla.
 - Intervallo minimo di concimazione pari a due annaffiature: controllo dei valori manuali al salvataggio, piani adattivi e output AI, con vincolo esplicito nei prompt.
-- Verifiche locali: 267 test backend, 16 test browser, controllo i18n e build frontend. Pubblicazione e aggiornamento Home Assistant non eseguiti per questa patch.
+- Errori di sessione, connessione e server distinti dai problemi di validazione; dettagli dei campi preservati in italiano e inglese.
+- Verifiche locali: 267 test backend, 25 test browser, controllo i18n e build frontend. Aggiornamento Home Assistant non eseguito per questa patch.
 
 ## Stato rispetto agli otto step
 

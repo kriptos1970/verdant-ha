@@ -373,8 +373,7 @@ function App() {
     } catch (e) {
       const message = (e as Error).message;
       const code = (e as Error & { code?: string }).code;
-      const generic = /^(Controlla i dati inseriti\.|Check the data and try again\.)$/.test(message);
-      if (code === "validation" && (document.querySelector("dialog[open]") || generic)) {
+      if (code === "validation" && document.querySelector("dialog[open]")) {
         console.warn("Errore di validazione gestito dal form:", message);
       } else {
         setError(message);

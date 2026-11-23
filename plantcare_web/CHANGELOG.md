@@ -3,7 +3,8 @@
 - **Completamento combinato**: la concimazione è preselezionata quando disponibile insieme all’annaffiatura; resta possibile deselezionarla.
 - **Frequenza**: l’intervallo di concimazione non può essere inferiore a due intervalli di annaffiatura, anche nei piani adattivi e nei suggerimenti AI. I valori manuali troppo ravvicinati vengono corretti al salvataggio.
 - **AI**: vincolo esplicito nei prompt giornaliero e dell’assistente, schema delle risposte aggiornato e correzione dei valori restituiti; invalidata la cache dei consigli precedenti.
-- Verifiche: 267 test backend, 16 test browser, 1.234 chiavi i18n allineate e build frontend.
+- **Errori più chiari**: risposte vuote o HTML del server, sessione scaduta e problemi di connessione non vengono più presentati come “Controlla i dati inseriti”. Le validazioni conservano campo e motivo anche con dettagli strutturati e interfaccia inglese; i problemi reali fuori dai moduli restano visibili.
+- Verifiche: 267 test backend, 25 test browser, 1.234 chiavi i18n allineate e build frontend.
 
 # 1.1.0 — cronologia indicizzata e interfaccia più accessibile
 

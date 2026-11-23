@@ -37,6 +37,62 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Your week" })).toBeVisible();
 });
 
+for (const language of ["it", "en"]) {
+  for (const status of [401, 502]) {
+    test(`HTTP ${status} without JSON is not a data validation error (${language})`, async ({ page }) => {
+      await page.evaluate(language => localStorage.setItem("plantcare.language", language), language);
+      await page.route("**/api/fertilizers", route => route.fulfill({
+        status, contentType: "text/html", body: "<html>Upstream error</html>",
+      }));
+      await page.reload();
+      const banner = page.locator(".alert.error");
+      await expect(banner).toContainText(status === 401
+        ? language === "it" ? "Sessione scaduta" : "Session expired"
+        : language === "it" ? "Server temporaneamente non disponibile" : "Server temporarily unavailable");
+      await expect(banner).not.toContainText(/Controlla i dati inseriti|Check the data and try again/);
+    });
+  }
+
+  test(`structured validation details remain visible in the form (${language})`, async ({ page }) => {
+    await page.evaluate(language => localStorage.setItem("plantcare.language", language), language);
+    await page.reload();
+    await page.route("**/api/plants", route => route.fulfill({
+      status: 422, contentType: "application/json",
+      body: JSON.stringify({ detail: [{ loc: ["body", "wateringInterval"], msg: "Input should be greater than or equal to 1" }] }),
+    }));
+    await page.getByRole("button", { name: language === "it" ? "Nuova pianta" : "New plant", exact: true }).first().click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("textbox", { name: language === "it" ? "Nome della pianta" : "Plant name", exact: true }).fill("Test");
+    await dialog.getByRole("button", { name: language === "it" ? "Salva pianta" : "Save plant", exact: true }).click();
+    await expect(dialog.getByRole("alert")).toContainText("wateringInterval: Input should be greater than or equal to 1");
+    await expect(page.locator(".alert.error")).toHaveCount(0);
+  });
+
+  test(`network and unexpected HTML responses have actionable messages (${language})`, async ({ page }) => {
+    await page.evaluate(language => localStorage.setItem("plantcare.language", language), language);
+    await page.route("**/api/fertilizers", route => route.abort("failed"));
+    await page.reload();
+    await expect(page.locator(".alert.error")).toContainText(language === "it"
+      ? "Impossibile connettersi a Verdant" : "Cannot connect to Verdant");
+    await page.unroute("**/api/fertilizers");
+    await page.route("**/api/fertilizers", route => route.fulfill({
+      status: 200, contentType: "text/html", body: "<html>Home Assistant login</html>",
+    }));
+    await page.reload();
+    await expect(page.locator(".alert.error")).toContainText(language === "it"
+      ? "Risposta del server inattesa" : "Unexpected server response");
+  });
+}
+
+test("English errors preserve specific server details without a dictionary entry", async ({ page }) => {
+  await page.route("**/api/fertilizers", route => route.fulfill({
+    status: 422, contentType: "application/json",
+    body: JSON.stringify({ code: "validation", detail: "wateringInterval: Input should be greater than or equal to 1" }),
+  }));
+  await page.reload();
+  await expect(page.locator(".alert.error")).toContainText("wateringInterval: Input should be greater than or equal to 1");
+});
+
 test("combined care preselects feeding and allows opting out", async ({ page }) => {
   const detail = await openPlant(page, "Olivia");
   await detail.getByRole("button", { name: "Water", exact: true }).click();

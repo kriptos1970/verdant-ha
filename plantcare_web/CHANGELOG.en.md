@@ -4,6 +4,14 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.1.1 — safer feeding intervals and clearer errors
+
+- **Combined care**: feeding is preselected when available alongside watering, with an opt-out checkbox.
+- **Feeding frequency**: feeding intervals must span at least two watering intervals, including adaptive plans and AI suggestions. Overly frequent manual intervals are corrected on save.
+- **AI**: both prompts explicitly state the constraint; response schemas and output normalization enforce it. Previously cached advice is invalidated.
+- **Clearer errors**: empty or HTML server responses, expired sessions and connection failures no longer appear as “Check the data and try again”. Validation errors retain their field and reason, including structured details and English UI messages; errors outside forms remain visible.
+- Checks: 267 backend tests, 25 browser tests, 1,234 aligned i18n keys and frontend build.
+
 # 1.1.0 — indexed history and a more accessible interface
 
 - **Faster history**: the collection history uses an SQLite index derived from the archive, created on first start, updated in the same transaction as care changes and rebuilt during restore. With 200,000 synthetic events p95 falls from **798 to 26 ms** unfiltered and from **501 to 21 ms** filtered, measured on Home Assistant OS in an isolated VM. The JSON archive, backups and photos are unchanged and the index can be rebuilt.

@@ -46,8 +46,40 @@ const EN_ERRORS: Record<string, string> = {
   conflict: "The data changed. Reload and try again.",
   too_large: "The request is too large.",
   validation: "Check the data and try again.",
+  server: "Server temporarily unavailable. Try again shortly.",
+  network: "Cannot connect to Verdant. Check your connection and try again.",
+  invalid_response: "Unexpected server response. Reopen Verdant from Home Assistant.",
+  remote: "An external service is temporarily unavailable. Try again shortly.",
   error: "The operation failed. Try again.",
 };
+
+const IT_ERRORS: Record<string, string> = {
+  bad_request: "Richiesta non valida.",
+  unauthorized: "Sessione scaduta. Riapri Verdant da Home Assistant.",
+  forbidden: "Accesso consentito soltanto tramite Home Assistant.",
+  not_found: "Elemento non trovato.",
+  conflict: "I dati sono cambiati. Ricarica e riprova.",
+  too_large: "La richiesta supera il limite consentito.",
+  validation: "La richiesta non è valida. Verifica i campi indicati e riprova.",
+  server: "Server temporaneamente non disponibile. Riprova tra poco.",
+  network: "Impossibile connettersi a Verdant. Controlla la connessione e riprova.",
+  invalid_response: "Risposta del server inattesa. Riapri Verdant da Home Assistant.",
+  remote: "Un servizio esterno non è temporaneamente disponibile. Riprova tra poco.",
+  error: "Operazione non riuscita. Riprova.",
+};
+
+function detailMessage(detail: unknown): string {
+  if (typeof detail === "string") return detail.trim();
+  if (!Array.isArray(detail)) return "";
+  return detail.slice(0, 3).flatMap(item => {
+    if (!item || typeof item.msg !== "string") return [];
+    const field = Array.isArray(item.loc)
+      ? item.loc.filter((part: unknown) => !["body", "query", "path"].includes(String(part))).join(".")
+      : "";
+    const message = item.msg.replace(/^Value error, /, "").trim();
+    return message ? [field ? `${field}: ${message}` : message] : [];
+  }).join("; ");
+}
 
 function activeLanguage() {
   try {
@@ -65,17 +97,16 @@ function activeLanguage() {
 }
 
 function errorMessage(code: string, detail: unknown) {
-  if (
-    activeLanguage() === "en" &&
-    typeof detail === "string" &&
-    EN_DETAILS[detail]
-  )
-    return EN_DETAILS[detail];
-  if (activeLanguage() === "en" && EN_ERRORS[code]) return EN_ERRORS[code];
-  if (typeof detail === "string" && detail) return detail;
-  return activeLanguage() === "en"
-    ? "Check the data and try again."
-    : "Controlla i dati inseriti.";
+  const message = detailMessage(detail);
+  const english = activeLanguage() === "en";
+  // Never replace a useful server detail with a generic translation.
+  if (message) return english ? EN_DETAILS[message] || message : message;
+  const messages = english ? EN_ERRORS : IT_ERRORS;
+  return messages[code] || messages.error;
+}
+
+function apiError(code: string, detail?: unknown, status?: number) {
+  return Object.assign(new Error(errorMessage(code, detail)), { code, status });
 }
 
 export async function api<T>(
@@ -86,28 +117,36 @@ export async function api<T>(
   headers.set("X-PlantCare-Request", "1");
   if (options.body && !(options.body instanceof FormData))
     headers.set("Content-Type", "application/json");
-  const response = await fetch(`api/${path}`, { ...options, headers });
+  let response: Response;
+  try {
+    response = await fetch(`api/${path}`, { ...options, headers });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") throw error;
+    throw apiError("network");
+  }
   if (!response.ok) {
-    let code =
-      response.status === 401
-        ? "unauthorized"
-        : response.status === 403
-          ? "forbidden"
-          : "error";
+    const statusCodes: Record<number, string> = {
+      400: "bad_request", 401: "unauthorized", 403: "forbidden",
+      404: "not_found", 409: "conflict", 413: "too_large",
+      422: "validation", 424: "remote",
+    };
+    let code = statusCodes[response.status] || (response.status >= 500 ? "server" : "error");
     let detail: unknown;
     try {
       const body = await response.json();
-      if (typeof body.code === "string") code = body.code;
-      detail = body.detail;
+      if (body && typeof body.code === "string") code = body.code;
+      detail = body?.detail;
     } catch {
       // Keep the status-derived code.
     }
-    const failure = new Error(errorMessage(code, detail)) as Error & { code?: string };
-    failure.code = code;
-    throw failure;
+    throw apiError(code, detail, response.status);
   }
   if (response.status === 204) return undefined as T;
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw apiError("invalid_response", undefined, response.status);
+  }
 }
 export const photoURL = (path?: string | null, thumb = false) =>
   path && /^[a-f0-9]{64}\.jpg$/.test(path)
