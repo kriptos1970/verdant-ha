@@ -1,4 +1,11 @@
-# Stato dell’incremento 1.1.1
+# Stato dell’incremento 1.1.2
+
+## Patch 1.1.2
+
+- Apprendimento bidirezionale: rinvii onorati e annaffiature anticipate influenzano il ritmo; scadenze registrate e stime storiche sono distinte. Duplicati e rinvii multipli nello stesso ciclo non aggiungono conferme indipendenti.
+- Guardrail AI proporzionati al profilo: ±15/25/35/50% per principiante/intermedio/esperto/professionista, con soglie botaniche vincolanti e controllo del profilo prima dell’applicazione.
+- Prompt arricchito con stati, rinvii, anticipi, note e completamenti; motivazioni esplicite anche quando l’output viene limitato. Nessuna nuova applicazione automatica dei piani AI.
+- Verifiche locali: 289 test backend, 25 test browser, controllo i18n e build frontend. Aggiornamento Home Assistant non eseguito per questa patch.
 
 ## Patch 1.1.1
 

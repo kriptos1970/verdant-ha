@@ -942,7 +942,7 @@ const en: Record<MessageKey, string> = {
   "settings.experience.intermediate": "Intermediate",
   "settings.experience.expert": "Expert",
   "settings.experience.professional": "Professional",
-  "settings.experienceHint": "Calibrates the learning step: 1 day for a beginner up to 4 for a professional. With more experience, consistent postponements weigh more.",
+  "settings.experienceHint": "A guardrail against mistakes: repeated postponements may lengthen the interval; early watering may shorten it. Learning steps range from 1 to 4 days. Daily AI margins around the Verdant baseline are ±15% for beginners, ±25% intermediate, ±35% expert and ±50% professional. Consistent signals are required; safety minimums remain binding.",
   "settings.experienceSaved": "Experience updated",
   "settings.careEngineAddon": "The mode is set in the Verdant add-on configuration; restart the add-on after the change.",
   "settings.days.one": "{count} day",

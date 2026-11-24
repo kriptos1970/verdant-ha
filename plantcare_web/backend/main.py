@@ -383,6 +383,8 @@ def edit_event(plant_id:str,event_id:str,body:EventRequest,version:int=Query(ge=
         if event.get('treatmentPlanID') and body.kind!='treatment':
             raise HTTPException(422,'Una registrazione del ciclo deve restare un trattamento.')
         fields=care.event_payload(body)
+        if any(fields.get(key)!=event.get(key) for key in ['kind','date','status']):
+            event.pop('wateringDueDate',None)
         for key in ['treatmentPlanID','productID']:
             if key not in body.model_fields_set: fields.pop(key,None)
         event.update(fields)

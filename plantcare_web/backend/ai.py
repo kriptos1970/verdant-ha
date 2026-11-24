@@ -8,7 +8,7 @@ from uuid import uuid4
 import httpx
 from zoneinfo import ZoneInfo
 from .care_kinds import canonical_kind, legacy_kind
-from .domain import active_history, parse, stable_water, minimum_water, accepted_water, feed_days, evidence, iso, now, normalize_experience
+from .domain import active_history, parse, stable_water, minimum_water, accepted_water, ai_watering_limits, early_watering_evidence, feed_days, evidence, iso, now, normalize_experience
 from .storage import Conflict
 from .ai_support import effective_settings, advice_values, climate_context, ADVICE_CONTEXT_VERSION
 
@@ -71,7 +71,7 @@ def care_timing(plant,zone='Europe/Rome'):
         return result
     def kind_timing(kind,interval):
         events=kind_events(kind)
-        completed=sorted(day(e['date']) for e in events if e.get('status')!='postponed')
+        completed=sorted({day(e['date']) for e in events if e.get('status')!='postponed'})
         gaps=[(b-a).days for a,b in zip(completed,completed[1:]) if (b-a).days>0][-8:]
         raw=[e for e in events if e.get('status')=='postponed' and e.get('postponedUntil')]
         raw.sort(key=lambda e:e.get('date',''),reverse=True)
@@ -83,13 +83,19 @@ def care_timing(plant,zone='Europe/Rome'):
             elif min(after)>=due: outcome='honored'
             else: outcome='early'
             postponements.append({'date':iso(parse(e['date'])),'postponedUntil':iso(parse(e['postponedUntil'])),'deferredDays':max(0,(due-start).days),'note':str(e.get('note') or '')[:300],'outcome':outcome})
+            previous=[d for d in completed if d<=start]
+            postponements[-1].update(completedOn=min(after).isoformat() if after else None,
+                                    completedGapDays=(min(after)-max(previous)).days if after and previous else None)
         starts={day(e['date']) for e in raw}
         late=0
         for a,b in zip(completed,completed[1:]):
             gap=(b-a).days
             if interval and gap>interval+2 and not any(a<start<=b for start in starts): late+=1
-        return {'recentCompletedGapsDays':gaps,'postponements':postponements,'honoredPostponements':sum(1 for p in postponements if p['outcome']=='honored'),'pendingPostponements':sum(1 for p in postponements if p['outcome']=='pending'),'earlyPostponements':sum(1 for p in postponements if p['outcome']=='early'),'lateGapsWithoutPostponement':late}
-    return {'water':kind_timing('water',plant.get('wateringInterval') or 0),'fertilize':kind_timing('fertilize',plant.get('fertilizingInterval') or 0)}
+        return {'recentCompletedGapsDays':gaps,'postponements':postponements,'honoredPostponements':sum(1 for p in postponements if p['outcome']=='honored'),'pendingPostponements':sum(1 for p in postponements if p['outcome']=='pending'),'earlyPostponements':sum(1 for p in postponements if p['outcome']=='early'),'lateGapsWithoutPostponement':late,
+                'honoredCycles':len({p['completedOn'] for p in postponements if p['outcome']=='honored'}),
+                'earlyCycles':len({p['completedOn'] for p in postponements if p['outcome']=='early'})}
+    return {'water':{**kind_timing('water',plant.get('wateringInterval') or 0),**early_watering_evidence(plant,zone)},
+            'fertilize':kind_timing('fertilize',plant.get('fertilizingInterval') or 0)}
 
 def care_timing_text(plant,zone='Europe/Rome',language='it'):
     timing=care_timing(plant,zone)
@@ -98,22 +104,42 @@ def care_timing_text(plant,zone='Europe/Rome',language='it'):
         items=[]
         for item in data['postponements']:
             note=f" · nota: {item['note']}" if item['note'] else ''
-            items.append(f"{item['date'][:10]} → {item['postponedUntil'][:10]} ({item['deferredDays']} g, {item['outcome']}{note})")
+            completed=''
+            if item['completedOn']:
+                completed=(f" · completed: {item['completedOn']}"
+                           if language=='en' else f" · completata: {item['completedOn']}")
+                if item['completedGapDays'] is not None:
+                    completed+=(f", gap: {item['completedGapDays']} days"
+                                if language=='en' else f", intervallo: {item['completedGapDays']} giorni")
+            items.append(f"{item['date'][:10]} → {item['postponedUntil'][:10]} ({item['deferredDays']} g, {item['outcome']}{note}{completed})")
         detail='; '.join(items) if items else ('nessuno' if language!='en' else 'none')
         if language=='en':
-            return f"{label}: honored {data['honoredPostponements']}, pending {data['pendingPostponements']}, early {data['earlyPostponements']}, late gaps without postponement {data['lateGapsWithoutPostponement']}; recent gaps {data['recentCompletedGapsDays']} days; {detail}."
-        return f"{label}: onorati {data['honoredPostponements']}, in attesa {data['pendingPostponements']}, anticipati {data['earlyPostponements']}, ritardi senza rinvio {data['lateGapsWithoutPostponement']}; intervalli recenti {data['recentCompletedGapsDays']} giorni; {detail}."
+            text=f"{label}: honored {data['honoredPostponements']}, pending {data['pendingPostponements']}, early {data['earlyPostponements']}, late gaps without postponement {data['lateGapsWithoutPostponement']}; recent gaps {data['recentCompletedGapsDays']} days; {detail}."
+        else:
+            text=f"{label}: onorati {data['honoredPostponements']}, in attesa {data['pendingPostponements']}, anticipati {data['earlyPostponements']}, ritardi senza rinvio {data['lateGapsWithoutPostponement']}; intervalli recenti {data['recentCompletedGapsDays']} giorni; {detail}."
+        if kind=='water':
+            text+=(f" Honoured postponement cycles: {data['honoredCycles']}. Early waterings: {data['earlyWaterings']} recorded, {data['inferredEarlyWaterings']} inferred; "
+                   if language=='en' else f" Cicli con rinvii onorati: {data['honoredCycles']}. Annaffiature anticipate: {data['earlyWaterings']} registrate, {data['inferredEarlyWaterings']} stimate; ")
+            text+=json.dumps(data['earlyWateringEvents'],ensure_ascii=False)
+        return text
     return line('water','Annaffiatura' if language!='en' else 'Watering')+' '+line('fertilize','Concimazione' if language!='en' else 'Feeding')
 
 def daily_context(plant,products,location=None,zone='Europe/Rome',experience='intermedio'):
     water=stable_water(plant)
-    item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage'),'recentCare':[{'kind':legacy_kind(e['kind']),'date':e['date']} for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]]}
+    item={'plantID':plant['id'],'name':plant['name'],'species':plant['species'],'category':plant['category'],'wateringProfile':'Succulenta' if plant['category']=='Succulenta' else 'Alta riserva idrica' if minimum_water(plant)>1 else 'Standard','room':plant['room'],'light':plant['light'],'wateringDaysCurrent':plant['wateringInterval'],'wateringDaysVerdantBaseline':water,'careFrequencyPreference':plant.get('careFrequencyPreference') or 'Normale','fertilizingDaysVerdantBaseline':stable_feed(plant,water),'fertilizingDaysCurrent':plant.get('fertilizingInterval'),'fertilizerProductLinked':bool(plant.get('fertilizerProductID')),'lastWatered':plant['lastWatered'],'potDiameterCM':plant.get('potDiameterCM'),'potMaterial':plant.get('potMaterial') or 'non indicato','drainage':plant.get('potHasDrainage')}
     product=next((p for p in products if p['id']==plant.get('fertilizerProductID')),None)
     if product:
         item.update(fertilizerProduct=product['name'],fertilizerManufacturerDays=product.get('applicationIntervalDays'))
     plan=plant.get('adaptivePlan') or {}
     item['locationName']=plan.get('locationName') or (location or {}).get('name') or 'Località non indicata'
     item['experienceLevel']=normalize_experience(experience)
+    item['wateringLimits']=ai_watering_limits(water,minimum_water(plant),experience)
+    item['recentCare']=[
+        {'kind':legacy_kind(e['kind']),'date':e['date'],'status':e.get('status') or 'completed',
+         **({'wateringDueDate':e['wateringDueDate']} if e.get('wateringDueDate') else {}),
+         **({'postponedUntil':e.get('postponedUntil'),'note':str(e.get('note') or '')[:300]} if e.get('status')=='postponed' else {})}
+        for e in sorted(active_history(plant),key=lambda e:e['date'],reverse=True)[:6]
+    ]
     item['careTiming']=care_timing(plant,zone)
     for dest,source in [('season','seasonName'),('temperatureC','averageTemperature'),('humidityPercent','relativeHumidity'),('rainNext7DaysMM','precipitationNextWeek'),('placement','placement')]:
         if source in plan: item[dest]=plan[source]
@@ -146,11 +172,22 @@ async def analyze(store,settings):
             if not isinstance(reason,str) or len(reason)>20000 or type(suggestion.get('hasSufficientEvidence')) is not bool or any(type(suggestion.get(k)) is not int or abs(suggestion[k])>10**12 for k in ['wateringDays','fertilizingDays']):
                 raise ValueError('Valori AI non validi')
             if not evidence(suggestion.get('hasSufficientEvidence'),reason): continue
-            water=accepted_water(suggestion['wateringDays'],stable_water(plant),minimum_water(plant))
+            limits=ai_watering_limits(stable_water(plant),minimum_water(plant),experience)
+            water=accepted_water(suggestion['wateringDays'],stable_water(plant),minimum_water(plant),experience)
+            if water!=suggestion['wateringDays']:
+                reason+=(
+                    f" Safety adjustment: AI requested {suggestion['wateringDays']} days; accepted {water} days "
+                    f"(profile {experience}, ±{limits['maxDeviationPercent']}%, permitted {limits['minimumDays']}–{limits['maximumDays']} days)."
+                    if language=='en' else
+                    f" Correzione di sicurezza: AI {suggestion['wateringDays']} giorni, accettati {water} giorni "
+                    f"(profilo {experience}, ±{limits['maxDeviationPercent']}%, intervallo ammesso {limits['minimumDays']}–{limits['maximumDays']} giorni)."
+                )
             feed=feed_days(suggestion['fertilizingDays'],water)
             if water==plant['wateringInterval'] and feed==plant.get('fertilizingInterval'): continue
             proposals.append({'id':plant['id'],'plantID':plant['id'],'plantName':plant['name'],'expectedVersion':version,'currentWateringDays':plant['wateringInterval'],'currentFertilizingDays':plant.get('fertilizingInterval'),'proposedWateringDays':water,'proposedFertilizingDays':feed,'reason':reason,'provider':settings.public()['aiProvider'],'model':settings.public()['aiModel'],'createdAt':iso(now())})
         with store.connection() as db:
+            if normalize_experience((store.state('preferences',None,db) or {}).get('experience'))!=experience:
+                raise Conflict('Il profilo di esperienza è cambiato durante l’analisi. Genera una nuova proposta.')
             for original,expected in plants:
                 current,actual=store.get('plants',original['id'],db)
                 if actual!=expected or current.get('carePlanMode')!='AI':raise Conflict('Una pianta è cambiata durante l’analisi. Ripeti prima di applicare le proposte.')
@@ -183,6 +220,9 @@ def apply(store,plant_id):
         plant,version=store.get('plants',plant_id,db)
         if version!=proposal['expectedVersion'] or plant.get('carePlanMode')!='AI':
             raise Conflict('La pianta è cambiata dopo l’analisi. Genera una nuova proposta.')
+        experience=normalize_experience((store.state('preferences',None,db) or {}).get('experience'))
+        if accepted_water(proposal['proposedWateringDays'],stable_water(plant),minimum_water(plant),experience)!=proposal['proposedWateringDays']:
+            raise Conflict('La proposta supera i limiti del profilo attuale. Genera una nuova proposta.')
         proposal['proposedFertilizingDays']=feed_days(proposal['proposedFertilizingDays'],proposal['proposedWateringDays'])
         plant.update(wateringInterval=proposal['proposedWateringDays'],fertilizingInterval=proposal['proposedFertilizingDays'])
         if plant.get('adaptivePlan'):

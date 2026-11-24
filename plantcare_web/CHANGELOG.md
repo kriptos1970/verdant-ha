@@ -1,3 +1,12 @@
+# 1.1.2 — apprendimento bidirezionale e guardrail del coltivatore
+
+- **Rinvii e annaffiature anticipate**: l’apprendimento Verdant usa rinvii onorati su più cicli per allungare l’intervallo e annaffiature anticipate ripetute per accorciarlo, con passi da 1 a 4 giorni secondo esperienza. Più rinvii nello stesso ciclo e registrazioni duplicate nella stessa giornata non moltiplicano l’evidenza; i segnali contraddittori non accelerano l’apprendimento.
+- **Scadenza storica**: le nuove annaffiature conservano la scadenza prevista prima dell’intervento. Per lo storico senza scadenza gli anticipi sono indicati come stime; modificando data, tipo o stato dell’evento il vecchio confronto viene invalidato.
+- **AI e profilo**: il limite fisso ±25% dell’analisi giornaliera diventa ±15% per principiante, ±25% intermedio, ±35% esperto e ±50% professionista. Prompt e controllo dell’output usano gli stessi limiti; le soglie botaniche prevalgono sempre. Il profilo viene ricontrollato prima di applicare una proposta.
+- **Evidenze esplicite**: il contesto AI distingue cure completate, rinvii e annaffiature anticipate, include note e cicli distinti e richiede una motivazione delle variazioni o del mantenimento della frequenza. Le correzioni dei valori AI mostrano valore richiesto, accettato e limite. Rimossa una condizione che scartava motivazioni valide solo perché contenevano “intervalli attuali”.
+- **Sicurezza**: l’apprendimento rispetta il minimo d’annaffiatura della specie e riallinea il concime ad almeno due cicli. In modalità AI l’apprendimento alimenta le proposte, senza introdurre nuove applicazioni automatiche; l’assistente della scheda resta distinto dall’analisi giornaliera.
+- Verifiche: 289 test backend, 25 test browser, 1.234 chiavi i18n allineate e build frontend. Reso indipendente dalla data corrente un test del punteggio salute.
+
 # 1.1.1 — concimazione preselezionata e frequenza protetta
 
 - **Completamento combinato**: la concimazione è preselezionata quando disponibile insieme all’annaffiatura; resta possibile deselezionarla.

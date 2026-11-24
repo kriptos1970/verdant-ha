@@ -1,6 +1,13 @@
 # Status and known limits
 
-Current version: **1.1.1**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current version: **1.1.2**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+
+## Patch 1.1.2
+
+- Bidirectional learning considers honoured postponements and repeated early watering, distinguishing recorded deadlines from historical estimates. Duplicates and several deferrals within one cycle are not independent confirmations.
+- Daily AI guardrails follow the profile: ±15/25/35/50% for beginner/intermediate/expert/professional, with binding botanical minimums and a profile check before applying proposals.
+- AI context includes care status, postponements, early care, notes and completions; reasons expose clamped values. No new automatic application of AI plans.
+- Local checks: 289 backend tests, 25 browser tests, translation checks and frontend build. This patch has not been installed on Home Assistant.
 
 ## Patch 1.1.1
 

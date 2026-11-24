@@ -143,11 +143,11 @@ def test_smart_learning_after_water_is_prudent_and_idempotent(client):
     event=dict(id=str(uuid4()),kind='Annaffia',date='2026-11-11T12:00:00Z')
     result=client.post(f"/api/plants/{p['id']}/events",json=event)
     assert result.status_code==200,result.text
-    assert result.json()['wateringInterval']==6
+    assert result.json()['wateringInterval']==5
     assert result.json()['adaptivePlan']['careLearning']['observedIntervalDays']==5
     replay=client.post(f"/api/plants/{p['id']}/events",json=event)
     assert replay.json()['_version']==result.json()['_version']
-    assert replay.json()['wateringInterval']==6
+    assert replay.json()['wateringInterval']==5
 
 
 def test_learning_updates_deferred_fertilizer_to_new_water_date(client):
@@ -159,6 +159,48 @@ def test_learning_updates_deferred_fertilizer_to_new_water_date(client):
     main.store.put('plants',item,v)
     r=client.post(f"/api/plants/{p['id']}/events",json=dict(kind='Annaffia',date='2026-11-11T12:00:00Z'))
     assert r.status_code==200,r.text
-    assert r.json()['wateringInterval']==6
+    assert r.json()['wateringInterval']==5
     deferred=next(e for e in r.json()['history'] if e['kind']=='Concima' and e['status']=='postponed')
-    assert deferred['postponedUntil']=='2026-11-17T12:00:00Z'
+    assert deferred['postponedUntil']=='2026-11-16T12:00:00Z'
+
+
+def test_water_records_due_date_and_actual_early_care_drives_learning(client):
+    p = plant(client)
+    item, version = main.store.get('plants', p['id'])
+    item.update(carePlanMode='Intelligente', wateringInterval=10,
+                adaptivePlan=dict(wateringDays=10, verdantWateringDays=10, revisionSource='Verdant'))
+    item['history'] = [
+        dict(id=str(uuid4()), kind='water', status='completed',
+             date=f'2026-11-{day:02}T12:00:00Z') for day in [1, 8]
+    ]
+    main.store.put('plants', item, version)
+    result = client.post(f"/api/plants/{p['id']}/events",
+                         json=dict(kind='Annaffia', date='2026-11-15T12:00:00Z'))
+    assert result.status_code == 200, result.text
+    value = result.json()
+    last = next(e for e in value['history'] if e['date'] == '2026-11-15T12:00:00Z')
+    assert last['wateringDueDate'] == '2026-11-18T12:00:00Z'
+    assert value['wateringInterval'] == 8
+    assert value['adaptivePlan']['careLearning']['earlyWaterings'] == 1
+    assert value['adaptivePlan']['careLearning']['inferredEarlyWaterings'] == 1
+
+
+def test_editing_care_date_discards_old_schedule_snapshot(client):
+    p = plant(client, lastWatered='2026-11-01T12:00:00Z')
+    result = client.post(f"/api/plants/{p['id']}/events",
+                         json=dict(kind='Annaffia', date='2026-11-10T12:00:00Z'))
+    assert result.status_code == 200, result.text
+    value = result.json()
+    event = next(e for e in value['history'] if e['date']=='2026-11-10T12:00:00Z')
+    assert 'wateringDueDate' in event
+    event['note'] = 'Nota aggiornata'
+    path = f"/api/plants/{p['id']}/events/{event['id']}"
+    result = client.put(f"{path}?version={value['_version']}", json=event)
+    assert result.status_code == 200, result.text
+    value = result.json()
+    saved = next(e for e in value['history'] if e['id']==event['id'])
+    assert saved['wateringDueDate'] == event['wateringDueDate']
+    event['date'] = '2026-11-09T12:00:00Z'
+    result = client.put(f"{path}?version={value['_version']}", json=event)
+    assert result.status_code == 200, result.text
+    assert 'wateringDueDate' not in next(e for e in result.json()['history'] if e['id']==event['id'])

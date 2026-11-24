@@ -941,7 +941,7 @@ const it = {
   "settings.experience.intermediate": "Intermedio",
   "settings.experience.expert": "Esperto",
   "settings.experience.professional": "Professionista",
-  "settings.experienceHint": "Calibra il passo di apprendimento: 1 giorno da principiante fino a 4 da professionista. Con più esperienza i rinvii coerenti contano di più.",
+  "settings.experienceHint": "È un guardrail contro gli errori: rinvii ripetuti possono allungare l’intervallo, annaffiature anticipate possono accorciarlo. Il passo di apprendimento va da 1 a 4 giorni. Nell’analisi AI giornaliera il margine dalla base Verdant è ±15% per principiante, ±25% intermedio, ±35% esperto e ±50% professionista. Servono segnali coerenti; le soglie di sicurezza restano vincolanti.",
   "settings.experienceSaved": "Esperienza aggiornata",
   "settings.careEngineAddon": "La modalità si imposta nella configurazione dell’add-on Verdant; dopo la modifica riavvia l’add-on.",
   "settings.days.one": "{count} giorno",

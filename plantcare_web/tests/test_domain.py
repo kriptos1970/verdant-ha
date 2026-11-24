@@ -1,7 +1,7 @@
 """Behavior fixtures derived from Models.swift/CarePlanLearner.swift, not UI internals."""
 from datetime import datetime, timezone
 from uuid import uuid4
-from plantcare_web.backend.domain import schedule, learning, accepted_water, minimum_water, stable_water
+from plantcare_web.backend.domain import schedule, learning, accepted_water, minimum_water, stable_water, early_watering_evidence
 from plantcare_web.backend.care_kinds import canonical_kind
 
 def plant(**values):
@@ -116,3 +116,104 @@ def test_stable_baseline_does_not_compound_yesterdays_ai():
     p=plant();p['adaptivePlan']={'verdantWateringDays':12};p['wateringInterval']=15;p['careFrequencyPreference']='Frequente'
     assert stable_water(p)==10
     assert accepted_water(100,stable_water(p),1)==12
+
+
+def test_repeated_early_waterings_reduce_interval_with_profile_guardrails():
+    p = plant()
+    p['wateringInterval'] = 10
+    p['history'] = [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'completed',
+         'wateringDueDate': f'2026-11-{day+3:02}T12:00:00Z'}
+        for day in [1, 8, 15, 22]
+    ]
+    beginner = learning(p, 10, 'Europe/Rome', experience='principiante')
+    expert = learning(p, 10, 'Europe/Rome', experience='esperto')
+    assert expert['earlyWaterings'] == 3
+    assert expert['inferredEarlyWaterings'] == 0
+    assert expert['learnedIntervalDays'] == 7
+    assert beginner['learnedIntervalDays'] == 9
+    assert 'anticipate' in expert['explanation']
+
+
+def test_historical_short_intervals_are_labelled_inferred_not_confirmed():
+    p = plant()
+    p['wateringInterval'] = 10
+    p['history'] = [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'completed'}
+        for day in [1, 8, 15, 22]
+    ]
+    result = learning(p, 10, 'Europe/Rome', experience='esperto')
+    assert result['earlyWaterings'] == 0
+    assert result['inferredEarlyWaterings'] == 3
+    assert result['learnedIntervalDays'] == 7
+
+
+def test_duplicate_same_day_and_deleted_waterings_do_not_strengthen_learning():
+    p = plant()
+    p['wateringInterval'] = 10
+    p['history'] = [
+        {'kind': 'water', 'date': '2026-11-01T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-08T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-08T15:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-09T12:00:00Z', 'status': 'completed',
+         'deletedAt': '2026-11-10T12:00:00Z'},
+    ]
+    assert learning(p, 10, 'Europe/Rome') is None
+
+
+def test_learning_never_shortens_below_species_minimum():
+    p = plant()
+    p.update(category='Succulenta', light='Luce bassa', wateringInterval=30)
+    p['history'] = [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'completed'}
+        for day in [1, 8, 15, 22]
+    ]
+    assert learning(p, 30, 'Europe/Rome', experience='professionista')['learnedIntervalDays'] >= 30
+
+
+def test_recorded_due_dates_do_not_follow_later_interval_changes():
+    p = plant()
+    p['wateringInterval'] = 30
+    p['history'] = [
+        {'kind': 'water', 'date': '2026-11-01T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-09T12:00:00Z', 'status': 'completed',
+         'wateringDueDate': '2026-11-08T12:00:00Z'},
+        {'kind': 'water', 'date': '2026-11-15T12:00:00Z', 'status': 'completed',
+         'wateringDueDate': '2026-11-16T12:00:00Z'},
+    ]
+    result = early_watering_evidence(p)
+    assert result['earlyWaterings'] == 1
+    assert result['inferredEarlyWaterings'] == 0
+    assert result['earlyWateringEvents'][0]['daysEarly'] == 1
+
+
+def test_multiple_postponements_in_one_cycle_do_not_accelerate_learning():
+    p = plant()
+    p['history'] = [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'completed'}
+        for day in [1, 10, 19]
+    ] + [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'postponed',
+         'postponedUntil': f'2026-11-{day+1:02}T12:00:00Z'}
+        for day in [3, 5, 7]
+    ]
+    result = learning(p, 7, 'Europe/Rome', experience='professionista')
+    assert result['honoredPostponements'] == 3
+    assert result['honoredPostponementCycles'] == 1
+    assert result['adaptiveStepDays'] == 1
+
+
+def test_waterings_and_postponements_in_opposing_directions_remain_prudent():
+    p = plant()
+    p['wateringInterval'] = 10
+    p['history'] = [
+        {'kind': 'water', 'date': f'2026-11-{day:02}T12:00:00Z', 'status': 'completed'}
+        for day in [1, 8, 15, 22]
+    ] + [
+        {'kind': 'water', 'date': '2026-11-04T12:00:00Z', 'status': 'postponed',
+         'postponedUntil': '2026-11-06T12:00:00Z'},
+    ]
+    result = learning(p, 10, 'Europe/Rome', experience='professionista')
+    assert result['honoredPostponements'] == 1
+    assert result['inferredEarlyWaterings'] == 3
+    assert result['adaptiveStepDays'] == 1

@@ -113,9 +113,9 @@ note lunghe già presenti negli archivi possono restare nella lingua originale.
 
 ## Stato
 
-Versione attuale: **1.1.1** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Versione attuale: **1.1.2** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 
-Patch **1.1.1**: concimazione preselezionata nelle cure combinate, intervallo minimo pari a due annaffiature anche nei suggerimenti AI ed errori di server/sessione non più confusi con problemi nei dati inseriti.
+Patch **1.1.2**: rinvii ripetuti e annaffiature anticipate influenzano il ritmo d’irrigazione; l’esperienza regola i guardrail e l’AI riceve evidenze esplicite con limiti proporzionati al profilo. Le soglie botaniche restano vincolanti.
 Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio
 personale, ma è ancora in sviluppo attivo. Limiti noti e roadmap in [docs/STATUS.md](docs/STATUS.md)
 e [ROADMAP.md](ROADMAP.md).

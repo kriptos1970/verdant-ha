@@ -68,11 +68,13 @@ Watering is clamped between 2 and 35 days (12–60 for succulents, with a positi
 
 After at least **3 completed waterings** and **2 intervals**:
 
-- the last 7 completed waterings are considered;
+- the last 7 days with completed watering are considered; multiple entries on one day do not simulate additional drying cycles;
 - the median gap in days is calculated;
 - the value is kept within ±30% of the Verdant baseline;
 - the current interval moves towards that value by **1 day**;
-- with at least **2 honoured postponements** (with at least one day of deferral) the step equals the number of postponements, up to the profile maximum; at least **2 early postponements** work the same way in the opposite direction;
+- honoured postponements across at least **2 distinct cycles** can increase the step, up to the profile maximum: they may suggest slower drying but are not moisture measurements;
+- at least **2 early waterings**, even without a previous postponement, can increase the step towards a shorter interval. Postponements followed by early completions work in the same direction. Conflicting signals prevent accelerated learning;
+- new watering events store `wateringDueDate`, the due date before the care command, so later plan changes cannot rewrite that comparison. Shorter historical gaps without a saved due date are labelled separately as **inferred**. Changing an event's date, kind or status invalidates its old schedule snapshot;
 - **late gaps without a postponement** never increase the step: they remain weak evidence and the step stays 1;
 - the value stays within ±30% and never overshoots the target;
 - confidence grows with the number of observed intervals.
@@ -88,7 +90,7 @@ In **Settings → Grower experience** you choose the global level:
 | Expert | 3 days |
 | Professional | 4 days |
 
-With at least two honoured postponements (or two early ones in the opposite direction), the step equals the number of postponements, up to the profile maximum. Inconsistent postponements, late gaps without a postponement and insufficient data leave the step at 1 day. The profile does not change safety thresholds or the ±30% bound.
+The profile is a **guardrail against human error**, not proof that every intervention is correct. Repeated signals allow larger steps up to the profile maximum; late gaps without postponement and conflicting signals do not accelerate learning. Several postponements in one cycle are not independent confirmations. Species safety minimums always take priority; Verdant learning retains its ±30% baseline bound (rounded to whole days), distinct from the AI percentages below.
 
 Learning applies:
 
@@ -120,16 +122,20 @@ The planner uses the **real position**, not the **Exposure** field (low/indirect
 - The daily analysis considers **only plants in AI mode**.
 - It runs once a day at `ai_update_time` (default **03:00**) or on demand with “Analyse now”.
 - The provider receives: current intervals, Verdant baseline, care rhythm, room, light, saved season and climate, **location**, **experience level**, recent care, the linked fertilizer product and pot data.
-- `careTiming` summarises, for water and feeding, observed gaps, intentional postponements with date, new date and note, and late gaps without a postponement. The prompt explicitly separates postponements from delays.
+- `careTiming` summarises, for water and feeding, observed gaps, intentional postponements with date, new date and note, and late gaps without a postponement. Each postponement includes the subsequent completion, if any, and its gap from the previous care event. `recentCare` preserves postponement status and target dates instead of making deferred events look completed. The prompt requires the reason to explain how honoured postponements affected the decision, including when no change is proposed.
+- `careTiming.water` also includes watering completed before recorded due dates, separately inferred early waterings in old history, and their dates, deadlines, notes and days early. The model must consider postponements as possible slower-drying signals and repeated early care as possible faster-drying signals, never as soil readings. Experience and consistency across cycles control prudence; experience alone is not evidence.
 - Proposals are validated:
   - they must declare sufficient evidence and a concrete reason;
-  - watering stays within **±25%** of the Verdant baseline, respecting the species minimum;
-  - feeding is aligned to a multiple of watering;
+  - watering stays within the profile allowance around the Verdant baseline: **beginner ±15%, intermediate ±25%, expert ±35%, professional ±50%**. Species minimums always take priority. Integer bounds round inward and are sent in `wateringLimits`; the same bounds normalize output and are rechecked before applying proposals. Experience alone is not evidence;
+  - when a proposed interval is clamped, the reason includes the requested and accepted values and the profile limit;
+  - feeding is aligned to a multiple of watering, with at least two cycles;
   - a proposal identical to the current intervals is discarded.
 - With `auto_apply_ai` off (the default), proposals **wait for approval** in “AI plan”. Applying them updates intervals and plan with an AI revision and a history entry.
 - For plants in AI mode the daily refresh **preserves** the AI intervals. An AI revision on a Verdant plan is preserved while its reason has evidence; without evidence the plan can return to the Verdant/learning baseline.
 
 The AI assistant in the plant card is separate: it answers a question and does not recalculate the plan.
+
+These percentages apply to daily AI analysis. They do not change the ±30% Verdant learning bound or unlock the fixed watering interval in the plant-card assistant.
 
 ## Operational engine (shadow / operational)
 

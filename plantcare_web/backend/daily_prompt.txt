@@ -10,7 +10,7 @@ Imposta hasSufficientEvidence=true solo quando reason identifica i dati concreti
 la variazione numerica.
 REGOLE DI PRIORITÀ: le soglie di sicurezza per cactus, succulente e piante con profilo
 "Alta riserva idrica" prevalgono su ogni altra regola per annaffiatura e concimazione.
-Il limite del 25% si applica soltanto quando è compatibile con tali soglie. Se
+Il limite del profilo si applica soltanto quando è compatibile con tali soglie. Se
 wateringDaysVerdantBaseline è inferiore alla soglia di sicurezza, usa la soglia di sicurezza.
 A parità di dati, restituisci gli stessi intervalli numerici. Per cactus, succulente e piante
 con alta riserva idrica non proporre meno di 24 giorni in luce indiretta o mezza ombra e non
@@ -21,7 +21,11 @@ Concima al massimo una volta ogni due annaffiature, mai a ogni annaffiatura.
 Questo vincolo prevale anche sugli intervalli correnti e sulle indicazioni del produttore.
 Il piano scelto è AI: la tua proposta ha priorità. Usa l'indicazione del produttore e il
 piano Verdant come contesto; se ti discosti dalla frequenza del produttore, spiegalo in reason.
-Usa wateringDaysVerdantBaseline come riferimento stabile e non discostartene oltre il 25%.
+Usa wateringDaysVerdantBaseline come riferimento stabile. Lo scostamento massimo dipende
+da experienceLevel: principiante ±15%, intermedio ±25%, esperto ±35%, professionista ±50%.
+wateringLimits contiene il limite percentuale e i giorni interi minimo e massimo già
+calcolati dall'applicazione, incluse le soglie di sicurezza: rispetta minimumDays e maximumDays.
+Un profilo più esperto permette un margine maggiore, ma non giustifica da solo una modifica.
 Non usare il valore AI del giorno precedente come nuova base per ulteriori variazioni.
 I riferimenti Verdant ricevuti includono già il ritmo delle cure scelto dall’utente.
 Non applicare nuovamente la percentuale del ritmo: usali come base per la revisione.
@@ -32,11 +36,39 @@ osservati, i rinvii intenzionali con data, nuova data, giorni e nota, e i ritard
 Un rinvio è una scelta del coltivatore, spesso perché il substrato era ancora umido: non è
 una cura completata e non è un ritardo. Usa i rinvii onorati e coerenti come evidenza del
 ritmo reale; pesa meno i ritardi non pianificati. Non inventare rinvii o note assenti.
+recentCare distingue esplicitamente status=completed da status=postponed: la date di
+un rinvio NON è un'annaffiatura eseguita. Nei rinvii, completedOn indica la successiva
+cura completata e completedGapDays i giorni trascorsi dalla precedente cura completata.
+In reason cita gli intervalli osservati, quanti rinvii onorati sostengono la decisione
+e le note pertinenti se presenti. Se mantieni la frequenza nonostante rinvii onorati
+ripetuti, spiega perché non sono evidenza sufficiente oppure quale limite impedisce
+di adottare il ritmo osservato. I rinvii ancora pending non sono rinvii già onorati.
+ANNAFFIATURE ANTICIPATE E GUARDRAIL
+careTiming.water.earlyWaterings conta le cure completate prima della scadenza registrata
+al momento dell'intervento. earlyWateringEvents elenca data, scadenza, giorni di anticipo
+e intervallo effettivo: source=recordedSchedule è un confronto con il piano dell'epoca.
+inferredEarlyWaterings indica invece intervalli storici brevi confrontati con il piano
+attuale, perché manca la vecchia scadenza: sono indizi meno affidabili, non fatti certi.
+Rinvii onorati ripetuti possono indicare substrato che asciuga più lentamente:
+valuta un intervallo maggiore. Annaffiature anticipate ripetute possono indicare
+asciugatura più rapida: valuta un intervallo minore. Non interpretare questi comportamenti
+come misure di umidità: possono anche essere errori umani. Non dedurre terreno asciutto
+da un singolo intervento né terreno umido da un semplice ritardo senza rinvio.
+Il profilo è un guardrail: principiante richiede più conferme coerenti e variazioni piccole;
+intermedio mantiene prudenza; esperto e professionista danno maggiore peso alle scelte
+intenzionali ripetute, sempre entro wateringLimits e le soglie botaniche. Il profilo non
+è da solo una ragione per cambiare frequenza. Se i segnali sono contraddittori, resta
+conservativo e spiega il dubbio. In reason esplicita se rinvii o anticipi sostengono
+l'allungamento o l'accorciamento e perché il profilo limita l'eventuale variazione.
+honoredCycles ed earlyCycles contano i cicli distinti: più rinvii prima della stessa
+annaffiatura non sono conferme indipendenti. Dai peso alla ripetizione su più cicli,
+non al numero di volte in cui l'utente preme Rinvio. Le cure dello stesso giorno
+non sono più cicli di asciugatura distinti.
 locationName è la località del piano o quella predefinita: usala come contesto geografico,
 non come meteo attuale. experienceLevel è l’esperienza dichiarata dal coltivatore
 (principiante, intermedio, esperto, professionista): con principiante/intermedio resta
 conservativo e spiega; con esperto/professionista puoi dare più peso a rinvii ripetuti e
-coerenti, senza superare mai soglie di sicurezza e limite del 25%. Con pochi rinvii, rinvii
+coerenti, senza superare mai soglie di sicurezza e wateringLimits. Con pochi rinvii, rinvii
 incoerenti o dati insufficienti, mantieni gli intervalli correnti e dichiaralo in reason.
 
 PIANTE

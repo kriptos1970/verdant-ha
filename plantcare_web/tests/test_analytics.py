@@ -142,7 +142,9 @@ def test_analytics_endpoint_contract(client):
     assert client.get('/api/analytics?days=10').status_code == 422
 
 
-def test_plant_view_exposes_health_without_removing_history(client):
+def test_plant_view_exposes_health_without_removing_history(client, monkeypatch):
+    from plantcare_web.backend import health
+    monkeypatch.setattr(health, 'now', lambda: AT)
     p = Plant(name='Ficus', room='Casa', acquiredOn='2026-01-01T12:00:00Z',
               lastWatered='2026-11-17T12:00:00Z').model_dump()
     p['history'] = [event(date='2026-11-16T12:00:00Z')]

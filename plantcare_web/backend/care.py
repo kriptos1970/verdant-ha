@@ -58,6 +58,10 @@ def record(plant, body, zone, product=None, experience='intermedio'):
     before = schedule(plant, zone, parse(body.date))
     event = event_payload(body)
     event.update(schemaVersion=2, createdAt=iso(now()), updatedAt=iso(now()), revision=1, origin='user')
+    if body.kind=='water' and body.status=='completed':
+        anchor, _ = care_state(plant,'water')
+        if parse(body.date)>anchor:
+            event['wateringDueDate']=next(a['dueDate'] for a in before if a['kind']=='water')
     if plan:
         event['productID'] = plan['productID']
         event['applicationNumber'] = body.expectedApplicationNumber

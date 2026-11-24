@@ -4,6 +4,15 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.1.2 — bidirectional learning and grower guardrails
+
+- **Postponements and early watering**: Verdant learning uses honoured postponements across multiple cycles to lengthen intervals and repeated early waterings to shorten them, with 1–4 day steps according to experience. Several postponements within one cycle and duplicate same-day entries do not multiply evidence; conflicting signals do not accelerate learning.
+- **Historical due dates**: new waterings preserve the due date before the intervention. Early care in older history without saved deadlines is labelled inferred; editing the date, kind or status invalidates the old comparison.
+- **AI and experience**: the fixed ±25% daily-analysis bound becomes ±15% for beginners, ±25% intermediate, ±35% expert and ±50% professional. Prompts and output validation share the same limits; botanical safety minimums always take priority. Profile limits are rechecked before applying proposals.
+- **Explicit evidence**: AI context distinguishes completed care, postponements and early watering, includes notes and distinct cycles, and requests reasons for changing or maintaining intervals. Clamped AI values show the requested value, accepted value and limit. Removed a check that rejected valid Italian reasons merely for mentioning current intervals.
+- **Safety**: learning respects species watering minimums and realigns feeding to at least two watering cycles. In AI mode, evidence feeds proposals without introducing new automatic application; the plant-card assistant remains separate from daily analysis.
+- Checks: 289 backend tests, 25 browser tests, 1,234 aligned i18n keys and frontend build. A health-score test no longer depends on the current date.
+
 # 1.1.1 — safer feeding intervals and clearer errors
 
 - **Combined care**: feeding is preselected when available alongside watering, with an opt-out checkbox.

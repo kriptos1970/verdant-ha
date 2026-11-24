@@ -113,9 +113,50 @@ def stable_water(plant):
 
 EXPERIENCE_LEVELS = ('principiante', 'intermedio', 'esperto', 'professionista')
 EXPERIENCE_MAX_STEP = {'principiante': 1, 'intermedio': 2, 'esperto': 3, 'professionista': 4}
+AI_WATER_DEVIATION_PERCENT = {'principiante': 15, 'intermedio': 25, 'esperto': 35, 'professionista': 50}
 
 def normalize_experience(value):
     return value if value in EXPERIENCE_LEVELS else 'intermedio'
+
+def early_watering_evidence(plant, zone='Europe/Rome', recent=None):
+    """Compare actual completions with the due date recorded before each care command.
+
+    Old events lack that snapshot: shorter gaps are estimates, not proof that the
+    historical schedule was missed. Keep them separate in both learner and AI.
+    """
+    plant = canonical_plant(plant)
+    tz = ZoneInfo(zone)
+    completed = {}
+    for event in sorted(active_history(plant), key=lambda e: parse(e['date'])):
+        if event['kind']=='water' and event.get('status')!='postponed':
+            completed.setdefault(parse(event['date']).astimezone(tz).date(), event)
+    dates = sorted(completed)
+    if recent is None:
+        dates = dates[-9:]
+    records = []
+    allowed = set(recent) if recent is not None else None
+    for previous, current in zip(dates, dates[1:]):
+        if allowed is not None and (previous not in allowed or current not in allowed):
+            continue
+        event = completed[current]
+        snapshot = event.get('wateringDueDate')
+        if snapshot:
+            try:
+                due = parse(snapshot).astimezone(tz).date()
+            except (ValueError, TypeError):
+                snapshot = None
+            else:
+                source = 'recordedSchedule'
+        if not snapshot:
+            due = previous + timedelta(days=plant['wateringInterval'])
+            source = 'inferredFromCurrentInterval'
+        if current < due:
+            records.append(dict(date=event['date'],dueDate=due.isoformat(),
+                                daysEarly=(due-current).days,completedGapDays=(current-previous).days,
+                                source=source,note=str(event.get('note') or '')[:300]))
+    return dict(earlyWaterings=sum(e['source']=='recordedSchedule' for e in records),
+                inferredEarlyWaterings=sum(e['source']=='inferredFromCurrentInterval' for e in records),
+                earlyWateringEvents=records[-8:])
 
 def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
     """Honoured postponements are intentional evidence; late gaps without one are weaker."""
@@ -136,9 +177,11 @@ def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
         if not after:
             continue
         outcome = 'honored' if min(after) >= due else 'early'
-        starts.append((start, outcome, max(0, (due-start).days)))
-    honoured = [days for _, outcome, days in starts if outcome == 'honored' and days >= 1]
-    early = sum(1 for _, outcome, _ in starts if outcome == 'early')
+        starts.append((start, outcome, max(0, (due-start).days), min(after)))
+    honoured = [days for _, outcome, days, _ in starts if outcome == 'honored' and days >= 1]
+    early = sum(1 for _, outcome, _, _ in starts if outcome == 'early')
+    honoured_cycles = len({completion for _, outcome, days, completion in starts if outcome=='honored' and days>=1})
+    early_cycles = len({completion for _, outcome, _, completion in starts if outcome=='early'})
     deferred = sorted(honoured)
     median_deferred = 0
     if deferred:
@@ -148,15 +191,18 @@ def water_learning_evidence(plant, zone='Europe/Rome', recent=None):
     late = 0
     for a, b in zip(completed, completed[1:]):
         gap = (b-a).days
-        if gap > current + 2 and not any(a < start <= b for start, _, _ in starts):
+        if gap > current + 2 and not any(a < start <= b for start, _, _, _ in starts):
             late += 1
-    return {'honoredPostponements': len(honoured), 'earlyPostponements': early, 'medianDeferredDays': median_deferred, 'lateGapsWithoutPostponement': late}
+    return {'honoredPostponements': len(honoured), 'earlyPostponements': early,
+            'honoredPostponementCycles': honoured_cycles, 'earlyPostponementCycles': early_cycles,
+            'medianDeferredDays': median_deferred, 'lateGapsWithoutPostponement': late,
+            **early_watering_evidence(plant,zone,completed)}
 
 def learning(plant, baseline, zone, language='it', experience='intermedio'):
     plant = canonical_plant(plant)
     experience = normalize_experience(experience)
     max_step = EXPERIENCE_MAX_STEP[experience]
-    dates = sorted(parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed')
+    dates = sorted({parse(e['date']).astimezone(ZoneInfo(zone)).date() for e in active_history(plant) if e['kind'] == 'water' and e.get('status') != 'postponed'})
     if len(dates) < 3:
         return None
     recent = dates[-7:]
@@ -168,21 +214,29 @@ def learning(plant, baseline, zone, language='it', experience='intermedio'):
     baseline = max(2, baseline)
     distance = max(1, swift_round(baseline * .3))
     target = min(min(35, baseline + distance), max(max(2, baseline-distance), median))
+    target = max(minimum_water(plant), target)
     current = min(35, max(2, plant['wateringInterval']))
     evidence = water_learning_evidence(plant, zone, recent)
     honoured = evidence['honoredPostponements']
+    honoured_cycles = evidence['honoredPostponementCycles']
     early = evidence['earlyPostponements']
+    early_water = evidence['earlyWaterings']
+    inferred_early = evidence['inferredEarlyWaterings']
+    short_signals = max(evidence['earlyPostponementCycles'], early_water + inferred_early)
     late = evidence['lateGapsWithoutPostponement']
     step = 1
-    if target > current and honoured >= 2 and early == 0 and evidence['medianDeferredDays'] >= 1:
-        step = min(max_step, honoured)
-    elif target < current and early >= 2 and honoured == 0:
-        step = min(max_step, early)
+    if target > current and honoured_cycles >= 2 and short_signals < 2 and evidence['medianDeferredDays'] >= 1:
+        step = min(max_step, honoured_cycles)
+    elif target < current and short_signals >= 2 and honoured == 0:
+        step = min(max_step, short_signals)
     step = min(step, abs(target-current)) if target != current else 0
     learned = current + (step if target > current else -step if target < current else 0)
+    learned = max(minimum_water(plant), learned)
     if language == 'en':
-        if step == 2 and target > current:
-            reason = f'{honoured} honoured postponements confirm a longer rhythm.'
+        if step > 0 and target > current and honoured_cycles:
+            reason = f'{honoured} honoured postponements across {honoured_cycles} watering cycles suggest slower drying.'
+        elif step > 0 and target < current and early_water + inferred_early:
+            reason = f'Early waterings: {early_water} against recorded due dates, {inferred_early} inferred from shorter historical gaps; possible faster drying, not a moisture measurement.'
         elif step == 2 and target < current:
             reason = f'{early} postponements followed by earlier watering suggest a shorter rhythm.'
         elif late and not honoured:
@@ -191,8 +245,10 @@ def learning(plant, baseline, zone, language='it', experience='intermedio'):
             reason = 'Prudent change.'
         explanation = f'The latest care suggests about {median} days between waterings. Honoured postponements: {honoured}, early: {early}, late gaps without postponement: {late}. {reason} Change: {learned-current:+d} days.'
     else:
-        if step == 2 and target > current:
-            reason = f'{honoured} rinvii onorati confermano un ritmo più lungo.'
+        if step > 0 and target > current and honoured_cycles:
+            reason = f'{honoured} rinvii onorati in {honoured_cycles} cicli suggeriscono un’asciugatura più lenta.'
+        elif step > 0 and target < current and early_water + inferred_early:
+            reason = f'Annaffiature anticipate: {early_water} rispetto a scadenze registrate, {inferred_early} stimate da intervalli storici più brevi; possibile asciugatura più rapida, non una misura di umidità.'
         elif step == 2 and target < current:
             reason = f'{early} rinvii seguiti da annaffiature anticipate indicano un ritmo più corto.'
         elif late and not honoured:
@@ -200,16 +256,22 @@ def learning(plant, baseline, zone, language='it', experience='intermedio'):
         else:
             reason = 'Variazione prudente.'
         explanation = f'Le ultime cure indicano circa {median} giorni tra le annaffiature. Rinvii onorati: {honoured}, anticipati: {early}, ritardi senza rinvio: {late}. {reason} Variazione: {learned-current:+d} giorni.'
-    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'adaptiveStepDays': step, 'maxAdaptiveStepDays': max_step, 'experience': experience, 'honoredPostponements': honoured, 'earlyPostponements': early, 'medianDeferredDays': evidence['medianDeferredDays'], 'lateGapsWithoutPostponement': late, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
+    return {'completedWaterings': len(recent), 'observedIntervalDays': median, 'baselineIntervalDays': baseline, 'learnedIntervalDays': learned, 'adaptiveStepDays': step, 'maxAdaptiveStepDays': max_step, 'experience': experience, 'honoredPostponements': honoured, 'honoredPostponementCycles': honoured_cycles, 'earlyPostponements': early, 'earlyWaterings': early_water, 'inferredEarlyWaterings': inferred_early, 'medianDeferredDays': evidence['medianDeferredDays'], 'lateGapsWithoutPostponement': late, 'confidence': min(1, n/6), 'explanation': explanation, 'updatedAt': iso(now())}
 
 def evidence(declared, reason):
-    signals = ['dati insufficienti', 'non ci sono dati sufficienti', 'non abbiamo dati sufficienti', 'mancano dati', 'mancano informazioni', 'mantengo gli intervalli', 'manteniamo gli intervalli', 'mantenere gli intervalli', 'intervalli attuali', 'continuiamo con gli intervalli']
+    signals = ['dati insufficienti', 'non ci sono dati sufficienti', 'non abbiamo dati sufficienti', 'mancano dati', 'mancano informazioni', 'mantengo gli intervalli', 'manteniamo gli intervalli', 'mantenere gli intervalli', 'continuiamo con gli intervalli']
     return declared is True and not any(s in normalize(reason) for s in signals)
 
-def accepted_water(proposed, baseline, minimum):
-    lower = max(minimum, math.ceil(max(1, baseline)*.75))
-    upper = max(lower, min(120, math.floor(max(1, baseline)*1.25)))
-    return min(upper, max(lower, proposed))
+def ai_watering_limits(baseline, minimum, experience='intermedio'):
+    percent = AI_WATER_DEVIATION_PERCENT[normalize_experience(experience)]
+    baseline = max(1, baseline)
+    lower = max(minimum, (baseline * (100-percent) + 99) // 100)
+    upper = max(lower, min(120, baseline * (100+percent) // 100))
+    return dict(maxDeviationPercent=percent, minimumDays=lower, maximumDays=upper)
+
+def accepted_water(proposed, baseline, minimum, experience='intermedio'):
+    limits = ai_watering_limits(baseline, minimum, experience)
+    return min(limits['maximumDays'], max(limits['minimumDays'], proposed))
 
 def plant_view(plant, zone, version, product=None, language='it', experience='intermedio'):
     from .treatments import treatment_view

@@ -68,11 +68,13 @@ L’annaffiatura viene limitata tra 2 e 35 giorni (12–60 per le succulente, co
 
 Dopo almeno **3 annaffiature completate** e **2 intervalli**:
 
-- si considerano le ultime 7 annaffiature completate;
+- si considerano le ultime 7 giornate con annaffiature completate; più registrazioni nello stesso giorno non simulano cicli di asciugatura aggiuntivi;
 - si calcola la mediana dei giorni tra un’annaffiatura e la successiva;
 - il valore viene contenuto entro ±30% rispetto alla base Verdant;
 - l’intervallo corrente si muove verso quel valore con un passo di **1 giorno**;
-- con almeno **2 rinvii onorati** (con almeno un giorno di rinvio) il passo è pari al numero di rinvii, fino al massimo del profilo; con almeno **2 rinvii anticipati** vale lo stesso nella direzione opposta;
+- con rinvii onorati in almeno **2 cicli distinti** (con almeno un giorno di rinvio) il passo può aumentare, fino al massimo del profilo: è un indizio di asciugatura più lenta, non una misura dell’umidità;
+- con almeno **2 annaffiature anticipate**, anche senza rinvii precedenti, il passo può aumentare nella direzione opposta: la frequenza cresce (intervallo più breve), sempre senza superare il target. Vale anche per rinvii seguiti da annaffiature anticipate. Segnali in direzioni opposte impediscono l’accelerazione;
+- le nuove annaffiature conservano `wateringDueDate`, la scadenza prima dell’intervento: i cambi di piano successivi non alterano quel confronto. Per eventi storici senza scadenza, gli intervalli brevi sono indicati separatamente come **stime**. Una modifica alla data/tipo/stato dell’evento invalida il vecchio confronto;
 - i **ritardi senza rinvio** non aumentano il passo: restano evidenza debole e il passo resta 1;
 - il valore resta entro ±30% e non supera il target;
 - la confidenza cresce con il numero di intervalli osservati.
@@ -88,7 +90,7 @@ In **Impostazioni → Esperienza del coltivatore** si sceglie il livello globale
 | Esperto | 3 giorni |
 | Professionista | 4 giorni |
 
-Con almeno due rinvii onorati (o due anticipati nella direzione opposta), il passo è pari al numero di rinvii, fino al massimo del profilo. I rinvii senza una direzione coerente, i ritardi senza rinvio e i dati insufficienti lasciano il passo a 1 giorno. Il profilo non modifica le soglie di sicurezza né il limite ±30%.
+Il profilo è un **guardrail contro gli errori umani**, non una prova della correttezza di ogni intervento. I segnali ripetuti permettono passi più ampi entro il massimo del profilo; ritardi senza rinvio e segnali contraddittori non accelerano l’apprendimento. Più rinvii nello stesso ciclo non valgono come più conferme indipendenti. Le soglie minime della specie prevalgono sempre; il limite di riferimento dell’apprendimento Verdant resta ±30% (con arrotondamento ai giorni interi), distinto dalle percentuali AI sotto.
 
 L’apprendimento si applica:
 
@@ -120,16 +122,20 @@ Il pianificatore usa **Posizione reale**, non il campo **Esposizione** (Luce bas
 - L’analisi giornaliera considera **solo le piante in modalità AI**.
 - Parte una volta al giorno all’orario `ai_update_time` (predefinito **03:00**) oppure su richiesta con “Analizza ora”.
 - Il provider riceve: intervalli correnti, base Verdant, ritmo delle cure scelto, ambiente, luce, stagione e clima salvato, **località**, **livello di esperienza**, ultime cure, prodotto fertilizzante e dati del vaso.
-- `careTiming` riassume, per acqua e concime, gli intervalli osservati, i rinvii intenzionali con data, nuova data e nota, e i ritardi senza rinvio. Il prompt distingue esplicitamente rinvii e ritardi.
+- `careTiming` riassume, per acqua e concime, gli intervalli osservati, i rinvii intenzionali con data, nuova data e nota, e i ritardi senza rinvio. Ogni rinvio include l’eventuale completamento successivo e l’intervallo dalla cura precedente; `recentCare` conserva stato e destinazione dei rinvii invece di farli sembrare cure eseguite. Il prompt richiede di esplicitare nella motivazione il peso dei rinvii onorati, anche quando non cambia la frequenza.
+- `careTiming.water` include inoltre le annaffiature anticipate rispetto alla scadenza registrata, gli anticipi solo stimati per lo storico e il dettaglio di date, scadenze, note e giorni di anticipo. Il modello deve valutare rinvii come possibili segnali di asciugatura lenta e anticipi ripetuti come possibili segnali di asciugatura rapida, non come letture del substrato. Esperienza e coerenza dei cicli regolano la prudenza; l’esperienza da sola non giustifica variazioni.
 - Le proposte sono validate:
   - devono dichiarare sufficiente evidenza e una motivazione concreta;
-  - l’annaffiatura resta entro **±25%** della base Verdant, rispettando la soglia minima della specie;
-  - la concimazione viene allineata a un multiplo dell’annaffiatura;
+  - l’annaffiatura resta entro lo scostamento della base Verdant consentito dal profilo: **principiante ±15%, intermedio ±25%, esperto ±35%, professionista ±50%**. Le soglie minime della specie prevalgono sempre. I limiti in giorni interi sono arrotondati verso l’interno e inviati al provider in `wateringLimits`; gli stessi limiti correggono l’output e sono ricontrollati prima dell’applicazione. Un profilo più esperto non sostituisce l’evidenza;
+  - se il valore AI viene corretto dal limite, la motivazione mostra valore richiesto, accettato e limite del profilo;
+  - la concimazione viene allineata a un multiplo dell’annaffiatura, con almeno due cicli;
   - una proposta uguale agli intervalli correnti viene scartata.
 - Con `auto_apply_ai` disattivato (comportamento predefinito), le proposte **aspettano l’approvazione** in “Piano AI”. Applicandole, gli intervalli e il piano vengono aggiornati con revisione AI e una voce in cronologia.
 - Per le piante in modalità AI il refresh giornaliero **conserva** gli intervalli AI. Una revisione AI su un piano Verdant viene conservata finché la motivazione ha evidenza; senza evidenza il piano può tornare alla base Verdant/apprendimento.
 
 L’assistente AI della scheda pianta è separato: risponde a una domanda e non ricalcola il piano.
+
+Queste percentuali riguardano l’analisi AI giornaliera, non modificano il limite ±30% dell’apprendimento Verdant né sbloccano l’intervallo vincolante dell’assistente della scheda.
 
 ## Motore operativo (shadow / operativo)
 

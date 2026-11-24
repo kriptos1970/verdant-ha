@@ -106,9 +106,9 @@ diagnosis. Some long notes already stored in archives may remain in their origin
 
 ## Status
 
-Current version: **1.1.1** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Current version: **1.1.2** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 
-Patch **1.1.1**: feeding is preselected for combined care, feeding intervals span at least two watering intervals including AI suggestions, and server/session errors are no longer confused with data validation failures.
+Patch **1.1.2**: repeated postponements and early watering inform irrigation frequency; experience controls the guardrails, and AI receives explicit care evidence with profile-specific bounds. Botanical safety minimums remain binding.
 The project is usable and runs on a real Home Assistant installation with a personal archive,
 but it is still under active development. Known limits and the remaining roadmap are tracked in
 [docs/STATUS.md](docs/STATUS.md) and [ROADMAP.md](ROADMAP.md).

@@ -177,3 +177,6 @@ def learn_after_watering(plant, zone, at, experience='intermedio'):
         summary['updatedAt'] = iso(at)
         plan.update(wateringDays=summary['learnedIntervalDays'],revisionSource='Apprendimento dalle cure',revisedAt=summary['updatedAt'])
         plant['wateringInterval'] = summary['learnedIntervalDays']
+        feed = plan.get('verdantFertilizingDays') or plant.get('fertilizingInterval')
+        if feed is not None:
+            plant['fertilizingInterval'] = plan['fertilizingDays'] = feed_days(feed,plant['wateringInterval'])

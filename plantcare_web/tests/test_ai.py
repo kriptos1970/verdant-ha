@@ -3,9 +3,135 @@ import pytest
 from uuid import uuid4
 from plantcare_web.backend import ai
 from plantcare_web.backend.storage import Store
+from plantcare_web.backend.storage import Conflict
 from plantcare_web.backend.settings import Settings
 from plantcare_web.backend.models import Plant
-from plantcare_web.backend.domain import feed_days
+from plantcare_web.backend.domain import feed_days, accepted_water
+
+
+@pytest.mark.parametrize('experience,low,high', [
+    ('principiante', 17, 23), ('intermedio', 15, 25),
+    ('esperto', 13, 27), ('professionista', 10, 30),
+    ('unknown', 15, 25),
+])
+def test_ai_water_limits_follow_experience(experience, low, high):
+    assert accepted_water(1, 20, 1, experience) == low
+    assert accepted_water(999, 20, 1, experience) == high
+    assert accepted_water(1, 7, 30, experience) == 30
+
+
+@pytest.mark.parametrize('experience,percent,maximum', [
+    ('principiante', 15, 6), ('intermedio', 25, 7),
+    ('esperto', 35, 8), ('professionista', 50, 9),
+])
+def test_daily_prompt_and_output_share_experience_limits(tmp_path, monkeypatch, experience, percent, maximum):
+    store = Store(tmp_path)
+    plant = Plant(name='Pothos', carePlanMode='AI', wateringInterval=6).model_dump()
+    store.put('plants', plant)
+    store.set_state('preferences', {'experience': experience})
+
+    async def complete(settings, prompt, schema, name):
+        import json
+        context = json.loads(prompt.split('PIANTE\n', 1)[1].split('\nData della richiesta:', 1)[0])[0]
+        assert context['experienceLevel'] == experience
+        assert context['wateringLimits']['maxDeviationPercent'] == percent
+        assert context['wateringLimits']['maximumDays'] == maximum
+        assert 'limite del 25%' not in prompt
+        assert 'rinvii onorati' in prompt and 'reason' in prompt
+        return {'summary': 'Revisione', 'plants': [{
+            'plantID': plant['id'], 'wateringDays': 9, 'fertilizingDays': 18,
+            'hasSufficientEvidence': True, 'reason': 'Due rinvii onorati indicano che gli intervalli attuali sono troppo brevi: nove giorni osservati.',
+        }]}
+
+    monkeypatch.setattr(ai, 'complete', complete)
+    asyncio.run(ai.analyze(store, Settings()))
+    proposal, _ = store.get('proposals', plant['id'])
+    assert proposal['proposedWateringDays'] == maximum
+    assert proposal['proposedFertilizingDays'] >= 2 * maximum
+    if maximum != 9:
+        assert '9' in proposal['reason'] and str(maximum) in proposal['reason']
+        assert f'{percent}%' in proposal['reason']
+
+
+def test_recent_care_and_timing_keep_postponement_evidence():
+    plant = Plant(name='Pothos', wateringInterval=6).model_dump()
+    plant['history'] = [
+        {'kind': 'water', 'date': '2026-11-01T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-07T12:00:00Z', 'status': 'postponed',
+         'postponedUntil': '2026-11-10T12:00:00Z', 'note': 'Substrato ancora umido'},
+        {'kind': 'water', 'date': '2026-11-10T12:00:00Z', 'status': 'completed'},
+    ]
+    context = ai.daily_context(plant, [])
+    postponed = next(e for e in context['recentCare'] if e['status'] == 'postponed')
+    assert postponed['postponedUntil'] == '2026-11-10T12:00:00Z'
+    assert postponed['note'] == 'Substrato ancora umido'
+    timing = context['careTiming']['water']
+    assert timing['recentCompletedGapsDays'] == [9]
+    assert timing['honoredPostponements'] == 1
+    assert timing['postponements'][0]['completedOn'] == '2026-11-10'
+    assert timing['postponements'][0]['completedGapDays'] == 9
+    text = ai.care_timing_text(plant)
+    assert 'Substrato ancora umido' in text
+    assert 'completata: 2026-11-10, intervallo: 9 giorni' in text
+
+
+def test_changed_profile_rejects_out_of_bounds_pending_proposal(tmp_path):
+    store = Store(tmp_path)
+    plant = Plant(name='Pothos', carePlanMode='AI', wateringInterval=6).model_dump()
+    store.put('plants', plant)
+    store.put('proposals', {
+        'id': plant['id'], 'expectedVersion': 1, 'proposedWateringDays': 9,
+        'proposedFertilizingDays': 18, 'reason': 'Rinvii onorati', 'provider': 'test',
+    })
+    store.set_state('preferences', {'experience': 'intermedio'})
+    with pytest.raises(Conflict, match='profilo attuale'):
+        ai.apply(store, plant['id'])
+    assert store.get('plants', plant['id'])[0]['wateringInterval'] == 6
+    store.set_state('preferences', {'experience': 'professionista'})
+    saved, _ = ai.apply(store, plant['id'])
+    assert saved['wateringInterval'] == 9
+    assert saved['fertilizingInterval'] == 18
+
+
+def test_profile_change_during_analysis_preserves_existing_proposal(tmp_path, monkeypatch):
+    store = Store(tmp_path)
+    plant = Plant(name='Pothos', carePlanMode='AI', wateringInterval=6).model_dump()
+    store.put('plants', plant)
+    store.set_state('preferences', {'experience': 'professionista'})
+    old = {'id': plant['id'], 'marker': 'previous proposal'}
+    store.put('proposals', old)
+
+    async def complete(*args):
+        store.set_state('preferences', {'experience': 'principiante'})
+        return {'summary': 'Revisione', 'plants': [{
+            'plantID': plant['id'], 'wateringDays': 9, 'fertilizingDays': 18,
+            'hasSufficientEvidence': True, 'reason': 'Rinvii onorati',
+        }]}
+
+    monkeypatch.setattr(ai, 'complete', complete)
+    with pytest.raises(Conflict, match='esperienza è cambiato'):
+        asyncio.run(ai.analyze(store, Settings()))
+    assert store.get('proposals', plant['id'])[0] == old
+
+
+def test_ai_gets_early_watering_events_with_recorded_and_inferred_sources():
+    plant = Plant(name='Pothos', wateringInterval=10).model_dump()
+    plant['history'] = [
+        {'kind': 'water', 'date': '2026-11-01T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-08T12:00:00Z', 'status': 'completed'},
+        {'kind': 'water', 'date': '2026-11-15T12:00:00Z', 'status': 'completed',
+         'wateringDueDate': '2026-11-18T12:00:00Z', 'note': 'Substrato asciutto'},
+    ]
+    context = ai.daily_context(plant, [])
+    timing = context['careTiming']['water']
+    assert timing['earlyWaterings'] == 1
+    assert timing['inferredEarlyWaterings'] == 1
+    early = timing['earlyWateringEvents'][-1]
+    assert early['daysEarly'] == 3
+    assert early['note'] == 'Substrato asciutto'
+    assert early['source'] == 'recordedSchedule'
+    assert context['recentCare'][0]['wateringDueDate'] == '2026-11-18T12:00:00Z'
+    assert 'Annaffiature anticipate: 1 registrate, 1 stimate' in ai.care_timing_text(plant)
 
 
 @pytest.mark.parametrize('water', [1, 3, 7, 30, 120])
@@ -79,6 +205,7 @@ def test_care_timing_distinguishes_postponements_and_delays():
     ]}
     timing=ai.care_timing(plant,'Europe/Rome')
     assert timing['water']['honoredPostponements']==1
+    assert timing['water']['honoredCycles']==1
     assert timing['water']['pendingPostponements']==1
     assert timing['water']['earlyPostponements']==0
     assert timing['water']['recentCompletedGapsDays']==[4,13]
