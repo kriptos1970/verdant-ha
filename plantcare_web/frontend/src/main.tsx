@@ -81,6 +81,7 @@ import { SpeciesCatalog } from "./species-catalog";
 import { IdentificationTool, SpeciesLibrary, BotanicalLookup, type PlantSeed } from "./knowledge";
 import { CareCalendar, WeekStrip } from "./care-calendar";
 import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
+import { TextSizeProvider } from "./text-size";
 import { useCareLabels } from "./care-labels";
 import { useProductLabels } from "./product-labels";
 import { useDomainLabels } from "./domain-labels";
@@ -5259,7 +5260,9 @@ function SensorsTool({
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <I18nProvider>
-      <App />
+      <TextSizeProvider>
+        <App />
+      </TextSizeProvider>
     </I18nProvider>
   </React.StrictMode>,
 );
