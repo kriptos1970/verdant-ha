@@ -1046,6 +1046,42 @@ main {
   font-size: var(--vc-text-17);
   margin-top: 5px;
 }
+.appearance-settings {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 24px 0;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.appearance-settings > h3,
+.appearance-settings > label,
+.appearance-settings > p,
+.text-size-preview > p {
+  margin: 0;
+}
+.appearance-settings > select {
+  width: 100%;
+  max-width: 400px;
+  min-width: 0;
+}
+.appearance-settings > .button {
+  justify-self: start;
+  max-width: 100%;
+  white-space: normal;
+}
+.text-size-preview {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--vc-radius-sm);
+  background: var(--vc-mint-soft);
+  font-size: var(--vc-font-body);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 .settings-list {
   font-size: var(--vc-text-12);
 }

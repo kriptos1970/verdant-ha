@@ -82,6 +82,7 @@ import { IdentificationTool, SpeciesLibrary, BotanicalLookup, type PlantSeed } f
 import { CareCalendar, WeekStrip } from "./care-calendar";
 import { I18nProvider, useI18n, type MessageKey, type LanguagePreference } from "./i18n";
 import { TextSizeProvider } from "./text-size";
+import { TextSizeControl } from "./text-size-control";
 import { useCareLabels } from "./care-labels";
 import { useProductLabels } from "./product-labels";
 import { useDomainLabels } from "./domain-labels";
@@ -4901,6 +4902,7 @@ function SettingsTool({
     <section className="panel">
       <h2>{t("settings.title")}</h2>
       <p className="muted">{t("settings.description")}</p>
+      <TextSizeControl />
       <dl className="settings-list">
         <div>
           <dt>{t("settings.language")}</dt>
