@@ -20,12 +20,48 @@
   --vc-radius-lg: 18px;
   --vc-radius-xl: 22px;
 
-  --vc-font-caption: 12px;
-  --vc-font-small: 13px;
-  --vc-font-body: 15px;
-  --vc-font-title: 18px;
-  --vc-font-h2: 20px;
-  --vc-font-display: 30px;
+  /* Scale text only: geometry, icons and images keep their original size.
+     Absolute lengths avoid multiplying the scale again in nested elements. */
+  --vc-text-scale: 1;
+  --vc-text-7: calc(7px * var(--vc-text-scale));
+  --vc-text-8: calc(8px * var(--vc-text-scale));
+  --vc-text-8-5: calc(8.5px * var(--vc-text-scale));
+  --vc-text-9: calc(9px * var(--vc-text-scale));
+  --vc-text-10: calc(10px * var(--vc-text-scale));
+  --vc-text-11: calc(11px * var(--vc-text-scale));
+  --vc-text-12: calc(12px * var(--vc-text-scale));
+  --vc-text-12-5: calc(12.5px * var(--vc-text-scale));
+  --vc-text-13: calc(13px * var(--vc-text-scale));
+  --vc-text-14: calc(14px * var(--vc-text-scale));
+  --vc-text-15: calc(15px * var(--vc-text-scale));
+  --vc-text-16: calc(16px * var(--vc-text-scale));
+  --vc-text-17: calc(17px * var(--vc-text-scale));
+  --vc-text-18: calc(18px * var(--vc-text-scale));
+  --vc-text-19: calc(19px * var(--vc-text-scale));
+  --vc-text-20: calc(20px * var(--vc-text-scale));
+  --vc-text-21: calc(21px * var(--vc-text-scale));
+  --vc-text-22: calc(22px * var(--vc-text-scale));
+  --vc-text-23: calc(23px * var(--vc-text-scale));
+  --vc-text-24: calc(24px * var(--vc-text-scale));
+  --vc-text-25: calc(25px * var(--vc-text-scale));
+  --vc-text-26: calc(26px * var(--vc-text-scale));
+  --vc-text-27: calc(27px * var(--vc-text-scale));
+  --vc-text-28: calc(28px * var(--vc-text-scale));
+  --vc-text-29: calc(29px * var(--vc-text-scale));
+  --vc-text-30: calc(30px * var(--vc-text-scale));
+  --vc-text-31: calc(31px * var(--vc-text-scale));
+  --vc-text-32: calc(32px * var(--vc-text-scale));
+  --vc-text-34: calc(34px * var(--vc-text-scale));
+  --vc-text-35: calc(35px * var(--vc-text-scale));
+  --vc-text-36: calc(36px * var(--vc-text-scale));
+  --vc-text-38: calc(38px * var(--vc-text-scale));
+
+  --vc-font-caption: var(--vc-text-12);
+  --vc-font-small: var(--vc-text-13);
+  --vc-font-body: var(--vc-text-15);
+  --vc-font-title: var(--vc-text-18);
+  --vc-font-h2: var(--vc-text-20);
+  --vc-font-display: var(--vc-text-30);
 
   --vc-space-1: 4px;
   --vc-space-2: 8px;
@@ -43,4 +79,12 @@
   --moss: var(--vc-moss);
   --line: var(--vc-line);
   --muted: var(--vc-text-secondary);
+}
+
+/* Printed plant labels must not depend on a device's reading preference.
+   Important overrides the scale set inline by TextSizeProvider. */
+@media print {
+  :root {
+    --vc-text-scale: 1 !important;
+  }
 }

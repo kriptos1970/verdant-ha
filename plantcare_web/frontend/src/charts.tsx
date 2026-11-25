@@ -196,14 +196,14 @@ function ActivityBars({
               tickLine={false}
               axisLine={false}
               minTickGap={18}
-              tick={{ fontSize: 11, fill: "#7c877e" }}
+              tick={{ fontSize: "var(--vc-text-11)", fill: "#7c877e" }}
             />
             <YAxis
               allowDecimals={false}
               tickLine={false}
               axisLine={false}
               width={34}
-              tick={{ fontSize: 11, fill: "#7c877e" }}
+              tick={{ fontSize: "var(--vc-text-11)", fill: "#7c877e" }}
             />
             <Tooltip
               cursor={{ fill: "rgba(64,110,77,0.07)" }}
@@ -377,7 +377,7 @@ function RoomBars({ rooms }: { rooms: RoomSummary[] }) {
               width={92}
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 12, fill: "#4c5a50" }}
+              tick={{ fontSize: "var(--vc-text-12)", fill: "#4c5a50" }}
             />
             <Tooltip
               cursor={{ fill: "rgba(64,110,77,0.07)" }}

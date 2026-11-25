@@ -74,3 +74,64 @@ test("provider starts normally when localStorage is blocked", async ({ page }) =
   await expect(page.locator("html")).toHaveAttribute("data-text-size", "normal");
   await expect(page.getByRole("heading", { name: "Your week" })).toBeVisible();
 });
+
+for (const width of [1280, 390]) {
+  test(`shared typography scales text once without resizing icons or photos at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const navigation = page.getByRole("navigation", { name: "Main navigation" });
+    await navigation.getByRole("button", { name: "Plants", exact: true }).click();
+    const card = page.locator(".plant-card").first();
+    await expect(card).toBeVisible();
+    const readSizes = () => page.evaluate(() => {
+      const fontSize = (selector: string) =>
+        parseFloat(getComputedStyle(document.querySelector(selector)!).fontSize);
+      const size = (selector: string) => {
+        const { width, height } = document.querySelector(selector)!.getBoundingClientRect();
+        return { width, height };
+      };
+      return {
+        heading: fontSize(".plant-card-body h3"),
+        caption: fontSize(".plant-card-body > small"),
+        inherited: fontSize("body"),
+        input: fontSize(".search input"),
+        icon: size(".topbar-right .button > svg"),
+        photo: size(".card-image .plant-cover"),
+      };
+    });
+    const baseline = await readSizes();
+    for (const [preference, scale] of Object.entries(TEXT_SIZE_SCALES)) {
+      // The settings control will use the provider in the next step.
+      // Updating its CSS output here isolates the typography contract.
+      await page.evaluate(({ scale }) => {
+        document.documentElement.style.setProperty("--vc-text-scale", String(scale));
+      }, { scale });
+      const actual = await readSizes();
+      expect(actual.heading, preference).toBeCloseTo(baseline.heading * scale);
+      expect(actual.caption, preference).toBeCloseTo(baseline.caption * scale);
+      expect(actual.inherited, preference).toBeCloseTo(baseline.inherited * scale);
+      expect(actual.input, preference).toBeCloseTo(
+        width <= 760 ? Math.max(16, baseline.input * scale) : baseline.input * scale,
+      );
+      expect(actual.icon, preference).toEqual(baseline.icon);
+      expect(actual.photo, preference).toEqual(baseline.photo);
+    }
+  });
+}
+
+test("printing ignores the reading scale and restores it on screen", async ({ page }) => {
+  await page.addInitScript(({ key }) => localStorage.setItem(key, "maximum"), {
+    key: TEXT_SIZE_STORAGE_KEY,
+  });
+  await page.goto("/");
+  const scale = () => page.locator("html").evaluate(
+    root => getComputedStyle(root).getPropertyValue("--vc-text-scale").trim(),
+  );
+  await expect.poll(scale).toBe("1.5");
+  await page.emulateMedia({ media: "print" });
+  await expect.poll(scale).toBe("1");
+  await expect(page.locator("html")).toHaveCSS("font-size", "16px");
+  await page.emulateMedia({ media: "screen" });
+  await expect.poll(scale).toBe("1.5");
+  await expect(page.locator("html")).toHaveCSS("font-size", "24px");
+});
