@@ -1,4 +1,12 @@
-# Stato dell’incremento 1.1.2
+# Stato dell’incremento 1.1.3
+
+## Patch 1.1.3
+
+- Dimensione del testo in **Impostazioni → Aspetto**: cinque livelli (90/100/115/130/150%), anteprima e ripristino. Preferenza locale al browser, con fallback nella sessione quando il salvataggio è bloccato.
+- Scala tipografica desktop/mobile e grafici; foto e icone non scalate, stampa delle etichette indipendente dalla preferenza e campi mobile di almeno 16 px.
+- Layout adattivo per pulsanti della pianta, riepilogo, calendario, prodotti, barra inferiore e finestre. Le dimensioni normale e piccola conservano il layout precedente.
+- Verifiche locali: 289 test backend, 60 test browser, 1.245 chiavi i18n allineate e build frontend. Controllo visivo Chromium a 320/360/375/390 e 1280 px; test automatici del livello massimo in italiano e inglese. Questa patch non è stata collaudata su iPhone fisico o installata su Home Assistant.
+- Reversibilità: tag `checkpoint/before-font-scaling` e commit dedicati, senza migrazioni dell’archivio.
 
 ## Patch 1.1.2
 

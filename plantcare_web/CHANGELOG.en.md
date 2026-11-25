@@ -4,6 +4,15 @@ User-facing English notes for GitHub releases. The script `scripts/release_notes
 uses the section that matches the add-on version; when a version is missing here it
 falls back to the Italian entry in [`CHANGELOG.md`](CHANGELOG.md).
 
+# 1.1.3 — adjustable text size
+
+- **Appearance**: **Settings → Appearance → Text size** offers five levels from 90% to 150%, a preview, immediate application and a reset to normal size.
+- **Local preference**: the choice is saved only in the device's browser; when storage is blocked it still works for the session. The archive and preferences on other devices are unchanged.
+- **Desktop and phone**: the shared scale includes chart text. Photos and icons are not enlarged; printed label sizes stay independent of the reading preference, and phone form controls stay at least 16 px.
+- **Responsive layout**: larger text reflows plant actions into several rows, reduces summary columns, allows the weekly calendar to scroll and wraps dialog and product text. Bottom navigation gives longer labels more room without reducing the font.
+- **Checks**: 289 backend tests, 60 browser tests, 1,245 aligned i18n keys and frontend build. Visual Chromium checks at 320, 360, 375, 390 and 1280 px; this is not a physical iPhone or Home Assistant rehearsal.
+- **Reversibility**: annotated `checkpoint/before-font-scaling` tag on the previous state and dedicated implementation commits. No data migration.
+
 # 1.1.2 — bidirectional learning and grower guardrails
 
 - **Postponements and early watering**: Verdant learning uses honoured postponements across multiple cycles to lengthen intervals and repeated early waterings to shorten them, with 1–4 day steps according to experience. Several postponements within one cycle and duplicate same-day entries do not multiply evidence; conflicting signals do not accelerate learning.

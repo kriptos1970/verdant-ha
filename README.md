@@ -51,6 +51,8 @@ with a real interface — no YAML dashboards to assemble, no second cloud app.
   deduplication and EXIF stripping, configurable measurement retention.
 - **Web UI**: responsive, aligned with the native Verdant app at phone widths; works inside
   Home Assistant Ingress without exposing ports.
+- **Text size**: five levels (90–150%) under **More → Settings → Appearance**, with a preview
+  and reset. Saved per browser; printed labels keep their original size.
 
 ## Install
 
@@ -106,16 +108,16 @@ diagnosis. Some long notes already stored in archives may remain in their origin
 
 ## Status
 
-Current version: **1.1.2** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Current version: **1.1.3** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 
-Patch **1.1.2**: repeated postponements and early watering inform irrigation frequency; experience controls the guardrails, and AI receives explicit care evidence with profile-specific bounds. Botanical safety minimums remain binding.
+Patch **1.1.3**: adjustable text size with an immediate preview, browser-local preference and responsive layouts for larger text. Photos, icons and printed labels are not enlarged.
 The project is usable and runs on a real Home Assistant installation with a personal archive,
 but it is still under active development. Known limits and the remaining roadmap are tracked in
 [docs/STATUS.md](docs/STATUS.md) and [ROADMAP.md](ROADMAP.md).
 
 Under the hood: Python 3.13, FastAPI, Pydantic, SQLite, React 19, TypeScript and Vite, built as
-a Home Assistant add-on for `aarch64` and `amd64`. 225 backend tests plus the frontend
-type-check and build run in CI on every push and pull request.
+a Home Assistant add-on for `aarch64` and `amd64`. 289 backend tests and 60 browser tests,
+plus translation checks, frontend type-check and build, run in CI on every push and pull request.
 
 ## Documentation
 

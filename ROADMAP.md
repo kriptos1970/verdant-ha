@@ -2,10 +2,11 @@
 
 Verdant HA is a self-hosted Home Assistant add-on for a houseplant collection. This file lists what is actually still open; released changes are in [plantcare_web/CHANGELOG.md](plantcare_web/CHANGELOG.md), and verification notes are in [docs/STATUS.md](docs/STATUS.md).
 
-Current version: **1.1.2** (24 November 2026).
+Current version: **1.1.3** (25 November 2026).
 
 ## Done recently
 
+- [x] **Adjustable text size (1.1.3)**: five browser-local levels (90–150%) with preview and reset under Settings → Appearance; enlarged-text reflow on desktop and phone, unchanged icon/photo sizing and printed labels, 60 browser tests and visual checks at 320/360/375/390 and 1280 px. No archive migration; rollback checkpoint `checkpoint/before-font-scaling`.
 - [x] **Bidirectional care learning and grower guardrails (1.1.2)**: repeated postponements can lengthen irrigation intervals and early watering can shorten them; recorded deadlines, historical estimates and distinct cycles are explicit. Daily AI bounds follow the experience profile (±15/25/35/50%) without relaxing botanical minimums or adding automatic plan application.
 - [x] **Clearer API errors (1.1.1)**: distinguish server, session and network failures from invalid input; preserve structured field details and specific English errors instead of the generic validation banner.
 - [x] **Feeding safety (1.1.1)**: preselect feeding for combined care while allowing opt-out; require at least two watering intervals between feeding dates, including manual saves, adaptive plans and AI suggestions, with explicit prompt constraints and output correction.
@@ -32,8 +33,8 @@ Current version: **1.1.2** (24 November 2026).
 - [x] Soft green page canvas; panels, cards and sheets stay white, matching the native section separation at phone and desktop widths.
 - [x] Care engine mode in Settings shows the running add-on value explicitly, with both modes listed and the current one highlighted.
 - [x] Care cards and history rows show the action icon in the bottom-right corner of the plant image, colour-coded by care kind.
-- [x] The Home greeting keeps “Buongiorno 🌿” on one line on phones; the weather/icon column sizes to its content and the compact phone weather shows the temperature only.
-- [x] The phone care calendar keeps the month title, Today button, week/month switch and arrows, and its seven-day strip fits the width without horizontal scrolling.
+- [x] At normal text size the Home greeting keeps “Buongiorno 🌿” on one line on phones; larger text can wrap. The weather/icon column sizes to its content and the compact phone weather shows the temperature only.
+- [x] The phone care calendar keeps the month title, Today button, week/month switch and arrows; enlarged text allows horizontal scrolling in the Home weekly strip rather than squeezing day labels.
 - [x] On phones the week arrows are replaced by a continuously swipeable day strip (14 days back, one year ahead); desktop keeps the seven-day grid and arrows.
 - [x] Phone plant rows swipe left to reveal Delete and move the plant to the trash (30-day restore); the trash can be emptied on demand behind a confirmation.
 

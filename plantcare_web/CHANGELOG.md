@@ -1,3 +1,12 @@
+# 1.1.3 — dimensione del testo personalizzabile
+
+- **Aspetto**: in **Impostazioni → Aspetto → Dimensione del testo** si possono scegliere cinque livelli, dal 90% al 150%, con anteprima, applicazione immediata e ripristino della dimensione normale.
+- **Preferenza locale**: la scelta viene salvata solo nel browser del dispositivo; se il salvataggio è bloccato, funziona comunque nella sessione. Nessuna modifica all’archivio o alle preferenze degli altri dispositivi.
+- **Desktop e telefono**: la scala condivisa comprende i caratteri dei grafici. Foto e icone non vengono ingrandite; la stampa delle etichette resta indipendente dalla preferenza e i campi su telefono non scendono sotto 16 px.
+- **Layout adattivo**: con testo grande i pulsanti della pianta vanno su più righe, il riepilogo riduce le colonne, il calendario settimanale può scorrere e i testi di finestre e prodotti vanno a capo. La barra inferiore assegna più spazio alle etichette lunghe senza ridurre il carattere.
+- **Verifiche**: 289 test backend, 60 test browser, 1.245 chiavi i18n allineate e build frontend. Controllo visivo in Chromium a 320, 360, 375, 390 e 1280 px; non è un collaudo su iPhone fisico o Home Assistant.
+- **Reversibilità**: tag annotato `checkpoint/before-font-scaling` sullo stato precedente e commit dedicati alla modifica. Nessuna migrazione dei dati.
+
 # 1.1.2 — apprendimento bidirezionale e guardrail del coltivatore
 
 - **Rinvii e annaffiature anticipate**: l’apprendimento Verdant usa rinvii onorati su più cicli per allungare l’intervallo e annaffiature anticipate ripetute per accorciarlo, con passi da 1 a 4 giorni secondo esperienza. Più rinvii nello stesso ciclo e registrazioni duplicate nella stessa giornata non moltiplicano l’evidenza; i segnali contraddittori non accelerano l’apprendimento.

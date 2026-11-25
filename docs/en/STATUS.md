@@ -1,6 +1,14 @@
 # Status and known limits
 
-Current version: **1.1.2**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current version: **1.1.3**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+
+## Patch 1.1.3
+
+- Text size under **Settings → Appearance**: five levels (90/100/115/130/150%), a preview and reset. The preference is local to the browser, with session-only fallback if storage is blocked.
+- Shared desktop/mobile and chart typography; photos and icons are not scaled, printed labels ignore the reading preference and phone form controls stay at least 16 px.
+- Enlarged text reflows plant actions, summary columns, calendar, products, bottom navigation and dialogs. Normal and small keep the previous layout.
+- Local checks: 289 backend tests, 60 browser tests, 1,245 aligned i18n keys and frontend build. Visual Chromium checks at 320/360/375/390 and 1280 px; automated maximum-size checks in Italian and English. This patch has not been tested on a physical iPhone or installed on Home Assistant.
+- Reversibility: `checkpoint/before-font-scaling` tag and dedicated commits, with no archive migrations.
 
 ## Patch 1.1.2
 
@@ -43,7 +51,7 @@ Current version: **1.1.2**; release assets are available through [GitHub Release
 - **Frontend and accessibility checks**: CI runs Playwright and axe in Chromium against a temporary archive. Tests cover navigation, plant editing, language persistence, web restore and rejection of native backups on a populated archive. Keyboard focus, dialog names, secondary text contrast and calendar labels were improved.
 - The suite also verifies that canceling a watering leaves the archive unchanged and completing it persists in the plant diary and collection history after reload. Desktop tests cover switching plants without carrying over the previous diary; mobile tests cover the growth diary disclosure, with visual checks at 320, 360, 375 and 390 px.
 - The restore preview and confirmation were visually checked in Chromium at 320, 360, 375 and 390 px. The maintainer confirmed VoiceOver works in the Companion app on a physical iPhone. These checks do not certify accessibility across the entire app.
-- **234 backend tests** pass.
+- **289 backend tests and 60 browser tests** pass.
 - Frontend type-check and production build pass; CI runs both plus translation key/placeholder checks.
 - 7.160 Care Engine recommendations, 4.096 adaptive plans, 162 native scheduling cases and 1.536 AI selection combinations were compared with the original Swift code.
 - Real Home Assistant checks: Ingress in Safari, imported 18 plants, 7 products and 124 photos, care round, calendar, history, products and iOS layout at phone widths.

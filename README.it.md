@@ -52,6 +52,8 @@ un'interfaccia vera: niente dashboard YAML da montare, nessuna seconda app cloud
   conservazione misure configurabile.
 - **Interfaccia web**: responsiva, allineata all'app nativa Verdant alle larghezze telefono;
   funziona dentro Home Assistant Ingress senza esporre porte.
+- **Dimensione del testo**: cinque livelli (90–150%) in **Altro → Impostazioni → Aspetto**,
+  con anteprima e ripristino. Preferenza per browser; le etichette stampate non cambiano.
 
 ## Installazione su Home Assistant OS
 
@@ -113,16 +115,16 @@ note lunghe già presenti negli archivi possono restare nella lingua originale.
 
 ## Stato
 
-Versione attuale: **1.1.2** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Versione attuale: **1.1.3** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
 
-Patch **1.1.2**: rinvii ripetuti e annaffiature anticipate influenzano il ritmo d’irrigazione; l’esperienza regola i guardrail e l’AI riceve evidenze esplicite con limiti proporzionati al profilo. Le soglie botaniche restano vincolanti.
+Patch **1.1.3**: dimensione del testo personalizzabile con anteprima immediata, preferenza locale al browser e layout adattivo per i caratteri grandi. Foto, icone ed etichette stampate non vengono ingrandite.
 Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio
 personale, ma è ancora in sviluppo attivo. Limiti noti e roadmap in [docs/STATUS.md](docs/STATUS.md)
 e [ROADMAP.md](ROADMAP.md).
 
 Sotto il cofano: Python 3.13, FastAPI, Pydantic, SQLite, React 19, TypeScript e Vite, confezionati
-come add-on Home Assistant per `aarch64` e `amd64`. 225 test backend più type-check e build del
-frontend girano in CI a ogni push e pull request.
+come add-on Home Assistant per `aarch64` e `amd64`. 289 test backend e 60 test browser, controllo
+traduzioni, type-check e build frontend girano in CI a ogni push e pull request.
 
 ## Documentazione
 
