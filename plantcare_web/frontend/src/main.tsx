@@ -67,6 +67,7 @@ import { uploadPhoto } from "./photo-upload";
 import "./style.css";
 import "./tokens.css";
 import "./ios-layout.css";
+import "./text-size-layout.css";
 import {IOSProducts,IOSPlantOverview,useIOSLayout} from "./ios-layout";
 import { PlantAssistant, AIModelCatalog } from "./ai-assistant";
 import { AdaptiveEditor, CareInsights, placements } from "./adaptive";
@@ -1467,7 +1468,7 @@ function App() {
               <IOSIcon name={iosNavigation[n.id]} size={24} />
               {n.id === "care" && due.length > 0 && <b>{due.length}</b>}
             </span>
-            {t(n.labelKey)}
+            <span className="bottom-tab-label">{t(n.labelKey)}</span>
           </button>
         ))}
       </nav>

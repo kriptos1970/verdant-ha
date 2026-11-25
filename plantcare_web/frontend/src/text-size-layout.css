@@ -1,0 +1,77 @@
+/* Reflow enlarged text rather than shrinking the user's chosen font.
+   Normal and small retain the existing layout. */
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-plant-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  aspect-ratio: auto;
+  padding-top: 96px;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-plant-caption {
+  position: relative;
+  overflow-wrap: anywhere;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-plant-actions {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(52px * var(--vc-text-scale))), 1fr));
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-plant-actions button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-plant-actions button > span {
+  max-width: 100%;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(118px * var(--vc-text-scale))), 1fr));
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-summary-grid small,
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-summary-grid strong {
+  overflow-wrap: anywhere;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-summary-toggle {
+  flex-wrap: wrap;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .editor-disclosure > summary > span,
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .editor-disclosure > summary > em {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .modal-top h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .modal-actions {
+  flex-wrap: wrap;
+}
+:root:is([data-text-size$="large"], [data-text-size="maximum"]) .modal-actions .button {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .home-heading h1 {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .native-week .calendar-week {
+    grid-template-columns: repeat(7, minmax(54px, 1fr));
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .bottom-tabs button {
+    /* Give longer labels more room instead of dividing the bar equally. */
+    flex: 1 1 auto;
+    min-width: 44px;
+  }
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .bottom-tab-label {
+    white-space: nowrap;
+  }
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-product-list strong,
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .ios-product-list small {
+    overflow-wrap: anywhere;
+  }
+  :root:is([data-text-size$="large"], [data-text-size="maximum"]) .plant-editor-form .form-grid.two-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
