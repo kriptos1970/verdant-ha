@@ -93,6 +93,27 @@ test("English errors preserve specific server details without a dictionary entry
   await expect(page.locator(".alert.error")).toContainText("wateringInterval: Input should be greater than or equal to 1");
 });
 
+test("the plant photo opens full screen without an original link", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const photo = "https://example.com/plant-photo.svg";
+  await page.route(photo, route => route.fulfill({
+    contentType: "image/svg+xml",
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="green"/></svg>',
+  }));
+  await page.route("**/api/plants/*", async route => {
+    const response = await route.fetch();
+    const plant = await response.json();
+    await route.fulfill({ response, json: { ...plant, catalogImageURL: photo } });
+  });
+  const detail = await openPlant(page, "Olivia");
+  await detail.getByRole("button", { name: "Show photo of Olivia full screen" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("img", { name: "Fotografia di Olivia" })).toBeVisible();
+  await expect(dialog.getByRole("link")).toHaveCount(0);
+  await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(dialog).not.toBeVisible();
+});
+
 test("combined care preselects feeding and allows opting out", async ({ page }) => {
   const detail = await openPlant(page, "Olivia");
   await detail.getByRole("button", { name: "Water", exact: true }).click();

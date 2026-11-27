@@ -108,7 +108,9 @@ diagnosis. Some long notes already stored in archives may remain in their origin
 
 ## Status
 
-Current version: **1.1.3** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Current version: **1.1.4** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+
+Patch **1.1.4**: removed the inaccessible “Open original” link from the full-screen plant photo viewer.
 
 Patch **1.1.3**: adjustable text size with an immediate preview, browser-local preference and responsive layouts for larger text. Photos, icons and printed labels are not enlarged.
 The project is usable and runs on a real Home Assistant installation with a personal archive,

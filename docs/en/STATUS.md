@@ -1,6 +1,10 @@
 # Status and known limits
 
-Current version: **1.1.3**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+Current version: **1.1.4**; release assets are available through [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases). The add-on runs on a real Home Assistant installation with a personal archive.
+
+## Patch 1.1.4
+
+- The full-screen plant photo viewer no longer shows the “Open original” link. A browser test covers opening and closing the viewer and checks that the link is absent.
 
 ## Patch 1.1.3
 

@@ -115,7 +115,9 @@ note lunghe già presenti negli archivi possono restare nella lingua originale.
 
 ## Stato
 
-Versione attuale: **1.1.3** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+Versione attuale: **1.1.4** — [GitHub Releases](https://github.com/kriptos1970/verdant-ha/releases).
+
+Patch **1.1.4**: rimosso il link non accessibile «Apri originale» dalla foto a schermo intero nella scheda pianta.
 
 Patch **1.1.3**: dimensione del testo personalizzabile con anteprima immediata, preferenza locale al browser e layout adattivo per i caratteri grandi. Foto, icone ed etichette stampate non vengono ingrandite.
 Il progetto è utilizzabile e gira su un'installazione Home Assistant reale con un archivio

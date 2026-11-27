@@ -1,3 +1,7 @@
+# 1.1.4 — foto della pianta senza link non accessibile
+
+- Rimosso «Apri originale» dal visualizzatore della scheda pianta. La foto si apre ancora a schermo intero.
+
 # 1.1.3 — dimensione del testo personalizzabile
 
 - **Aspetto**: in **Impostazioni → Aspetto → Dimensione del testo** si possono scegliere cinque livelli, dal 90% al 150%, con anteprima, applicazione immediata e ripristino della dimensione normale.

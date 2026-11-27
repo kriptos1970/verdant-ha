@@ -1,4 +1,8 @@
-# Stato dell’incremento 1.1.3
+# Stato dell’incremento 1.1.4
+
+## Patch 1.1.4
+
+- Il visualizzatore a schermo intero della foto nella scheda pianta non mostra più «Apri originale». Un test nel browser copre l’apertura, l’assenza del link e la chiusura.
 
 ## Patch 1.1.3
 
